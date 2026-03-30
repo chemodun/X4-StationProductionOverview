@@ -477,6 +477,11 @@ end
 --- Build the frame-border, table, and connections for the production submenu.
 --- Follows the structure of menu.createCrewInfoSubmenu exactly.
 function spo.createProductionSubmenu(inputframe, instance)
+  -- temporary fix
+  if instance == "right" then
+    inputframe = menu.infoFrame2
+  end
+  -- temporary fix
   local frameHeight = inputframe.properties.height
   -- infoSubmenuObject fallback (mirrors all vanilla info submenus)
   if (not menu.infoSubmenuObject) or (menu.infoSubmenuObject == 0) then
@@ -583,7 +588,7 @@ function spo.createProductionSubmenu(inputframe, instance)
   if isLeft then
     menu.playerinfotable:addConnection(1, 2, true)
   end
-  tableHeader:addConnection(isLeft and 2 or 1, isLeft and 2 or 3, true)
+  tableHeader:addConnection(isLeft and 2 or 1, isLeft and 2 or 3, not isLeft)
   tableInfo:addConnection(isLeft and 3 or 2, isLeft and 2 or 3)
   tableButton:addConnection(isLeft and 4 or 3, isLeft and 2 or 3)
 end
