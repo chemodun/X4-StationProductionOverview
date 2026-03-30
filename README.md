@@ -75,6 +75,11 @@ Wares are organized into three groups:
 
 ## Changelog
 
+### [9.00.02] - 2026-03-31
+
+- **Fixed**
+  - Disappearing the info menu on a right panel when this mod enabled tab is selected
+
 ### [9.00.01] - 2026-03-30
 
 - **Added**
