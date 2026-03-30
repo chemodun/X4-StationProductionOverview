@@ -7,8 +7,8 @@
       <t id="1">Produktionsübersicht</t>
       <t id="2">Stationsproduktionsübersicht</t>
       <!-- dropdown mode options -->
-      <t id="100">Aktuell \(Live-Status\) / Stunde</t>
-      <t id="101">Geschätzt \(alle Module aktiv\) / Stunde</t>
+      <t id="100">Aktueller Live-Status \(± mit Baumodulen\) / Stunde</t>
+      <t id="101">Geschätzt, d.h. alle Module aktiv \(± mit Baumodulen\) / Stunde</t>
       <!-- column headers -->
       <t id="110">Ware</t>
       <t id="111">Module</t>

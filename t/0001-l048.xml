@@ -7,8 +7,8 @@
       <t id="1">Przegląd produkcji</t>
       <t id="2">Przegląd produkcji stacji</t>
       <!-- dropdown mode options -->
-      <t id="100">Bieżący \(stan na żywo\) / godzinę</t>
-      <t id="101">Szacowany \(wszystkie moduły aktywne\) / godzinę</t>
+      <t id="100">Bieżący stan na żywo \(± z modułami w budowie\) / godzinę</t>
+      <t id="101">Szacowany, tj. wszystkie moduły aktywne \(± z modułami w budowie\) / godzinę</t>
       <!-- column headers -->
       <t id="110">Towar</t>
       <t id="111">Moduły</t>

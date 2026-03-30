@@ -7,8 +7,8 @@
       <t id="1">Přehled výroby</t>
       <t id="2">Přehled výroby stanice</t>
       <!-- dropdown mode options -->
-      <t id="100">Aktuální \(živý stav\) / hodinu</t>
-      <t id="101">Odhadovaný \(všechny moduly aktivní\) / hodinu</t>
+      <t id="100">Aktuální živý stav \(± s moduly ve výstavbě\) / hodinu</t>
+      <t id="101">Odhadovaný, tj. všechny moduly aktivní \(± s moduly ve výstavbě\) / hodinu</t>
       <!-- column headers -->
       <t id="110">Zboží</t>
       <t id="111">Moduly</t>

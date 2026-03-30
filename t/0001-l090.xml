@@ -7,8 +7,8 @@
       <t id="1">Üretim Özeti</t>
       <t id="2">İstasyon Üretim Özeti</t>
       <!-- dropdown mode options -->
-      <t id="100">Mevcut \(canlı durum\) / saat</t>
-      <t id="101">Tahmini \(tüm modüller aktif\) / saat</t>
+      <t id="100">Mevcut canlı durum \(± yapım aşamasındaki modüllerle\) / saat</t>
+      <t id="101">Tahmini, yani tüm modüller aktif \(± yapım aşamasındaki modüllerle\) / saat</t>
       <!-- column headers -->
       <t id="110">Mal</t>
       <t id="111">Modüller</t>

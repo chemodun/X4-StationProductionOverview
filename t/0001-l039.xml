@@ -7,8 +7,8 @@
       <t id="1">Panoramica produzione</t>
       <t id="2">Panoramica produzione stazione</t>
       <!-- dropdown mode options -->
-      <t id="100">Attuale \(stato live\) / ora</t>
-      <t id="101">Stimato \(tutti i moduli attivi\) / ora</t>
+      <t id="100">Stato live attuale \(± con moduli in costruzione\) / ora</t>
+      <t id="101">Stimato, ovvero tutti i moduli attivi \(± con moduli in costruzione\) / ora</t>
       <!-- column headers -->
       <t id="110">Merce</t>
       <t id="111">Moduli</t>

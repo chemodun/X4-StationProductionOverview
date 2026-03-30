@@ -7,8 +7,8 @@
       <t id="1">Resumen de producción</t>
       <t id="2">Resumen de producción de estación</t>
       <!-- dropdown mode options -->
-      <t id="100">Actual \(estado en vivo\) / hora</t>
-      <t id="101">Estimado \(todos los módulos activos\) / hora</t>
+      <t id="100">Estado en vivo actual \(± con módulos en construcción\) / hora</t>
+      <t id="101">Estimado, es decir, todos los módulos activos \(± con módulos en construcción\) / hora</t>
       <!-- column headers -->
       <t id="110">Mercancía</t>
       <t id="111">Módulos</t>
