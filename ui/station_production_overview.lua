@@ -15,8 +15,8 @@
 -- and ego_detailmonitorhelper (helper.lua) declare a superset, so there is no
 -- conflict — re-declaring the same typedef/function signatures is harmless.
 
-local ffi          = require("ffi")
-local C            = ffi.C
+local ffi = require("ffi")
+local C   = ffi.C
 
 ffi.cdef [[
 	typedef uint64_t UniverseID;
@@ -54,6 +54,12 @@ ffi.cdef [[
 	bool         IsComponentWrecked(UniverseID componentid);
 	bool         IsRealComponentClass(UniverseID componentid, const char* classname);
 	void         SetFocusMapComponent(UniverseID holomapid, UniverseID componentid, bool resetplayerpan);
+
+	typedef struct {
+		int major;
+		int minor;
+	} GameVersion;
+	GameVersion  GetGameVersion();
 ]]
 
 -- infoMode.left key that identifies our sub-tab (must be unique across mods)
@@ -64,7 +70,8 @@ local menu         = nil
 local config       = nil
 
 local spo          = {}
-spo.showEstimated  = false   -- false = live state, true = all modules active (ignorestate)
+spo.showEstimated  = false -- false = live state, true = all modules active (ignorestate)
+spo.isV9           = C.GetGameVersion().major >= 9
 
 -- ─── data collection ────────────────────────────────────────────────────────
 
@@ -216,26 +223,57 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance)
   local isStation = station and (tonumber(station) ~= 0)
       and C.IsComponentClass(station, "station")
 
+
+  if not spo.isV9 then
+    --- title ---
+    local row = tableInfo:addRow(false, { fixed = true, bgColor = Color["row_title_background"] })
+    row[1]:setColSpan(8):createText(ReadText(1001, 2427), Helper.headerRowCenteredProperties)
+
+    local row = tableInfo:addRow(false, { fixed = true, bgColor = Color["row_title_background"] })
+    row[1]:setColSpan(8):createText(ReadText(1972092416, 1), Helper.headerRowCenteredProperties)
+  end
   -- ── info_focus row: object name + map-focus button ──
-  local titleColor = isStation and menu.getObjectColor(station) or Color["text_normal"]
+  local titleColor = spo.isV9 and (isStation and menu.getObjectColor(station) or Color["text_normal"]) or menu.holomapcolor.playercolor
   local objectName = isStation
       and ffi.string(C.GetComponentName(station))
-      or "Production Overview"
+      or ReadText(1972092416, 1)
 
-  local row = tableInfo:addRow("info_focus", { fixed = true })
-  row[6]:createButton({ width = config.mapRowHeight, height = config.mapRowHeight, cellBGColor = Color["row_background"] })
-      :setIcon("menu_center_selection", { width = config.mapRowHeight, height = config.mapRowHeight })
+  local row = tableInfo:addRow("info_focus", { fixed = true, bgColor = not spo.isV9 and Color["row_title_background"] or nil })
+  row[6]:createButton({
+    width = config.mapRowHeight,
+    height = config.mapRowHeight,
+    cellBGColor = Color
+        ["row_background"]
+  })
+      :setIcon("menu_center_selection",
+        { width = config.mapRowHeight, height = config.mapRowHeight, y = not spo.isV9 and (Helper.headerRow1Height - config.mapRowHeight) / 2 or nil }
+      )
   row[6].handlers.onClick = function() return C.SetFocusMapComponent(menu.holomap, menu.infoSubmenuObject, true) end
-  row[1]:setBackgroundColSpan(5):setColSpan(5):createText(objectName, { fontsize = Helper.headerRow1FontSize, color = titleColor })
-
+  if spo.isV9 then
+    row[1]:setBackgroundColSpan(5):setColSpan(5):createText(objectName,
+      { fontsize = Helper.headerRow1FontSize, color = titleColor })
+  else
+    row[1]:setBackgroundColSpan(5):setColSpan(3):createText(objectName, Helper.headerRow1Properties)
+    row[1].properties.color = titleColor
+    row[4]:setColSpan(2):createText(ffi.string(C.GetObjectIDCode(station)), Helper.headerRow1Properties)
+    row[4].properties.halign = "right"
+    row[4].properties.color = titleColor
+  end
   -- ── estimated/current toggle row ──
   local modeOptions = {
     { id = "live",      text = ReadText(1972092416, 100), icon = "", displayremoveoption = false },
     { id = "estimated", text = ReadText(1972092416, 101), icon = "", displayremoveoption = false },
   }
-  row = tableInfo:addRow(true, { fixed = true })
-  row[1]:setColSpan(6):createDropDown(modeOptions, { height = config.mapRowHeight, startOption = spo.showEstimated and "estimated" or "live" })
-      :setTextProperties({ halign = "center", font = Helper.titleFont, fontsize = Helper.standardFontSize, y = Helper.headerRow1Offsety })
+  local row = tableInfo:addRow(true, { fixed = true })
+  row[1]:setColSpan(6):createDropDown(modeOptions,
+    { height = config.mapRowHeight, startOption = spo.showEstimated and "estimated" or "live" })
+      :setTextProperties({
+        halign = "center",
+        font = Helper.titleFont,
+        fontsize = Helper.standardFontSize,
+        y = Helper
+            .headerRow1Offsety
+      })
   row[1].handlers.onDropDownConfirmed = function(_, id)
     spo.showEstimated = (id == "estimated")
     menu.refreshInfoFrame()
@@ -269,11 +307,11 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance)
   -- C.GetContainerWareProduction(station, ware, false) already returns the live
   -- effective rate (base * workforce bonus).  We use it directly for productionCurrent,
   -- and scale planned modules' base contribution by the same multiplier.
-  local workforceBonus        = GetComponentData(station, "workforcebonus") or 0
-  local workforceMultiplier   = 1 + workforceBonus
+  local workforceBonus      = GetComponentData(station, "workforcebonus") or 0
+  local workforceMultiplier = 1 + workforceBonus
 
-  local resourceWares   = {}   -- [ware] = { name, moduleCount, plannedCount }  (pure inputs)
-  local wareProduction  = {}   -- [ware] = { name, moduleCount, plannedCount, plannedBaseRate }
+  local resourceWares       = {} -- [ware] = { name, moduleCount, plannedCount }  (pure inputs)
+  local wareProduction      = {} -- [ware] = { name, moduleCount, plannedCount, plannedBaseRate }
 
   for _, data in pairs(moduleData) do
     local rates = getBaseRates(data.macro)
@@ -281,16 +319,16 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance)
       local ware = rateInfo.ware
       if not wareProduction[ware] then
         wareProduction[ware] = {
-          name              = GetWareData(ware, "name") or ware,
-          moduleCount       = 0,
-          plannedCount      = 0,
-          plannedBaseRate   = 0,   -- sum of ratePerModule * numplanned across all macros
+          name            = GetWareData(ware, "name") or ware,
+          moduleCount     = 0,
+          plannedCount    = 0,
+          plannedBaseRate = 0, -- sum of ratePerModule * numplanned across all macros
         }
       end
-      local wp               = wareProduction[ware]
-      wp.moduleCount         = wp.moduleCount        + data.count
-      wp.plannedCount        = wp.plannedCount       + data.numPlanned
-      wp.plannedBaseRate     = wp.plannedBaseRate    + rateInfo.ratePerModule * data.numPlanned
+      local wp           = wareProduction[ware]
+      wp.moduleCount     = wp.moduleCount + data.count
+      wp.plannedCount    = wp.plannedCount + data.numPlanned
+      wp.plannedBaseRate = wp.plannedBaseRate + rateInfo.ratePerModule * data.numPlanned
       for resourceWare in pairs(rateInfo.resources) do
         if not resourceWares[resourceWare] then
           resourceWares[resourceWare] = {
@@ -299,7 +337,7 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance)
             plannedCount = 0,
           }
         end
-        resourceWares[resourceWare].moduleCount  = resourceWares[resourceWare].moduleCount  + data.count
+        resourceWares[resourceWare].moduleCount  = resourceWares[resourceWare].moduleCount + data.count
         resourceWares[resourceWare].plannedCount = resourceWares[resourceWare].plannedCount + data.numPlanned
       end
     end
@@ -324,9 +362,9 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance)
   -- ── classify produced wares as products or intermediates ──
   -- A ware is an "intermediate" if it also appears as a resource (input) consumed
   -- by other modules on this same station; otherwise it is a "product".
-  local products      = {}
-  local intermediates = {}
-  local resources     = {}
+  local products         = {}
+  local intermediates    = {}
+  local resources        = {}
 
   local function makeEntry(ware, wp, productionCurrent, productionPlanned, moduleCount, plannedCount)
     local consumptionCurrentRaw = math.max(0, C.GetContainerWareConsumption(station, ware, spo.showEstimated))
@@ -334,33 +372,35 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance)
     if Helper.getWorkforceConsumption then
       consumptionCurrent = consumptionCurrent + Helper.getWorkforceConsumption(station, ware)
     end
-    local consumptionPlanned   = consumptionCurrent + (extraConsumption[ware] or 0)
+    local consumptionPlanned = consumptionCurrent + (extraConsumption[ware] or 0)
     -- activeCount: number of modules currently running (live mode only)
-    local activeCount = moduleCount
+    local activeCount        = moduleCount
     if not spo.showEstimated and moduleCount > 0 then
       local productionMax = Helper.round(C.GetContainerWareProduction(station, ware, true))
       if productionMax > 0 then
         -- produced ware: ratio of live rate to theoretical-max gives running count
-        activeCount = math.min(moduleCount, math.max(0, Helper.round(productionCurrent * moduleCount / productionMax)))
+        activeCount = math.min(moduleCount,
+          math.max(0, Helper.round(productionCurrent * moduleCount / productionMax)))
       else
         -- pure resource ware: use consumption ratio instead
         local consumptionMax = math.max(0, C.GetContainerWareConsumption(station, ware, true))
         if consumptionMax > 0 then
-          activeCount = math.min(moduleCount, math.max(0, Helper.round(consumptionCurrentRaw * moduleCount / consumptionMax)))
+          activeCount = math.min(moduleCount,
+            math.max(0, Helper.round(consumptionCurrentRaw * moduleCount / consumptionMax)))
         end
       end
     end
     return {
-      name         = wp.name,
-      moduleCount  = moduleCount,
-      plannedCount = plannedCount,
-      activeCount  = activeCount,
-      productionCurrent = productionCurrent,
-      productionPlanned = productionPlanned,
+      name               = wp.name,
+      moduleCount        = moduleCount,
+      plannedCount       = plannedCount,
+      activeCount        = activeCount,
+      productionCurrent  = productionCurrent,
+      productionPlanned  = productionPlanned,
       consumptionCurrent = consumptionCurrent,
       consumptionPlanned = consumptionPlanned,
-      totalCurrent = productionCurrent - consumptionCurrent,
-      totalPlanned = productionPlanned - consumptionPlanned,
+      totalCurrent       = productionCurrent - consumptionCurrent,
+      totalPlanned       = productionPlanned - consumptionPlanned,
     }
   end
 
@@ -380,9 +420,9 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance)
     end
   end
 
-  table.sort(products,      function(a, b) return a.name < b.name end)
+  table.sort(products, function(a, b) return a.name < b.name end)
   table.sort(intermediates, function(a, b) return a.name < b.name end)
-  table.sort(resources,     function(a, b) return a.name < b.name end)
+  table.sort(resources, function(a, b) return a.name < b.name end)
 
   -- ── render a group of ware rows under a labelled header ──
   -- Each ware gets a main row with current figures; if planned modules exist a
@@ -401,9 +441,9 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance)
     row = tableInfo:addRow(false, Helper.headerRowProperties)
     row[1]:setColSpan(6):createText(label, Helper.headerRowCenteredProperties)
     for _, entry in ipairs(entries) do
-      local entryGroup = tableInfo:addRowGroup({})
+      local entryGroup = spo.isV9 and tableInfo:addRowGroup({}) or nil
       -- main row: current figures (selectable — matches NPC name row in crew submenu)
-      row = entryGroup:addRow(true, { bgColor = Color["row_background_unselectable"] })
+      row = (entryGroup or tableInfo):addRow(true, { bgColor = Color["row_background_unselectable"] })
       row[1]:createText(entry.name, { wordwrap = true })
       local countStr
       if not spo.showEstimated and entry.activeCount < entry.moduleCount then
@@ -413,24 +453,25 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance)
       end
       row[2]:createText(countStr, { halign = "right" })
       row[3]:createText(entry.productionCurrent > 0 and fmt(entry.productionCurrent) or "--", { halign = "right" })
-      row[4]:createText(entry.consumptionCurrent > 0 and fmt(entry.consumptionCurrent) or "--", { halign = "right" })
+      row[4]:createText(entry.consumptionCurrent > 0 and fmt(entry.consumptionCurrent) or "--",
+        { halign = "right" })
       row[5]:setColSpan(2):createText(formatTotal(entry.totalCurrent, entry.totalCurrent), { halign = "right" })
       -- planned delta row (matches skill sub-rows in crew submenu)
       if entry.plannedCount > 0 then
-        local productionDelta  = entry.productionPlanned  - entry.productionCurrent
+        local productionDelta  = entry.productionPlanned - entry.productionCurrent
         local consumptionDelta = entry.consumptionPlanned - entry.consumptionCurrent
-        row = entryGroup:addRow(false, {  })
+        row                    = (entryGroup or tableInfo):addRow(false, {})
         row[2]:createText("(+" .. tostring(entry.plannedCount) .. ")", { halign = "right" })
-        row[3]:createText(formatDelta(productionDelta),    { halign = "right" })
-        row[4]:createText(formatDelta(consumptionDelta),   { halign = "right" })
+        row[3]:createText(formatDelta(productionDelta), { halign = "right" })
+        row[4]:createText(formatDelta(consumptionDelta), { halign = "right" })
         row[5]:setColSpan(2):createText(formatDelta(entry.totalPlanned), { halign = "right" })
       end
     end
   end
 
-  renderGroup(products,      ReadText(1972092416, 120))
+  renderGroup(products, ReadText(1972092416, 120))
   renderGroup(intermediates, ReadText(1972092416, 121))
-  renderGroup(resources,     ReadText(1972092416, 122))
+  renderGroup(resources, ReadText(1972092416, 122))
 end
 
 --- Build the frame-border, table, and connections for the production submenu.
@@ -450,29 +491,35 @@ function spo.createProductionSubmenu(inputframe, instance)
     end
   end
 
-  local infoBorder = inputframe:addFrameBorder("spo_prodoverview", {
-    offsetBottom = Helper.standardContainerOffset,
-    active       = menu.panelState[instance .. "menu"],
-    color        = Helper.getFrameBorderColor(menu, menu.panelState[instance .. "menu"], menu.panelPins[instance .. "menu"]),
-    linewidth    = Helper.getFrameBorderLineWidth(menu, menu.panelState[instance .. "menu"]),
-  })
-  Helper.setFrameBorderIcon(menu, infoBorder, instance, menu.sideBarWidth / 2)
+  local infoBorder = nil
+  if spo.isV9 then
+    infoBorder = inputframe:addFrameBorder("spo_prodoverview", {
+      offsetBottom = Helper.standardContainerOffset,
+      active       = menu.panelState[instance .. "menu"],
+      color        = Helper.getFrameBorderColor(menu, menu.panelState[instance .. "menu"],
+        menu.panelPins[instance .. "menu"]),
+      linewidth    = Helper.getFrameBorderLineWidth(menu, menu.panelState[instance .. "menu"]),
+    })
+    Helper.setFrameBorderIcon(menu, infoBorder, instance, menu.sideBarWidth / 2)
+  end
 
-  local tableInfo = inputframe:addTable(6, {
+  local tableInfo = inputframe:addTable(6, spo.isV9 and {
     tabOrder          = 1,
     x                 = Helper.standardContainerOffset,
     width             = inputframe.properties.width - 2 * Helper.standardContainerOffset,
     backgroundID      = "solid",
-    backgroundColor   = Color["container_subsection_background"],
+    backgroundColor   = Color["container_subsection_background"] or nil,
     backgroundPadding = 0,
-    frameborder       = infoBorder.id,
+    frameborder       = infoBorder.id or nil,
+  } or {
+    tabOrder = 1,
   })
-  tableInfo:setColWidthMinPercent(1, 32)          -- variable width; grows to fill space reserved for scrollbar
-  tableInfo:setColWidthPercent(2, 11)             -- Count
-  tableInfo:setColWidthPercent(3, 16)             -- Prod/h
-  tableInfo:setColWidthPercent(4, 16)             -- Cons/h
-  tableInfo:setColWidthPercent(5, 16)             -- Total/h
-  tableInfo:setColWidth(6, config.mapRowHeight)   -- focus button (auto-scaled)
+  tableInfo:setColWidthMinPercent(1, 30)        -- variable width; grows to fill space reserved for scrollbar
+  tableInfo:setColWidthPercent(2, 13)           -- Count
+  tableInfo:setColWidthPercent(3, 16)           -- Prod/h
+  tableInfo:setColWidthPercent(4, 16)           -- Cons/h
+  tableInfo:setColWidthPercent(5, 16)           -- Total/h
+  tableInfo:setColWidth(6, config.mapRowHeight) -- focus button (auto-scaled)
   tableInfo:setDefaultBackgroundColSpan(1, 6)
   tableInfo:setDefaultCellProperties("text", { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize })
   tableInfo:setDefaultCellProperties("button", { height = config.mapRowHeight })
@@ -491,38 +538,40 @@ function spo.createProductionSubmenu(inputframe, instance)
       menu.selectedCols["infotable" .. instance] = nil
     end
   end
-  menu.setrow             = nil
-  menu.settoprow          = nil
-  menu.setcol             = nil
+  menu.setrow            = nil
+  menu.settoprow         = nil
+  menu.setcol            = nil
 
-  local tableHeader      = menu.createOrdersMenuHeader(inputframe, infoBorder, instance)
+  local tableHeader      = spo.isV9 and menu.createOrdersMenuHeader(inputframe, infoBorder, instance) or menu.createOrdersMenuHeader(inputframe, instance)
   tableInfo.properties.y = tableHeader.properties.y + tableHeader:getFullHeight() + Helper.borderSize
 
   -- ── bottom buttons: Configure Station + Station Overview ──
-  local tableButton      = inputframe:addTable(2, {
+  local tableButton      = inputframe:addTable(2, spo.isV9 and {
     tabOrder          = 2,
     backgroundID      = "solid",
-    backgroundColor   = Color["container_subsection_background"],
+    backgroundColor   = Color["container_subsection_background"] or nil,
     backgroundPadding = 0,
-    frameborder       = infoBorder.id,
+    frameborder       = infoBorder.id or nil,
+  } or {
+    tabOrder = 2,
   })
   tableButton:setColWidthPercent(2, 50)
-  local buttonRowGroup = tableButton:addRowGroup({})
+  local buttonRowGroup = spo.isV9 and tableButton:addRowGroup({}) or tableButton
   local row = buttonRowGroup:addRow("info_button_bottom", { fixed = true })
-  row[1]:createButton({ y = Helper.borderSize }):setText(ReadText(1001, 1136), { halign = "center" })   -- Configure Station
+  row[1]:createButton({ y = Helper.borderSize }):setText(ReadText(1001, 1136), { halign = "center" }) -- Configure Station
   row[1].handlers.onClick = function()
     Helper.closeMenuAndOpenNewMenu(menu, "StationConfigurationMenu", { 0, 0, menu.infoSubmenuObject })
     menu.cleanup()
   end
-  row[2]:createButton({ y = Helper.borderSize }):setText(ReadText(1001, 1138), { halign = "center" })   -- Station Overview
-  row[2].handlers.onClick = function()
+  row[2]:createButton({ y = Helper.borderSize }):setText(ReadText(1001, 1138), { halign = "center" }) -- Station Overview
+  row[2].handlers.onClick  = function()
     Helper.closeMenuAndOpenNewMenu(menu, "StationOverviewMenu", { 0, 0, menu.infoSubmenuObject })
     menu.cleanup()
   end
   tableButton.properties.y = frameHeight - tableButton:getFullHeight()
 
-  local infoTableHeight   = tableInfo:getFullHeight()
-  local buttonTableHeight = tableButton:getFullHeight()
+  local infoTableHeight    = tableInfo:getFullHeight()
+  local buttonTableHeight  = tableButton:getFullHeight()
   if tableInfo.properties.y + infoTableHeight + buttonTableHeight + Helper.borderSize + Helper.frameBorder < frameHeight then
     tableButton.properties.y = tableInfo.properties.y + infoTableHeight + Helper.borderSize
   else
@@ -577,7 +626,7 @@ local function init()
     local insertAt = #config.infoCategories
     for i, entry in ipairs(config.infoCategories) do
       if entry.category == SPO_CATEGORY then
-        insertAt = nil; break         -- already present
+        insertAt = nil; break -- already present
       end
       if entry.category == "objectinfo" then
         insertAt = i
