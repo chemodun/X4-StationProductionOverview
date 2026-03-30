@@ -79,6 +79,13 @@ Wares are organized into three groups:
 [/list]
 [h2][b]Changelog[/b][/h2]
 
+[h2][9.00.02] - 2026-03-31[/h2]
+[list]
+[*] [b]Fixed[/b]
+[list]
+[*] Disappearing the info menu on a right panel when this mod enabled tab is selected
+[/list]
+[/list]
 [h2][9.00.01] - 2026-03-30[/h2]
 [list]
 [*] [b]Added[/b]
