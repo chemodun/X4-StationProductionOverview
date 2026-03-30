@@ -23,8 +23,8 @@ Adds a **Production Overview** tab to the info panel tab strip in the map menu (
 
 ## Installation
 
-- **Steam Workshop**: [Station Production Overview](https://steamcommunity.com/sharedfiles/filedetails/?id=TODO)
-- **Nexus Mods**: [Station Production Overview](https://www.nexusmods.com/x4foundations/mods/TODO)
+- **Steam Workshop**: will be available later, after public release of game version 9.00
+- **Nexus Mods**: [Station Production Overview](https://www.nexusmods.com/x4foundations/mods/2049)
 
 ## Usage
 
