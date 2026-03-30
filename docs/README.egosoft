@@ -19,11 +19,16 @@ Adds a [b]Production Overview[/b] tab to the info panel tab strip in the map men
 [list]
 [*] Available on Nexus Mods: [url=https://www.nexusmods.com/x4foundations/mods/552]UI Extensions and HUD[/url]
 [/list]
+[*] [b]Mod Support APIs[/b]: Version 1.95 or higher by [url=https://next.nexusmods.com/profile/sirnukes?gameId=2659]SirNukes[/url].
+[list]
+[*] Available on Steam: [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2042901274]SirNukes Mod Support APIs[/url]
+[*] Available on Nexus Mods: [url=https://www.nexusmods.com/x4foundations/mods/503]Mod Support APIs[/url]
+[/list]
 [/list]
 [size=130][u]Installation[/u][/size]
 [list]
-[*] [b]Steam Workshop[/b]: [url=https://steamcommunity.com/sharedfiles/filedetails/?id=TODO]Station Production Overview[/url]
-[*] [b]Nexus Mods[/b]: [url=https://www.nexusmods.com/x4foundations/mods/TODO]Station Production Overview[/url]
+[*] [b]Steam Workshop[/b]: will be available later, after public release of game version 9.00
+[*] [b]Nexus Mods[/b]: [url=https://www.nexusmods.com/x4foundations/mods/2049]Station Production Overview[/url]
 [/list]
 [size=130][u]Usage[/u][/size]
 
@@ -55,7 +60,7 @@ If the station's construction plan contains new production or processing modules
 [/list]
 [size=125][u]Ware groups[/u][/size]
 
-Wares are organised into three collapsible groups:
+Wares are organized into three groups:
 [list]
 [*] [b]Products[/b]: wares produced at this station that are not also consumed as a resource by any other module here.
 [*] [b]Intermediates[/b]: wares that are both produced and consumed internally (e.g. a station that refines ore into silicon and then uses that silicon further).
@@ -70,6 +75,7 @@ Wares are organised into three collapsible groups:
 [list]
 [*] [url=https://www.egosoft.com]EGOSOFT[/url] - for the X series.
 [*] [url=https://next.nexusmods.com/profile/kuertee?gameId=2659]kuertee[/url] - for the [b]UI Extensions and HUD[/b] that makes this extension possible.
+[*] [url=https://next.nexusmods.com/profile/sirnukes?gameId=2659]SirNukes[/url] — for the [b]Mod Support APIs[/b] that power the UI hooks.
 [/list]
 [size=130][u]Changelog[/u][/size]
 
