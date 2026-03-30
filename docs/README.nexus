@@ -1,0 +1,81 @@
+[size=4][u]Station Production Overview[/u][/size]
+
+Adds a [b]Production Overview[/b] tab to the info panel tab strip in the map menu (alongside Object Info, Crew, etc.) for player-owned stations. Shows per-ware production and consumption rates, groups wares into Products, Intermediates, and Resources, and previews the impact of planned (not yet built) modules.
+
+[size=3][u][b]Features[/b][/u][/size]
+[list]
+[*] [b]Production Overview Tab[/b]: A dedicated tab in the station info panel shows all production and consumption data at a glance.
+[*] [b]Per-ware rates[/b]: For each ware the tab displays produced, consumed, and net total amounts per hour.
+[*] [b]Live vs Estimated mode[/b]: A dropdown lets you switch between [i]Current (live state)[/i] (reflecting only active modules and workforce) and [i]Estimated (all modules active)[/i] (the theoretical maximum output).
+[*] [b]Active module count[/b]: In live mode the module count column shows how many modules are currently running out of the total installed (e.g. [b]3 (5)[/b]).
+[*] [b]Ware grouping[/b]: Wares are grouped into [b]Products[/b] (not consumed on-site), [b]Intermediates[/b] (produced and consumed on-site), and [b]Resources[/b] (pure inputs, not produced on-site).
+[*] [b]Planned module preview[/b]: When the construction plan contains new modules a second delta row per ware shows the expected impact once those modules are built.
+[*] [b]Quick-navigation buttons[/b]: [i]Configure Station[/i] and [i]Station Overview[/i] buttons are available at the bottom of the tab.
+[/list]
+[size=3][u][b]Requirements[/b][/u][/size]
+[list]
+[*] [b]X4: Foundations[/b]: Version [b]9.00 beta 3[/b] or higher.
+[*] [b]UI Extensions and HUD[/b]: Version [b]v9.0.0.0.3[/b] or higher by [url=https://next.nexusmods.com/profile/kuertee?gameId=2659]kuertee[/url].
+[list]
+[*] Available on Nexus Mods: [url=https://www.nexusmods.com/x4foundations/mods/552]UI Extensions and HUD[/url]
+[/list]
+[/list]
+[size=3][u][b]Installation[/b][/u][/size]
+[list]
+[*] [b]Nexus Mods[/b]: [url=https://www.nexusmods.com/x4foundations/mods/2049]Station Production Overview[/url]
+[/list]
+[size=3][u][b]Usage[/b][/u][/size]
+
+Open the map, select a player-owned station, and click the [b]Production Overview[/b] tab in the info panel on the left or right side.
+
+[size=3][u][i]Production Overview Tab[/i][/u][/size]
+
+The tab renders a table with one row per ware that is produced or consumed by the station's production and processing modules.
+
+[img]https://raw.githubusercontent.com/chemodun/X4-StationProductionOverview/refs/heads/main/docs/images/production_overview_tab.png[/img]
+
+[size=3][u][i]Live vs Estimated mode[/i][/u][/size]
+
+Use the dropdown at the top of the tab to switch between two display modes:
+
+[img]https://raw.githubusercontent.com/chemodun/X4-StationProductionOverview/refs/heads/main/docs/images/production_calculation_type_dropdown.png[/img]
+[list]
+[*] [b]Current (live state) / hour[/b]: uses the actual running rate from the engine, accounting for modules that are idle due to missing resources or workforce shortages. The Modules column shows [b]active (total)[/b] when not all modules are running.
+[*] [b]Estimated (all modules active) / hour[/b]: reports the theoretical rate assuming all installed modules run at full capacity with the current workforce bonus applied.
+[/list]
+[img]https://raw.githubusercontent.com/chemodun/X4-StationProductionOverview/refs/heads/main/docs/images/production_estimated.png[/img]
+
+[size=3][u][i]Planned module preview[/i][/u][/size]
+
+If the station's construction plan contains new production or processing modules that have not been built yet, a secondary delta row appears directly below the ware row. It shows:
+[list]
+[*] [b](+N)[/b] in the Modules column: the number of planned new modules
+[*] The additional production/consumption contribution those modules would add once built
+[/list]
+[size=3][u][i]Ware groups[/i][/u][/size]
+
+Wares are organised into three collapsible groups:
+[list]
+[*] [b]Products[/b]: wares produced at this station that are not also consumed as a resource by any other module here.
+[*] [b]Intermediates[/b]: wares that are both produced and consumed internally (e.g. a station that refines ore into silicon and then uses that silicon further).
+[*] [b]Resources[/b]: wares consumed as raw inputs that are not produced on-site.
+[/list]
+[size=3][u][b]Credits[/b][/u][/size]
+[list]
+[*] [b]Author[/b]: Chem O`Dun, on [url=https://next.nexusmods.com/profile/ChemODun/mods?gameId=2659]Nexus Mods[/url] and [url=https://steamcommunity.com/id/chemodun/myworkshopfiles/?appid=392160]Steam Workshop[/url]
+[*] [i]"X4: Foundations"[/i] is a trademark of [url=https://www.egosoft.com]Egosoft[/url].
+[/list]
+[size=3][u][b]Acknowledgements[/b][/u][/size]
+[list]
+[*] [url=https://www.egosoft.com]EGOSOFT[/url] - for the X series.
+[*] [url=https://next.nexusmods.com/profile/kuertee?gameId=2659]kuertee[/url] - for the [b]UI Extensions and HUD[/b] that makes this extension possible.
+[/list]
+[size=3][u][b]Changelog[/b][/u][/size]
+
+[size=3][u][i][9.00.01] - 2026-03-30[/i][/u][/size]
+[list]
+[*] [b]Added[/b]
+[list]
+[*] Initial public version
+[/list]
+[/list]

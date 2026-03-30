@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spanish -->
+<diff>
+  <add sel="/language">
+    <page id="1972092416" voice="no" title="Resumen de producción de estación" descr="Resumen de producción de estación">
+      <!-- mod identity -->
+      <t id="1">Resumen de producción</t>
+      <t id="2">Resumen de producción de estación</t>
+      <!-- dropdown mode options -->
+      <t id="100">Actual \(estado en vivo\) / hora</t>
+      <t id="101">Estimado \(todos los módulos activos\) / hora</t>
+      <!-- column headers -->
+      <t id="110">Mercancía</t>
+      <t id="111">Módulos</t>
+      <t id="112">Producido</t>
+      <t id="113">Consumido</t>
+      <t id="114">Total</t>
+      <!-- group headers -->
+      <t id="120">Productos</t>
+      <t id="121">Intermedios</t>
+      <t id="122">Recursos</t>
+      <!-- status / empty messages -->
+      <t id="1001">Seleccione una estación para ver los datos de producción.</t>
+      <t id="1002">No se encontraron módulos de producción.</t>
+      <t id="1003">No se encontraron mercancías de producción.</t>
+    </page>
+  </add>
+</diff>

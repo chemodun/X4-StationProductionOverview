@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Czech -->
+<diff>
+  <add sel="/language">
+    <page id="1972092416" voice="no" title="Přehled výroby stanice" descr="Přehled výroby stanice">
+      <!-- mod identity -->
+      <t id="1">Přehled výroby</t>
+      <t id="2">Přehled výroby stanice</t>
+      <!-- dropdown mode options -->
+      <t id="100">Aktuální \(živý stav\) / hodinu</t>
+      <t id="101">Odhadovaný \(všechny moduly aktivní\) / hodinu</t>
+      <!-- column headers -->
+      <t id="110">Zboží</t>
+      <t id="111">Moduly</t>
+      <t id="112">Vyrobeno</t>
+      <t id="113">Spotřebováno</t>
+      <t id="114">Celkem</t>
+      <!-- group headers -->
+      <t id="120">Produkty</t>
+      <t id="121">Meziprodukty</t>
+      <t id="122">Zdroje</t>
+      <!-- status / empty messages -->
+      <t id="1001">Vyberte stanici pro zobrazení výrobních dat.</t>
+      <t id="1002">Nebyly nalezeny žádné výrobní moduly.</t>
+      <t id="1003">Nebylo nalezeno žádné výrobní zboží.</t>
+    </page>
+  </add>
+</diff>

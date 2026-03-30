@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<content
+  id="ws_3695609478"
+  name="Station Production Overview"
+  author="Chem O`Dun"
+  version="90001"
+  date="2026-03-30"
+  save="false"
+  sync="false"
+  enabled="1"
+  lastupdate="1774861331"
+  description="Adds a Production Overview tab to the info panel tab strip (alongside Object Info, Crew, etc.) for player-owned stations in the map menu. Shows per-ware production and consumption rates (live or estimated), groups wares into Products, Intermediates, and Resources, and previews the impact of planned modules.">
+  <text language="7"
+    description="Adds a Production Overview tab to the info panel tab strip (alongside Object Info, Crew, etc.) for player-owned stations in the map menu. Shows per-ware production and consumption rates (live or estimated), groups wares into Products, Intermediates, and Resources, and previews the impact of planned modules."></text>
+  <!-- French -->
+  <text language="33"
+    description="Ajoute un onglet Aperçu de la production au panneau d'informations (à côté de Info objet, Équipage, etc.) pour les stations appartenant au joueur dans le menu de la carte. Affiche les taux de production et de consommation par marchandise (en direct ou estimés), regroupe les marchandises en Produits, Intermédiaires et Ressources, et prévisualise l'impact des modules prévus."></text>
+  <!-- Spanish -->
+  <text language="34"
+    description="Añade una pestaña de Resumen de Producción al panel de información (junto a Info del objeto, Tripulación, etc.) para estaciones del jugador en el menú del mapa. Muestra tasas de producción y consumo por mercancía (en vivo o estimadas), agrupa mercancías en Productos, Intermedios y Recursos, y previsualiza el impacto de módulos planificados."></text>
+  <!-- Italian -->
+  <text language="39"
+    description="Aggiunge una scheda Panoramica produzione al pannello informazioni (accanto a Info oggetto, Equipaggio, ecc.) per le stazioni di proprietà del giocatore nel menu della mappa. Mostra i tassi di produzione e consumo per merce (in tempo reale o stimati), raggruppa le merci in Prodotti, Intermedi e Risorse, e visualizza in anteprima l'impatto dei moduli pianificati."></text>
+  <!-- Czech -->
+  <text language="42"
+    description="Přidává záložku Přehled výroby do informačního panelu (vedle Info o objektu, Posádka atd.) pro stanice vlastněné hráčem v mapovém menu. Zobrazuje míry výroby a spotřeby po zboží (živě nebo odhadnuté), seskupuje zboží do Produktů, Meziproduktů a Zdrojů a zobrazuje náhled dopadu plánovaných modulů."></text>
+  <!-- English -->
+  <text language="44"
+    description="Adds a Production Overview tab to the info panel tab strip (alongside Object Info, Crew, etc.) for player-owned stations in the map menu. Shows per-ware production and consumption rates (live or estimated), groups wares into Products, Intermediates, and Resources, and previews the impact of planned modules."></text>
+  <!-- Polish -->
+  <text language="48"
+    description="Dodaje zakładkę Przegląd produkcji do panelu informacyjnego (obok Info o obiekcie, Załoga itp.) dla stacji należących do gracza w menu mapy. Pokazuje wskaźniki produkcji i zużycia według towarów (na żywo lub szacowane), grupuje towary na Produkty, Półprodukty i Zasoby oraz wyświetla podgląd wpływu planowanych modułów."></text>
+  <!-- German -->
+  <text language="49"
+    description="Fügt einen Produktionsübersichts-Tab zum Info-Panel (neben Objektinfo, Besatzung usw.) für spielereigene Stationen im Kartenmenü hinzu. Zeigt Produktions- und Verbrauchsraten pro Ware (live oder geschätzt), gruppiert Waren in Produkte, Zwischenprodukte und Ressourcen und zeigt eine Vorschau der Auswirkungen geplanter Module."></text>
+  <!-- Portuguese -->
+  <text language="55"
+    description="Adiciona uma aba Visão Geral da Produção ao painel de informações (ao lado de Info do Objeto, Tripulação, etc.) para estações de propriedade do jogador no menu do mapa. Mostra taxas de produção e consumo por mercadoria (ao vivo ou estimadas), agrupa mercadorias em Produtos, Intermediários e Recursos, e pré-visualiza o impacto de módulos planejados."></text>
+  <!-- Japanese -->
+  <text language="81"
+    description="マップメニューのプレイヤー所有ステーションの情報パネル（オブジェクト情報、乗組員などと並んで）に生産概要タブを追加します。商品ごとの生産率と消費率（ライブまたは推定）を表示し、商品を製品、中間製品、資源にグループ化し、計画されたモジュールの影響をプレビューします。"></text>
+  <!-- Korean -->
+  <text language="82"
+    description="지도 메뉴의 플레이어 소유 스테이션에 대한 정보 패널(오브젝트 정보, 승무원 등과 함께)에 생산 개요 탭을 추가합니다. 상품별 생산 및 소비율(실시간 또는 추정)을 표시하고, 상품을 제품, 중간재, 자원으로 그룹화하며, 계획된 모듈의 영향을 미리 봅니다."></text>
+  <!-- Chinese Simplified -->
+  <text language="86"
+    description="在地图菜单中为玩家拥有的空间站的信息面板（与物体信息、船员等并列）添加生产概览选项卡。显示按商品的生产和消耗率（实时或估计），将商品分组为产品、中间产品和资源，并预览计划模块的影响。"></text>
+  <!-- Chinese Traditional -->
+  <text language="88"
+    description="在地圖選單中為玩家擁有的空間站的資訊面板（與物體資訊、船員等並列）新增生產概覽標籤。顯示按商品的生產和消耗率（即時或估計），將商品分組為產品、中間產品和資源，並預覽計畫模組的影響。"></text>
+  <!-- Turkish -->
+  <text language="90"
+    description="Harita menüsünde oyuncuya ait istasyonlar için bilgi paneline (Nesne Bilgisi, Mürettebat vb. ile birlikte) bir Üretim Özeti sekmesi ekler. Mal başına üretim ve tüketim oranlarını (canlı veya tahmini) gösterir, malları Ürünler, Ara Ürünler ve Kaynaklar olarak gruplandırır ve planlanan modüllerin etkisini önizler."></text>
+  <!-- Ukrainian -->
+  <text language="380"
+    description="Додає вкладку Огляд виробництва до інформаційної панелі (поряд з Інфо про об'єкт, Екіпаж тощо) для станцій гравця в меню карти. Показує показники виробництва та споживання за товарами (наживо або оціночно), групує товари на Продукти, Напівпродукти та Ресурси та попередньо переглядає вплив запланованих модулів."></text>
+  <dependency version="900"></dependency>
+  <dependency id="kuerteeUIExtensionsAndHUD" optional="false" name="kuertee UI Extensions and HUD" version="900"></dependency>
+  <dependency id="ws_2042901274" optional="false" name="SirNukes Mod Support APIs" version="195"></dependency>
+</content>

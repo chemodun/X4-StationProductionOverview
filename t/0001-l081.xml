@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Japanese -->
+<diff>
+  <add sel="/language">
+    <page id="1972092416" voice="no" title="ステーション生産概要" descr="ステーション生産概要">
+      <!-- mod identity -->
+      <t id="1">生産概要</t>
+      <t id="2">ステーション生産概要</t>
+      <!-- dropdown mode options -->
+      <t id="100">現在 \(ライブ状態\) / 時間</t>
+      <t id="101">推定 \(全モジュール稼働中\) / 時間</t>
+      <!-- column headers -->
+      <t id="110">商品</t>
+      <t id="111">モジュール</t>
+      <t id="112">生産</t>
+      <t id="113">消費</t>
+      <t id="114">合計</t>
+      <!-- group headers -->
+      <t id="120">製品</t>
+      <t id="121">中間製品</t>
+      <t id="122">資源</t>
+      <!-- status / empty messages -->
+      <t id="1001">生産データを表示するステーションを選択してください。</t>
+      <t id="1002">生産モジュールが見つかりません。</t>
+      <t id="1003">生産商品が見つかりません。</t>
+    </page>
+  </add>
+</diff>

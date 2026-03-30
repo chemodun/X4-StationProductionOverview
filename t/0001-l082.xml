@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Korean -->
+<diff>
+  <add sel="/language">
+    <page id="1972092416" voice="no" title="스테이션 생산 개요" descr="스테이션 생산 개요">
+      <!-- mod identity -->
+      <t id="1">생산 개요</t>
+      <t id="2">스테이션 생산 개요</t>
+      <!-- dropdown mode options -->
+      <t id="100">현재 \(실시간 상태\) / 시간당</t>
+      <t id="101">추정 \(모든 모듈 활성\) / 시간당</t>
+      <!-- column headers -->
+      <t id="110">상품</t>
+      <t id="111">모듈</t>
+      <t id="112">생산량</t>
+      <t id="113">소비량</t>
+      <t id="114">합계</t>
+      <!-- group headers -->
+      <t id="120">제품</t>
+      <t id="121">중간재</t>
+      <t id="122">자원</t>
+      <!-- status / empty messages -->
+      <t id="1001">생산 데이터를 보려면 스테이션을 선택하세요.</t>
+      <t id="1002">생산 모듈을 찾을 수 없습니다.</t>
+      <t id="1003">생산 상품을 찾을 수 없습니다.</t>
+    </page>
+  </add>
+</diff>

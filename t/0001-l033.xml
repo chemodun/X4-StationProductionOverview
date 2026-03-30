@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- French -->
+<diff>
+  <add sel="/language">
+    <page id="1972092416" voice="no" title="Aperçu de la production de station" descr="Aperçu de la production de station">
+      <!-- mod identity -->
+      <t id="1">Aperçu de la production</t>
+      <t id="2">Aperçu de la production de station</t>
+      <!-- dropdown mode options -->
+      <t id="100">Actuel \(état en direct\) / heure</t>
+      <t id="101">Estimé \(tous modules actifs\) / heure</t>
+      <!-- column headers -->
+      <t id="110">Marchandise</t>
+      <t id="111">Modules</t>
+      <t id="112">Produit</t>
+      <t id="113">Consommé</t>
+      <t id="114">Total</t>
+      <!-- group headers -->
+      <t id="120">Produits</t>
+      <t id="121">Intermédiaires</t>
+      <t id="122">Ressources</t>
+      <!-- status / empty messages -->
+      <t id="1001">Sélectionnez une station pour voir les données de production.</t>
+      <t id="1002">Aucun module de production trouvé.</t>
+      <t id="1003">Aucune marchandise de production trouvée.</t>
+    </page>
+  </add>
+</diff>

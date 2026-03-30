@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Polish -->
+<diff>
+  <add sel="/language">
+    <page id="1972092416" voice="no" title="Przegląd produkcji stacji" descr="Przegląd produkcji stacji">
+      <!-- mod identity -->
+      <t id="1">Przegląd produkcji</t>
+      <t id="2">Przegląd produkcji stacji</t>
+      <!-- dropdown mode options -->
+      <t id="100">Bieżący \(stan na żywo\) / godzinę</t>
+      <t id="101">Szacowany \(wszystkie moduły aktywne\) / godzinę</t>
+      <!-- column headers -->
+      <t id="110">Towar</t>
+      <t id="111">Moduły</t>
+      <t id="112">Wyprodukowane</t>
+      <t id="113">Zużyte</t>
+      <t id="114">Razem</t>
+      <!-- group headers -->
+      <t id="120">Produkty</t>
+      <t id="121">Półprodukty</t>
+      <t id="122">Zasoby</t>
+      <!-- status / empty messages -->
+      <t id="1001">Wybierz stację, aby zobaczyć dane produkcyjne.</t>
+      <t id="1002">Nie znaleziono modułów produkcyjnych.</t>
+      <t id="1003">Nie znaleziono towarów produkcyjnych.</t>
+    </page>
+  </add>
+</diff>

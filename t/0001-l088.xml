@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Chinese Traditional -->
+<diff>
+  <add sel="/language">
+    <page id="1972092416" voice="no" title="空間站生產概覽" descr="空間站生產概覽">
+      <!-- mod identity -->
+      <t id="1">生產概覽</t>
+      <t id="2">空間站生產概覽</t>
+      <!-- dropdown mode options -->
+      <t id="100">目前 \(即時狀態\) / 小時</t>
+      <t id="101">估計 \(所有模組啟動\) / 小時</t>
+      <!-- column headers -->
+      <t id="110">商品</t>
+      <t id="111">模組</t>
+      <t id="112">生產</t>
+      <t id="113">消耗</t>
+      <t id="114">總計</t>
+      <!-- group headers -->
+      <t id="120">產品</t>
+      <t id="121">中間產品</t>
+      <t id="122">資源</t>
+      <!-- status / empty messages -->
+      <t id="1001">選擇一個空間站以檢視生產資料。</t>
+      <t id="1002">未找到生產模組。</t>
+      <t id="1003">未找到生產商品。</t>
+    </page>
+  </add>
+</diff>
