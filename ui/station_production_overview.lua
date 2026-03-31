@@ -448,14 +448,14 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
     end
   end
 
-  local function renderGroup(entries, label)
+  local function renderGroup(tableInfo, entries, label)
     if #entries == 0 then return end
     row = tableInfo:addRow(sectorMode, Helper.headerRowProperties)
     row[1]:setColSpan(6):createText(label, Helper.headerRowCenteredProperties)
     for _, entry in ipairs(entries) do
-      local entryGroup = spo.isV9 and tableInfo:addRowGroup({}) or nil
+      local entryGroup = spo.isV9 and not sectorMode and tableInfo:addRowGroup({}) or tableInfo
       -- main row: current figures (selectable — matches NPC name row in crew submenu)
-      row = (entryGroup or tableInfo):addRow(true, { bgColor = Color["row_background_unselectable"] })
+      row = entryGroup:addRow(true, { bgColor = Color["row_background_unselectable"] })
       row[1]:createText(entry.name, { wordwrap = true })
       local countStr
       if not spo.showEstimated and entry.activeCount < entry.moduleCount then
@@ -472,7 +472,7 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
       if entry.plannedCount > 0 then
         local productionDelta  = entry.productionPlanned - entry.productionCurrent
         local consumptionDelta = entry.consumptionPlanned - entry.consumptionCurrent
-        row                    = (entryGroup or tableInfo):addRow(sectorMode, {})
+        row                    = entryGroup:addRow(sectorMode, {})
         row[2]:createText("(+" .. tostring(entry.plannedCount) .. ")", { halign = "right" })
         row[3]:createText(formatDelta(productionDelta), { halign = "right" })
         row[4]:createText(formatDelta(consumptionDelta), { halign = "right" })
@@ -481,14 +481,15 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
     end
   end
 
-  renderGroup(products, ReadText(1972092416, 120))
-  renderGroup(intermediates, ReadText(1972092416, 121))
-  renderGroup(resources, ReadText(1972092416, 122))
+  local stationGroup = spo.isV9 and sectorMode and tableInfo:addRowGroup({}) or tableInfo
+  renderGroup(stationGroup, products, ReadText(1972092416, 120))
+  renderGroup(stationGroup, intermediates, ReadText(1972092416, 121))
+  renderGroup(stationGroup, resources, ReadText(1972092416, 122))
 end
 
 --- Add the Configure Station and Station Overview buttons to the bottom of the production submenu.
 function spo.addButtonsToProductionSubmenu(tableButton, station, sectorMode)
-  local buttonRowGroup = spo.isV9 and tableButton:addRowGroup({}) or tableButton
+  local buttonRowGroup = spo.isV9 and sectorMode and tableButton:addRowGroup({}) or tableButton
   local row = buttonRowGroup:addRow("info_button_bottom", { fixed = not sectorMode })
   row[1]:setColSpan(sectorMode and 2 or 1):createButton({ y = Helper.borderSize }):setText(ReadText(1001, 1136), { halign = "center" }) -- Configure Station
   row[1].handlers.onClick = function()
