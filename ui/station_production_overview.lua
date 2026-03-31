@@ -725,6 +725,12 @@ end
 
 --- Build the frame-border, table, and connections for the sector production submenu.
 function spo.createSectorProductionSubmenu(inputframe, instance)
+  -- temporary fix
+  if instance == "right" then
+    inputframe = menu.infoFrame2
+  end
+  -- temporary fix
+
   local frameHeight = inputframe.properties.height
   if (not menu.infoSubmenuObject) or (menu.infoSubmenuObject == 0) then
     for id in pairs(menu.selectedcomponents) do
