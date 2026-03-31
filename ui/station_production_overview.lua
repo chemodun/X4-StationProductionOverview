@@ -875,7 +875,7 @@ local function init()
         category        = SPO_CATEGORY,
         name            = ReadText(1972092416, 1),
         icon            = "stationbuildst_production",
-        helpOverlayID   = "chem_production_overview",
+        helpOverlayID   = "chem_station_prod_overview",
         helpOverlayText = ReadText(1972092416, 2),
       })
       stationTabIdx = objectInfoIdx + 1
