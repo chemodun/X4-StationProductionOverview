@@ -3,9 +3,11 @@
 <diff>
   <add sel="/language">
     <page id="1972092416" voice="no" title="Visão geral da produção da estação" descr="Visão geral da produção da estação">
-      <!-- mod identity -->
+      <!-- mod identity / tab names -->
       <t id="1">Visão geral da produção</t>
       <t id="2">Visão geral da produção da estação</t>
+      <t id="3">Visão geral da produção do setor</t>
+      <t id="4">Visão geral da produção do setor</t>
       <!-- dropdown mode options -->
       <t id="100">Estado ao vivo atual \(± com módulos em construção\) / hora</t>
       <t id="101">Estimado, ou seja, todos os módulos ativos \(± com módulos em construção\) / hora</t>
@@ -23,6 +25,7 @@
       <t id="1001">Selecione uma estação para ver os dados de produção.</t>
       <t id="1002">Nenhum módulo de produção encontrado.</t>
       <t id="1003">Nenhuma mercadoria de produção encontrada.</t>
+      <t id="1004">Nenhuma estação do jogador com módulos de produção encontrada neste setor.</t>
     </page>
   </add>
 </diff>

@@ -5,6 +5,7 @@ Adds a **Production Overview** tab to the info panel tab strip in the map menu (
 ## Features
 
 - **Production Overview Tab**: A dedicated tab in the station info panel shows all production and consumption data at a glance.
+- **Sector Production Overview**: A dedicated tab in the sector info panel shows all production stations within the sector with their respective production data, equal to the single station production overview.
 - **Per-ware rates**: For each ware the tab displays produced, consumed, and net total amounts per hour.
 - **Live vs Estimated mode**: A dropdown lets you switch between *Current (live state)* (reflecting only active modules and workforce) and *Estimated (all modules active)* (the theoretical maximum output).
 - **Active module count**: In live mode the module count column shows how many modules are currently running out of the total installed (e.g. `3 (5)`).
@@ -62,6 +63,12 @@ Wares are organized into three groups:
 - **Intermediates**: wares that are both produced and consumed internally (e.g. a station that refines ore into silicon and then uses that silicon further).
 - **Resources**: wares consumed as raw inputs that are not produced on-site.
 
+### Sector Production Overview
+
+When viewing the info panel for a sector, a similar **Production Overview** tab lists all player-owned production stations in that sector with their respective production data, equal to the single station production overview.
+
+![Sector Production Overview Tab](docs/images/sector_production_overview_tab.png)
+
 ## Credits
 
 - **Author**: Chem O`Dun, on [Nexus Mods](https://next.nexusmods.com/profile/ChemODun/mods?gameId=2659) and [Steam Workshop](https://steamcommunity.com/id/chemodun/myworkshopfiles/?appid=392160)
@@ -74,6 +81,11 @@ Wares are organized into three groups:
 - [SirNukes](https://next.nexusmods.com/profile/sirnukes?gameId=2659) — for the `Mod Support APIs` that power the UI hooks.
 
 ## Changelog
+
+### [9.00.03] - 2026-03-31
+
+- **Added**
+  - **Sector Production Overview**: A new tab in the sector info panel that lists all player-owned production stations in the sector with their production data, equal to the single station production overview.
 
 ### [9.00.02] - 2026-03-31
 

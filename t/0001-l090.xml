@@ -3,9 +3,11 @@
 <diff>
   <add sel="/language">
     <page id="1972092416" voice="no" title="İstasyon Üretim Özeti" descr="İstasyon Üretim Özeti">
-      <!-- mod identity -->
+      <!-- mod identity / tab names -->
       <t id="1">Üretim Özeti</t>
       <t id="2">İstasyon Üretim Özeti</t>
+      <t id="3">Sektör Üretim Özeti</t>
+      <t id="4">Sektör Üretim Özeti</t>
       <!-- dropdown mode options -->
       <t id="100">Mevcut canlı durum \(± yapım aşamasındaki modüllerle\) / saat</t>
       <t id="101">Tahmini, yani tüm modüller aktif \(± yapım aşamasındaki modüllerle\) / saat</t>
@@ -23,6 +25,7 @@
       <t id="1001">Üretim verilerini görmek için bir istasyon seçin.</t>
       <t id="1002">Üretim modülü bulunamadı.</t>
       <t id="1003">Üretim malı bulunamadı.</t>
+      <t id="1004">Bu sektörde üretim modülü olan oyuncu istasyonu bulunamadı.</t>
     </page>
   </add>
 </diff>

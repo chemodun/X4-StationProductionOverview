@@ -3,9 +3,11 @@
 <diff>
   <add sel="/language">
     <page id="1972092416" voice="no" title="Panoramica produzione stazione" descr="Panoramica produzione stazione">
-      <!-- mod identity -->
+      <!-- mod identity / tab names -->
       <t id="1">Panoramica produzione</t>
       <t id="2">Panoramica produzione stazione</t>
+      <t id="3">Panoramica produzione settore</t>
+      <t id="4">Panoramica produzione settore</t>
       <!-- dropdown mode options -->
       <t id="100">Stato live attuale \(± con moduli in costruzione\) / ora</t>
       <t id="101">Stimato, ovvero tutti i moduli attivi \(± con moduli in costruzione\) / ora</t>
@@ -23,6 +25,7 @@
       <t id="1001">Seleziona una stazione per vedere i dati di produzione.</t>
       <t id="1002">Nessun modulo di produzione trovato.</t>
       <t id="1003">Nessuna merce di produzione trovata.</t>
+      <t id="1004">Nessuna stazione del giocatore con moduli di produzione trovata in questo settore.</t>
     </page>
   </add>
 </diff>

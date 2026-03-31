@@ -3,12 +3,12 @@
   id="ws_3695609478"
   name="Station Production Overview"
   author="Chem O`Dun"
-  version="90002"
+  version="90003"
   date="2026-03-31"
   save="false"
   sync="false"
   enabled="1"
-  lastupdate="1774906016"
+  lastupdate="1774957504"
   description="Adds a Production Overview tab to the info panel tab strip (alongside Object Info, Crew, etc.) for player-owned stations in the map menu. Shows per-ware production and consumption rates (live or estimated), groups wares into Products, Intermediates, and Resources, and previews the impact of planned modules.">
   <text language="7"
     description="Adds a Production Overview tab to the info panel tab strip (alongside Object Info, Crew, etc.) for player-owned stations in the map menu. Shows per-ware production and consumption rates (live or estimated), groups wares into Products, Intermediates, and Resources, and previews the impact of planned modules."></text>
