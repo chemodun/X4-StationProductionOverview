@@ -5,6 +5,7 @@ Adds a [b]Production Overview[/b] tab to the info panel tab strip in the map men
 [size=130][u]Features[/u][/size]
 [list]
 [*] [b]Production Overview Tab[/b]: A dedicated tab in the station info panel shows all production and consumption data at a glance.
+[*] [b]Sector Production Overview[/b]: A dedicated tab in the sector info panel shows all production stations within the sector with their respective production data, equal to the single station production overview.
 [*] [b]Per-ware rates[/b]: For each ware the tab displays produced, consumed, and net total amounts per hour.
 [*] [b]Live vs Estimated mode[/b]: A dropdown lets you switch between [i]Current (live state)[/i] (reflecting only active modules and workforce) and [i]Estimated (all modules active)[/i] (the theoretical maximum output).
 [*] [b]Active module count[/b]: In live mode the module count column shows how many modules are currently running out of the total installed (e.g. [b]3 (5)[/b]).
@@ -66,6 +67,12 @@ Wares are organized into three groups:
 [*] [b]Intermediates[/b]: wares that are both produced and consumed internally (e.g. a station that refines ore into silicon and then uses that silicon further).
 [*] [b]Resources[/b]: wares consumed as raw inputs that are not produced on-site.
 [/list]
+[size=125][u]Sector Production Overview[/u][/size]
+
+When viewing the info panel for a sector, a similar [b]Production Overview[/b] tab lists all player-owned production stations in that sector with their respective production data, equal to the single station production overview.
+
+[spoiler][img]https://raw.githubusercontent.com/chemodun/X4-StationProductionOverview/refs/heads/main/docs/images/sector_production_overview_tab.png[/img][/spoiler]
+
 [size=130][u]Credits[/u][/size]
 [list]
 [*] [b]Author[/b]: Chem O`Dun, on [url=https://next.nexusmods.com/profile/ChemODun/mods?gameId=2659]Nexus Mods[/url] and [url=https://steamcommunity.com/id/chemodun/myworkshopfiles/?appid=392160]Steam Workshop[/url]
@@ -79,6 +86,13 @@ Wares are organized into three groups:
 [/list]
 [size=130][u]Changelog[/u][/size]
 
+[size=125][u][9.00.03] - 2026-03-31[/u][/size]
+[list]
+[*] [b]Added[/b]
+[list]
+[*] [b]Sector Production Overview[/b]: A new tab in the sector info panel that lists all player-owned production stations in the sector with their production data, equal to the single station production overview.
+[/list]
+[/list]
 [size=125][u][9.00.02] - 2026-03-31[/u][/size]
 [list]
 [*] [b]Fixed[/b]
