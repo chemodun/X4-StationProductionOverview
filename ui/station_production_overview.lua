@@ -63,15 +63,16 @@ ffi.cdef [[
 ]]
 
 -- infoMode.left key that identifies our sub-tab (must be unique across mods)
-local SPO_CATEGORY = "chem_station_prod_overview"
+local SPO_CATEGORY = "chem_production_overview"
 
 -- Resolved in init()
 local menu         = nil
 local config       = nil
 
-local spo          = {}
-spo.showEstimated  = false -- false = live state, true = all modules active (ignorestate)
-spo.isV9           = C.GetGameVersion().major >= 9
+local spo          = {
+  showEstimated  = false, -- false = live state, true = all modules active (ignorestate)
+  isV9           = C.GetGameVersion().major >= 9
+}
 
 -- ─── data collection ────────────────────────────────────────────────────────
 
@@ -474,6 +475,22 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance)
   renderGroup(resources, ReadText(1972092416, 122))
 end
 
+--- Add the Configure Station and Station Overview buttons to the bottom of the production submenu.
+function spo.addButtonsToProductionSubmenu(tableButton, station)
+  local buttonRowGroup = spo.isV9 and tableButton:addRowGroup({}) or tableButton
+  local row = buttonRowGroup:addRow("info_button_bottom", { fixed = true })
+  row[1]:createButton({ y = Helper.borderSize }):setText(ReadText(1001, 1136), { halign = "center" }) -- Configure Station
+  row[1].handlers.onClick = function()
+    Helper.closeMenuAndOpenNewMenu(menu, "StationConfigurationMenu", { 0, 0, station })
+    menu.cleanup()
+  end
+  row[2]:createButton({ y = Helper.borderSize }):setText(ReadText(1001, 1138), { halign = "center" }) -- Station Overview
+  row[2].handlers.onClick  = function()
+    Helper.closeMenuAndOpenNewMenu(menu, "StationOverviewMenu", { 0, 0, station })
+    menu.cleanup()
+  end
+end
+
 --- Build the frame-border, table, and connections for the production submenu.
 --- Follows the structure of menu.createCrewInfoSubmenu exactly.
 function spo.createProductionSubmenu(inputframe, instance)
@@ -561,18 +578,9 @@ function spo.createProductionSubmenu(inputframe, instance)
     tabOrder = 2,
   })
   tableButton:setColWidthPercent(2, 50)
-  local buttonRowGroup = spo.isV9 and tableButton:addRowGroup({}) or tableButton
-  local row = buttonRowGroup:addRow("info_button_bottom", { fixed = true })
-  row[1]:createButton({ y = Helper.borderSize }):setText(ReadText(1001, 1136), { halign = "center" }) -- Configure Station
-  row[1].handlers.onClick = function()
-    Helper.closeMenuAndOpenNewMenu(menu, "StationConfigurationMenu", { 0, 0, menu.infoSubmenuObject })
-    menu.cleanup()
-  end
-  row[2]:createButton({ y = Helper.borderSize }):setText(ReadText(1001, 1138), { halign = "center" }) -- Station Overview
-  row[2].handlers.onClick  = function()
-    Helper.closeMenuAndOpenNewMenu(menu, "StationOverviewMenu", { 0, 0, menu.infoSubmenuObject })
-    menu.cleanup()
-  end
+
+  spo.addButtonsToProductionSubmenu(tableButton, menu.infoSubmenuObject)
+
   tableButton.properties.y = frameHeight - tableButton:getFullHeight()
 
   local infoTableHeight    = tableInfo:getFullHeight()
@@ -642,7 +650,7 @@ local function init()
         category        = SPO_CATEGORY,
         name            = ReadText(1972092416, 1),
         icon            = "stationbuildst_production",
-        helpOverlayID   = "chem_station_prod_overview",
+        helpOverlayID   = "chem_production_overview",
         helpOverlayText = ReadText(1972092416, 2),
       })
     end
