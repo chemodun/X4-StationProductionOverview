@@ -260,15 +260,6 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
   local isStation = station and (tonumber(station) ~= 0)
       and C.IsComponentClass(station, "station")
 
-
-  if not spo.isV9 and not sectorMode then
-    --- title ---
-    local row = tableInfo:addRow(false, { fixed = true, bgColor = Color["row_title_background"] })
-    row[1]:setColSpan(6):createText(ReadText(1001, 2427), Helper.headerRowCenteredProperties)
-
-    local row = tableInfo:addRow(false, { fixed = true, bgColor = Color["row_title_background"] })
-    row[1]:setColSpan(6):createText(ReadText(1972092416, 1), Helper.headerRowCenteredProperties)
-  end
   -- ── info_focus row: object name + map-focus button ──
   local titleColor = spo.isV9 and (isStation and menu.getObjectColor(station) or Color["text_normal"]) or
       menu.holomapcolor.playercolor
@@ -568,6 +559,15 @@ function spo.createProductionSubmenu(inputframe, instance)
   tableInfo:setDefaultCellProperties("text", { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize })
   tableInfo:setDefaultCellProperties("button", { height = config.mapRowHeight })
 
+  if not spo.isV9 then
+    --- title ---
+    local row = tableInfo:addRow(false, { fixed = true, bgColor = Color["row_title_background"] })
+    row[1]:setColSpan(6):createText(ReadText(1001, 2427), Helper.headerRowCenteredProperties)
+
+    local row = tableInfo:addRow(false, { fixed = true, bgColor = Color["row_title_background"] })
+    row[1]:setColSpan(6):createText(ReadText(1972092416, 1), Helper.headerRowCenteredProperties)
+  end
+
   spo.setupProductionSubmenuRows(tableInfo, menu.infoSubmenuObject, instance, false)
 
   if menu.selectedRows["infotable" .. instance] then
@@ -633,9 +633,29 @@ function spo.setupSectorProductionSubmenuRows(tableInfo, sector, instance)
   local isSector = sector and (tonumber(sector) ~= 0)
       and C.IsComponentClass(sector, "sector")
 
+  local titleColor = Color["text_normal"]
+  if not spo.isV9 then
+    local isPlayerOwned, isEnemy, isHostile = GetComponentData(sector, "isplayerowned", "isenemy", "ishostile")
+    if isPlayerOwned then
+      titleColor = menu.holomapcolor.playercolor
+    elseif isHostile then
+      titleColor = menu.holomapcolor.hostilecolor
+    elseif isEnemy then
+      titleColor = menu.holomapcolor.enemycolor
+    end
+  end
+
+  if not spo.isV9 then
+    --- title ---
+    local row = tableInfo:addRow(false, { fixed = true, bgColor = Color["row_title_background"] })
+    row[1]:setColSpan(6):createText(ReadText(1001, 2427), Helper.headerRowCenteredProperties)
+
+    local row = tableInfo:addRow(false, { fixed = true, bgColor = Color["row_title_background"] })
+    row[1]:setColSpan(6):createText(ReadText(1972092416, 3), Helper.headerRowCenteredProperties)
+  end
+
   -- ── sector title row ──
-  local titleColor = spo.isV9 and (isSector and menu.getObjectColor(sector) or Color["text_normal"]) or
-      menu.holomapcolor.playercolor
+  titleColor = spo.isV9 and (isSector and menu.getObjectColor(sector) or Color["text_normal"]) or titleColor
   local sectorName = isSector
       and ffi.string(C.GetComponentName(sector))
       or ReadText(1972092416, 3)
@@ -660,7 +680,7 @@ function spo.setupSectorProductionSubmenuRows(tableInfo, sector, instance)
     row[1]:setBackgroundColSpan(5):setColSpan(5):createText(sectorName,
       { fontsize = Helper.headerRow1FontSize, color = titleColor })
   else
-    row[1]:setBackgroundColSpan(5):setColSpan(3):createText(sectorName, Helper.headerRow1Properties)
+    row[1]:setBackgroundColSpan(5):setColSpan(5):createText(sectorName, Helper.headerRow1Properties)
     row[1].properties.color = titleColor
   end
 
