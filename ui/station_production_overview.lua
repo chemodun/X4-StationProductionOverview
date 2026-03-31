@@ -54,7 +54,6 @@ ffi.cdef [[
 	bool         IsComponentWrecked(UniverseID componentid);
 	bool         IsRealComponentClass(UniverseID componentid, const char* classname);
 	void         SetFocusMapComponent(UniverseID holomapid, UniverseID componentid, bool resetplayerpan);
-	UniverseID   GetContextByClass(UniverseID componentid, const char* classname, bool includeself);
 
 	typedef struct {
 		int major;
@@ -64,7 +63,8 @@ ffi.cdef [[
 ]]
 
 -- infoMode.left key that identifies our sub-tab (must be unique across mods)
-local SPO_CATEGORY = "chem_production_overview"
+local SPO_CATEGORY = "chem_station_prod_overview"
+local SSPO_CATEGORY = "chem_sector_prod_overview"
 
 -- Resolved in init()
 local menu         = nil
@@ -72,7 +72,11 @@ local config       = nil
 
 local spo          = {
   showEstimated  = false, -- false = live state, true = all modules active (ignorestate)
-  isV9           = C.GetGameVersion().major >= 9
+  isV9           = C.GetGameVersion().major >= 9,
+  modeOptions = {
+    { id = "live",      text = ReadText(1972092416, 100), icon = "", displayremoveoption = false },
+    { id = "estimated", text = ReadText(1972092416, 101), icon = "", displayremoveoption = false },
+  }
 }
 
 -- ─── data collection ────────────────────────────────────────────────────────
@@ -217,16 +221,47 @@ end
 
 -- ─── panel builder ───────────────────────────────────────────────────────────
 
+-- Add the estimated/current toggle dropdown row to the top of the table (below the title and info_focus rows).
+function spo.toggleEstimatedCurrent(tableInfo)
+  -- ── estimated/current toggle row ──
+  local row = tableInfo:addRow(true, { fixed = true })
+  row[1]:setColSpan(6):createDropDown(spo.modeOptions,
+    { height = config.mapRowHeight, startOption = spo.showEstimated and "estimated" or "live" })
+      :setTextProperties({
+        halign = "center",
+        font = Helper.titleFont,
+        fontsize = Helper.standardFontSize,
+        y = Helper
+            .headerRow1Offsety
+      })
+  row[1].handlers.onDropDownConfirmed = function(_, id)
+    spo.showEstimated = (id == "estimated")
+    menu.refreshInfoFrame()
+  end
+  row[1].handlers.onDropDownActivated = function() menu.noupdate = true end
+end
+
+-- Add the column headers row below the title and info_focus rows (and toggle row, if in station mode).
+function spo.columnHeaders(tableInfo)
+  -- ── column header row ──
+  row = tableInfo:addRow(false, { fixed = true })
+  row[1]:createText(ReadText(1972092416, 110), Helper.headerRowCenteredProperties)
+  row[2]:createText(ReadText(1972092416, 111), Helper.headerRowCenteredProperties)
+  row[3]:createText(ReadText(1972092416, 112), Helper.headerRowCenteredProperties)
+  row[4]:createText(ReadText(1972092416, 113), Helper.headerRowCenteredProperties)
+  row[5]:setColSpan(2):createText(ReadText(1972092416, 114), Helper.headerRowCenteredProperties)
+end
+
 --- Populate tableInfo with the production summary rows.
 --- Wares are grouped into "Products" (not consumed as a resource by any module at this
 --- station) and "Intermediates" (also consumed as input by other modules here).
 --- Within each group wares are sorted alphabetically.
-function spo.setupProductionSubmenuRows(tableInfo, station, instance)
+function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode)
   local isStation = station and (tonumber(station) ~= 0)
       and C.IsComponentClass(station, "station")
 
 
-  if not spo.isV9 then
+  if not spo.isV9 and not sectorMode then
     --- title ---
     local row = tableInfo:addRow(false, { fixed = true, bgColor = Color["row_title_background"] })
     row[1]:setColSpan(6):createText(ReadText(1001, 2427), Helper.headerRowCenteredProperties)
@@ -242,7 +277,7 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance)
       or ReadText(1972092416, 1)
 
   local row = tableInfo:addRow("info_focus",
-    { fixed = true, bgColor = not spo.isV9 and Color["row_title_background"] or nil })
+    { fixed = not sectorMode, bgColor = not spo.isV9 and Color["row_title_background"] or nil })
   row[6]:createButton({
     width = config.mapRowHeight,
     height = config.mapRowHeight,
@@ -258,44 +293,21 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance)
         }
       )
   row[6].handlers.onClick = function() return C.SetFocusMapComponent(menu.holomap, menu.infoSubmenuObject, true) end
-  if spo.isV9 then
-    row[1]:setBackgroundColSpan(5):setColSpan(5):createText(objectName,
-      { fontsize = Helper.headerRow1FontSize, color = titleColor })
-  else
-    row[1]:setBackgroundColSpan(5):setColSpan(3):createText(objectName, Helper.headerRow1Properties)
-    row[1].properties.color = titleColor
-    row[4]:setColSpan(2):createText(ffi.string(C.GetObjectIDCode(station)), Helper.headerRow1Properties)
-    row[4].properties.halign = "right"
-    row[4].properties.color = titleColor
-  end
-  -- ── estimated/current toggle row ──
-  local modeOptions = {
-    { id = "live",      text = ReadText(1972092416, 100), icon = "", displayremoveoption = false },
-    { id = "estimated", text = ReadText(1972092416, 101), icon = "", displayremoveoption = false },
-  }
-  local row = tableInfo:addRow(true, { fixed = true })
-  row[1]:setColSpan(6):createDropDown(modeOptions,
-    { height = config.mapRowHeight, startOption = spo.showEstimated and "estimated" or "live" })
-      :setTextProperties({
-        halign = "center",
-        font = Helper.titleFont,
-        fontsize = Helper.standardFontSize,
-        y = Helper
-            .headerRow1Offsety
-      })
-  row[1].handlers.onDropDownConfirmed = function(_, id)
-    spo.showEstimated = (id == "estimated")
-    menu.refreshInfoFrame()
-  end
-  row[1].handlers.onDropDownActivated = function() menu.noupdate = true end
 
-  -- ── column header row ──
-  row = tableInfo:addRow(false, { fixed = true })
-  row[1]:createText(ReadText(1972092416, 110), Helper.headerRowCenteredProperties)
-  row[2]:createText(ReadText(1972092416, 111), Helper.headerRowCenteredProperties)
-  row[3]:createText(ReadText(1972092416, 112), Helper.headerRowCenteredProperties)
-  row[4]:createText(ReadText(1972092416, 113), Helper.headerRowCenteredProperties)
-  row[5]:setColSpan(2):createText(ReadText(1972092416, 114), Helper.headerRowCenteredProperties)
+  row[1]:setBackgroundColSpan(5):setColSpan(3):createText(objectName, spo.isV9 and { fontsize = Helper.headerRow1FontSize } or Helper.headerRow1Properties)
+  row[1].properties.color = titleColor
+  row[4]:setColSpan(2):createText(ffi.string(C.GetObjectIDCode(station)), spo.isV9 and { fontsize = Helper.headerRow1FontSize } or Helper.headerRow1Properties)
+  row[4].properties.halign = "right"
+  row[4].properties.color = titleColor
+
+
+  if not sectorMode then
+    spo.toggleEstimatedCurrent(tableInfo)
+  end
+
+  if not sectorMode then
+    spo.columnHeaders(tableInfo)
+  end
 
   if not isStation then
     row = tableInfo:addRow(true, {})
@@ -447,7 +459,7 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance)
 
   local function renderGroup(entries, label)
     if #entries == 0 then return end
-    row = tableInfo:addRow(false, Helper.headerRowProperties)
+    row = tableInfo:addRow(sectorMode, Helper.headerRowProperties)
     row[1]:setColSpan(6):createText(label, Helper.headerRowCenteredProperties)
     for _, entry in ipairs(entries) do
       local entryGroup = spo.isV9 and tableInfo:addRowGroup({}) or nil
@@ -469,7 +481,7 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance)
       if entry.plannedCount > 0 then
         local productionDelta  = entry.productionPlanned - entry.productionCurrent
         local consumptionDelta = entry.consumptionPlanned - entry.consumptionCurrent
-        row                    = (entryGroup or tableInfo):addRow(false, {})
+        row                    = (entryGroup or tableInfo):addRow(sectorMode, {})
         row[2]:createText("(+" .. tostring(entry.plannedCount) .. ")", { halign = "right" })
         row[3]:createText(formatDelta(productionDelta), { halign = "right" })
         row[4]:createText(formatDelta(consumptionDelta), { halign = "right" })
@@ -484,16 +496,17 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance)
 end
 
 --- Add the Configure Station and Station Overview buttons to the bottom of the production submenu.
-function spo.addButtonsToProductionSubmenu(tableButton, station)
+function spo.addButtonsToProductionSubmenu(tableButton, station, sectorMode)
   local buttonRowGroup = spo.isV9 and tableButton:addRowGroup({}) or tableButton
-  local row = buttonRowGroup:addRow("info_button_bottom", { fixed = true })
-  row[1]:createButton({ y = Helper.borderSize }):setText(ReadText(1001, 1136), { halign = "center" }) -- Configure Station
+  local row = buttonRowGroup:addRow("info_button_bottom", { fixed = not sectorMode })
+  row[1]:setColSpan(sectorMode and 2 or 1):createButton({ y = Helper.borderSize }):setText(ReadText(1001, 1136), { halign = "center" }) -- Configure Station
   row[1].handlers.onClick = function()
     Helper.closeMenuAndOpenNewMenu(menu, "StationConfigurationMenu", { 0, 0, station })
     menu.cleanup()
   end
-  row[2]:createButton({ y = Helper.borderSize }):setText(ReadText(1001, 1138), { halign = "center" }) -- Station Overview
-  row[2].handlers.onClick  = function()
+  local nextButtonCell = sectorMode and 3 or 2
+  row[nextButtonCell]:setColSpan(sectorMode and 4 or 1):createButton({ y = Helper.borderSize }):setText(ReadText(1001, 1138), { halign = "center" }) -- Station Overview
+  row[nextButtonCell].handlers.onClick  = function()
     Helper.closeMenuAndOpenNewMenu(menu, "StationOverviewMenu", { 0, 0, station })
     menu.cleanup()
   end
@@ -555,7 +568,7 @@ function spo.createProductionSubmenu(inputframe, instance)
   tableInfo:setDefaultCellProperties("text", { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize })
   tableInfo:setDefaultCellProperties("button", { height = config.mapRowHeight })
 
-  spo.setupProductionSubmenuRows(tableInfo, menu.infoSubmenuObject, instance)
+  spo.setupProductionSubmenuRows(tableInfo, menu.infoSubmenuObject, instance, false)
 
   if menu.selectedRows["infotable" .. instance] then
     tableInfo:setSelectedRow(menu.selectedRows["infotable" .. instance])
@@ -589,7 +602,7 @@ function spo.createProductionSubmenu(inputframe, instance)
   })
   tableButton:setColWidthPercent(2, 50)
 
-  spo.addButtonsToProductionSubmenu(tableButton, menu.infoSubmenuObject)
+  spo.addButtonsToProductionSubmenu(tableButton, menu.infoSubmenuObject, false)
 
   tableButton.properties.y = frameHeight - tableButton:getFullHeight()
 
@@ -659,13 +672,12 @@ function spo.setupSectorProductionSubmenuRows(tableInfo, sector, instance)
 
   -- collect player-owned stations in this sector that have production modules
   local stations = {}
-  for _, stationId in ipairs(GetContainedStationsByOwner("player")) do
+  local stationIds = GetContainedStationsByOwner("player", sector)
+  for _, stationId in ipairs(stationIds) do
     local station64 = ConvertIDTo64Bit(stationId)
-    if C.GetContextByClass(station64, "sector", false) == sector then
-      local moduleData = collectModuleData(station64)
-      if next(moduleData) ~= nil then
-        table.insert(stations, { id = station64, name = ffi.string(C.GetComponentName(station64)) })
-      end
+    local moduleData = collectModuleData(station64)
+    if next(moduleData) ~= nil then
+      table.insert(stations, { id = station64, name = ffi.string(C.GetComponentName(station64)) })
     end
   end
 
@@ -675,13 +687,19 @@ function spo.setupSectorProductionSubmenuRows(tableInfo, sector, instance)
     return
   end
 
-  table.sort(stations, function(a, b) return a.name < b.name end)
+  table.sort(stations, Helper.sortName)
 
+  spo.toggleEstimatedCurrent(tableInfo)
+  spo.columnHeaders(tableInfo)
   -- render each station block, followed by its action buttons
-  for _, stationInfo in ipairs(stations) do
+  for i = 1, #stations do
+    local stationInfo = stations[i]
     local station = stationInfo.id
-    spo.setupProductionSubmenuRows(tableInfo, station, instance)
-    spo.addButtonsToProductionSubmenu(tableInfo, station)
+    spo.setupProductionSubmenuRows(tableInfo, station, instance, true)
+    spo.addButtonsToProductionSubmenu(tableInfo, station, true)
+    if i < #stations then
+      tableInfo:addEmptyRow(2 * Helper.standardContainerOffset, false, Color["row_background_unselectable"])
+    end
   end
 end
 
@@ -788,19 +806,19 @@ end
 
 function spo.onSectorInfoSubMenuCreate(infoFrame, instance)
   local activeMode = (instance == "right") and menu.infoMode.right or menu.infoMode.left
-  if activeMode ~= SPO_CATEGORY then return end
+  if activeMode ~= SSPO_CATEGORY then return end
   spo.createSectorProductionSubmenu(infoFrame, instance)
 end
 
 function spo.onSectorInfoSubMenuIsValidFor(object, mode)
-  if mode ~= SPO_CATEGORY then return false end
+  if mode ~= SSPO_CATEGORY then return false end
   if not object or object == 0 then return false end
   local classId = GetComponentData(object, "realclassid")
   return classId ~= nil and Helper.isComponentClass(classId, "sector")
 end
 
 function spo.onSectorInfoSubMenuToShow(object, mode)
-  if mode ~= SPO_CATEGORY then return nil end
+  if mode ~= SSPO_CATEGORY then return nil end
   return spo.onSectorInfoSubMenuIsValidFor(object, mode)
 end
 
@@ -815,24 +833,33 @@ local function init()
 
   config = type(menu.uix_getConfig) == "function" and menu.uix_getConfig() or {}
 
-  -- Insert our tab into config.infoCategories immediately after "objectinfo".
+  -- Insert station + sector tabs into config.infoCategories after "objectinfo".
   if config.infoCategories then
-    local insertAt = #config.infoCategories
+    local objectInfoIdx  = nil
+    local stationTabIdx  = nil
+    local sectorTabFound = false
     for i, entry in ipairs(config.infoCategories) do
-      if entry.category == SPO_CATEGORY then
-        insertAt = nil; break -- already present
-      end
-      if entry.category == "objectinfo" then
-        insertAt = i
-      end
+      if entry.category == "objectinfo"  then objectInfoIdx  = i end
+      if entry.category == SPO_CATEGORY  then stationTabIdx  = i end
+      if entry.category == SSPO_CATEGORY then sectorTabFound = true end
     end
-    if insertAt then
-      table.insert(config.infoCategories, insertAt + 1, {
+    if not stationTabIdx and objectInfoIdx then
+      table.insert(config.infoCategories, objectInfoIdx + 1, {
         category        = SPO_CATEGORY,
         name            = ReadText(1972092416, 1),
         icon            = "stationbuildst_production",
-        helpOverlayID   = "chem_production_overview",
+        helpOverlayID   = "chem_station_prod_overview",
         helpOverlayText = ReadText(1972092416, 2),
+      })
+      stationTabIdx = objectInfoIdx + 1
+    end
+    if not sectorTabFound and stationTabIdx then
+      table.insert(config.infoCategories, stationTabIdx + 1, {
+        category        = SSPO_CATEGORY,
+        name            = ReadText(1972092416, 3),
+        icon            = "stationbuildst_production",
+        helpOverlayID   = "chem_sector_prod_overview",
+        helpOverlayText = ReadText(1972092416, 4),
       })
     end
   end
