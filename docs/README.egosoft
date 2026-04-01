@@ -7,6 +7,8 @@ Adds a [b]Production Overview[/b] tab to the info panel tab strip in the map men
 [*] [b]Production Overview Tab[/b]: A dedicated tab in the station info panel shows all production and consumption data at a glance.
 [*] [b]Sector Production Overview[/b]: A dedicated tab in the sector info panel shows all production stations within the sector with their respective production data, equal to the single station production overview.
 [*] [b]Per-ware rates[/b]: For each ware the tab displays produced, consumed, and net total amounts per hour.
+[*] [b]Ware icons[/b]: Each ware row shows the ware icon alongside its name for quick visual identification.
+[*] [b]Production issue indicators[/b]: If any production modules for a ware are waiting for resources or waiting for storage, the ware name is highlighted in warning colour and a mouseover tooltip lists the exact issue counts per state.
 [*] [b]Live vs Estimated mode[/b]: A dropdown lets you switch between [i]Current (live state)[/i] (reflecting only active modules and workforce) and [i]Estimated (all modules active)[/i] (the theoretical maximum output).
 [*] [b]Active module count[/b]: In live mode the module count column shows how many modules are currently running out of the total installed (e.g. [b]3 (5)[/b]).
 [*] [b]Ware grouping[/b]: Wares are grouped into [b]Products[/b] (not consumed on-site), [b]Intermediates[/b] (produced and consumed on-site), and [b]Resources[/b] (pure inputs, not produced on-site).
@@ -86,6 +88,14 @@ When viewing the info panel for a sector, a similar [b]Production Overview[/b] t
 [/list]
 [size=130][u]Changelog[/u][/size]
 
+[size=125][u][9.00.04] - 2026-04-01[/u][/size]
+[list]
+[*] [b]Improved[/b]
+[list]
+[*] Ware icon is now displayed next to the ware name in each row.
+[*] Production issue highlighting: if any modules for a ware are waiting for resources or waiting for storage the ware name changes to warning colour and a mouseover tooltip shows the counts per issue state.
+[/list]
+[/list]
 [size=125][u][9.00.03] - 2026-03-31[/u][/size]
 [list]
 [*] [b]Added[/b]
