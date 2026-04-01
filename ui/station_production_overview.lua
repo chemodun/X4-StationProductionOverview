@@ -597,16 +597,17 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
 end
 
 --- Add the Configure Station and Station Overview buttons to the bottom of the production submenu.
-function spo.addButtonsToProductionSubmenu(tableButton, station, sectorMode)
+function spo.addButtonsToProductionSubmenu(tableButton, station, sectorMode, active)
+  if active == nil then active = true end
   local buttonRowGroup = spo.isV9 and sectorMode and tableButton:addRowGroup({}) or tableButton
   local row = buttonRowGroup:addRow("info_button_bottom", { fixed = not sectorMode })
-  row[1]:setColSpan(sectorMode and 2 or 1):createButton({ y = Helper.borderSize }):setText(ReadText(1001, 1136), { halign = "center" }) -- Configure Station
+  row[1]:setColSpan(sectorMode and 2 or 1):createButton({ y = Helper.borderSize, active = active }):setText(ReadText(1001, 1136), { halign = "center" }) -- Configure Station
   row[1].handlers.onClick = function()
     Helper.closeMenuAndOpenNewMenu(menu, "StationConfigurationMenu", { 0, 0, station })
     menu.cleanup()
   end
   local nextButtonCell = sectorMode and 3 or 2
-  row[nextButtonCell]:setColSpan(sectorMode and 4 or 1):createButton({ y = Helper.borderSize }):setText(ReadText(1001, 1138), { halign = "center" }) -- Station Overview
+  row[nextButtonCell]:setColSpan(sectorMode and 4 or 1):createButton({ y = Helper.borderSize, active = active }):setText(ReadText(1001, 1138), { halign = "center" }) -- Station Overview
   row[nextButtonCell].handlers.onClick  = function()
     Helper.closeMenuAndOpenNewMenu(menu, "StationOverviewMenu", { 0, 0, station })
     menu.cleanup()
@@ -668,7 +669,9 @@ function spo.createProductionSubmenu(inputframe, instance)
   })
   tableButton:setColWidthPercent(2, 50)
 
-  spo.addButtonsToProductionSubmenu(tableButton, menu.infoSubmenuObject, false)
+  local isStation = menu.infoSubmenuObject and (tonumber(menu.infoSubmenuObject) ~= 0)
+      and C.IsComponentClass(menu.infoSubmenuObject, "station")
+  spo.addButtonsToProductionSubmenu(tableButton, menu.infoSubmenuObject, false, isStation)
 
   tableButton.properties.y = frameHeight - tableButton:getFullHeight()
 
