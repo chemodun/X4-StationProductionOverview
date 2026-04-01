@@ -188,6 +188,39 @@ local function extraConsumptionFromPlanned(moduleData)
   return extra
 end
 
+--- Scan live (non-wrecked) production/processing modules at a station and return
+--- a table mapping ware → { noRes, waitStore } issue counts.
+local function collectModuleCountsForWares(stationId)
+  local counts = {}
+  local n = tonumber(C.GetNumStationModules(stationId, false, false))
+  if n == 0 then return counts end
+  local buf = ffi.new("UniverseID[?]", n)
+  n = tonumber(C.GetStationModules(buf, n, stationId, false, false))
+  for i = 0, n - 1 do
+    local mod = ConvertStringTo64Bit(tostring(buf[i]))
+    if IsValidComponent(mod) and not C.IsComponentWrecked(mod) then
+      if C.IsRealComponentClass(mod, "production") or C.IsRealComponentClass(mod, "processingmodule") then
+        local proddata = GetProductionModuleData(mod)
+        if proddata and proddata.products then
+          local state = proddata.state
+          for _, entry in ipairs(proddata.products) do
+            local w = entry.ware
+            if not counts[w] then
+              counts[w] = { noRes = 0, waitStore = 0 }
+            end
+            if state == "waitingforresources" then
+              counts[w].noRes = counts[w].noRes + 1
+            elseif state == "waitingforstorage" or state == "choosingitem" then
+              counts[w].waitStore = counts[w].waitStore + 1
+            end
+          end
+        end
+      end
+    end
+  end
+  return counts
+end
+
 -- ─── formatting helpers ──────────────────────────────────────────────────────
 
 local function fmt(n)
@@ -330,8 +363,10 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
     for _, rateInfo in ipairs(rates) do
       local ware = rateInfo.ware
       if not wareProduction[ware] then
+        local wareName, wareIcon = GetWareData(ware, "name", "icon")
         wareProduction[ware] = {
-          name            = GetWareData(ware, "name") or ware,
+          name            = wareName or ware,
+          icon            = (wareIcon and wareIcon ~= "") and wareIcon or "solid",
           moduleCount     = 0,
           plannedCount    = 0,
           plannedBaseRate = 0,           -- sum of ratePerModule * numplanned across all macros
@@ -343,8 +378,10 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
       wp.plannedBaseRate = wp.plannedBaseRate + rateInfo.ratePerModule * data.numPlanned
       for resourceWare in pairs(rateInfo.resources) do
         if not resourceWares[resourceWare] then
+          local resName, resIcon = GetWareData(resourceWare, "name", "icon")
           resourceWares[resourceWare] = {
-            name         = GetWareData(resourceWare, "name") or resourceWare,
+            name         = resName or resourceWare,
+            icon         = (resIcon and resIcon ~= "") and resIcon or "solid",
             moduleCount  = 0,
             plannedCount = 0,
           }
@@ -370,6 +407,7 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
   end
 
   local extraConsumption = extraConsumptionFromPlanned(moduleData)
+  local moduleCounts     = not spo.showEstimated and collectModuleCountsForWares(station) or {}
 
   -- ── classify produced wares as products or intermediates ──
   -- A ware is an "intermediate" if it also appears as a resource (input) consumed
@@ -402,8 +440,12 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
         end
       end
     end
+    local mc = moduleCounts[ware] or { noRes = 0, waitStore = 0 }
     return {
       name               = wp.name,
+      icon               = wp.icon,
+      noRes              = mc.noRes,
+      waitStore          = mc.waitStore,
       moduleCount        = moduleCount,
       plannedCount       = plannedCount,
       activeCount        = activeCount,
@@ -456,13 +498,32 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
       local entryGroup = spo.isV9 and not sectorMode and tableInfo:addRowGroup({}) or tableInfo
       -- main row: current figures (selectable — matches NPC name row in crew submenu)
       row = entryGroup:addRow(true, { bgColor = Color["row_background_unselectable"] })
-      row[1]:createText(entry.name, { wordwrap = true })
       local countStr
       if not spo.showEstimated and entry.activeCount < entry.moduleCount then
         countStr = tostring(entry.activeCount) .. " (" .. tostring(entry.moduleCount) .. ")"
       else
         countStr = tostring(entry.moduleCount)
       end
+      local hasIssue = entry.noRes > 0 or entry.waitStore > 0
+      local wareName = hasIssue
+          and (Helper.convertColorToText(Color["text_warning"]) .. entry.name .. "\027X")
+          or entry.name
+      local wareMouseover = ""
+      if hasIssue then
+        local errColor   = Helper.convertColorToText(Color["text_error"])
+        local resetColor = "\027X"
+        local lines = {}
+        if entry.noRes > 0 then
+          lines[#lines + 1] = errColor .. ReadText(1001, 8431) .. " (" .. entry.noRes .. ")" .. resetColor
+        end
+        if entry.waitStore > 0 then
+          lines[#lines + 1] = errColor .. ReadText(1001, 8432) .. " (" .. entry.waitStore .. ")" .. resetColor
+        end
+        wareMouseover = table.concat(lines, "\n")
+      end
+      local iconSize = menu.getShipIconWidth()
+      row[1]:createIcon(entry.icon, { scaling = false, width = iconSize, height = iconSize, mouseOverText = wareMouseover })
+          :setText(wareName, { halign = "left", x = iconSize + Helper.standardTextOffsetx })
       row[2]:createText(countStr, { halign = "right" })
       row[3]:createText(entry.productionCurrent > 0 and fmt(entry.productionCurrent) or "--", { halign = "right" })
       row[4]:createText(entry.consumptionCurrent > 0 and fmt(entry.consumptionCurrent) or "--",
