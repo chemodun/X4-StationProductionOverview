@@ -7,6 +7,8 @@ Adds a **Production Overview** tab to the info panel tab strip in the map menu (
 - **Production Overview Tab**: A dedicated tab in the station info panel shows all production and consumption data at a glance.
 - **Sector Production Overview**: A dedicated tab in the sector info panel shows all production stations within the sector with their respective production data, equal to the single station production overview.
 - **Per-ware rates**: For each ware the tab displays produced, consumed, and net total amounts per hour.
+- **Ware icons**: Each ware row shows the ware icon alongside its name for quick visual identification.
+- **Production issue indicators**: If any production modules for a ware are waiting for resources or waiting for storage, the ware name is highlighted in warning colour and a mouseover tooltip lists the exact issue counts per state.
 - **Live vs Estimated mode**: A dropdown lets you switch between *Current (live state)* (reflecting only active modules and workforce) and *Estimated (all modules active)* (the theoretical maximum output).
 - **Active module count**: In live mode the module count column shows how many modules are currently running out of the total installed (e.g. `3 (5)`).
 - **Ware grouping**: Wares are grouped into **Products** (not consumed on-site), **Intermediates** (produced and consumed on-site), and **Resources** (pure inputs, not produced on-site).
@@ -81,6 +83,12 @@ When viewing the info panel for a sector, a similar **Production Overview** tab 
 - [SirNukes](https://next.nexusmods.com/profile/sirnukes?gameId=2659) — for the `Mod Support APIs` that power the UI hooks.
 
 ## Changelog
+
+### [9.00.04] - 2026-04-01
+
+- **Improved**
+  - Ware icon is now displayed next to the ware name in each row.
+  - Production issue highlighting: if any modules for a ware are waiting for resources or waiting for storage the ware name changes to warning colour and a mouseover tooltip shows the counts per issue state.
 
 ### [9.00.03] - 2026-03-31
 
