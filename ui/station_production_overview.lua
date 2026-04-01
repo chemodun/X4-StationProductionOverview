@@ -227,14 +227,6 @@ local function fmt(n)
   return ConvertIntegerString(Helper.round(n), true, 0, true, false)
 end
 
-local function formatPair(cur, pla)
-  local cs = fmt(cur)
-  if Helper.round(cur) ~= Helper.round(pla) then
-    return cs .. "\n(+" .. fmt(pla - cur) .. ")"
-  end
-  return cs
-end
-
 local function formatTotal(cur, pla)
   local function coloured(v)
     if Helper.round(v) == 0 then
@@ -253,6 +245,65 @@ local function formatTotal(cur, pla)
 end
 
 -- ─── panel builder ───────────────────────────────────────────────────────────
+
+--- Resolve menu.infoSubmenuObject from selected components / player ship if not already set.
+local function resolveInfoSubmenuObject()
+  if (not menu.infoSubmenuObject) or (menu.infoSubmenuObject == 0) then
+    for id in pairs(menu.selectedcomponents) do
+      menu.infoSubmenuObject = ConvertStringTo64Bit(tostring(id)); break
+    end
+    if (not menu.infoSubmenuObject) or (menu.infoSubmenuObject == 0) then
+      menu.infoSubmenuObject = ConvertStringTo64Bit(tostring(C.GetPlayerOccupiedShipID()))
+      if (not menu.infoSubmenuObject) or (menu.infoSubmenuObject == 0) then
+        menu.infoSubmenuObject = ConvertStringTo64Bit(tostring(C.GetPlayerContainerID()))
+      end
+    end
+  end
+end
+
+--- Create and configure the standard 6-column info table inside inputframe.
+local function addInfoTable(inputframe, infoBorder)
+  local tableInfo = inputframe:addTable(6, spo.isV9 and {
+    tabOrder          = 1,
+    x                 = Helper.standardContainerOffset,
+    width             = inputframe.properties.width - 2 * Helper.standardContainerOffset,
+    backgroundID      = "solid",
+    backgroundColor   = Color["container_subsection_background"] or nil,
+    backgroundPadding = 0,
+    frameborder       = infoBorder and infoBorder.id or nil,
+  } or {
+    tabOrder = 1,
+  })
+  tableInfo:setColWidthMinPercent(1, 30)          -- variable width; grows to fill space reserved for scrollbar
+  tableInfo:setColWidthPercent(2, 13)             -- Count
+  tableInfo:setColWidthPercent(3, 16)             -- Prod/h
+  tableInfo:setColWidthPercent(4, 16)             -- Cons/h
+  tableInfo:setColWidthPercent(5, 16)             -- Total/h
+  tableInfo:setColWidth(6, config.mapRowHeight)   -- focus button (auto-scaled)
+  tableInfo:setDefaultBackgroundColSpan(1, 6)
+  tableInfo:setDefaultCellProperties("text", { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize })
+  tableInfo:setDefaultCellProperties("button", { height = config.mapRowHeight })
+  return tableInfo
+end
+
+--- Restore previously saved selected/top row and col for infotable<instance>.
+local function restoreTableSelection(tableInfo, instance)
+  if menu.selectedRows["infotable" .. instance] then
+    tableInfo:setSelectedRow(menu.selectedRows["infotable" .. instance])
+    menu.selectedRows["infotable" .. instance] = nil
+    if menu.topRows["infotable" .. instance] then
+      tableInfo:setTopRow(menu.topRows["infotable" .. instance])
+      menu.topRows["infotable" .. instance] = nil
+    end
+    if menu.selectedCols["infotable" .. instance] then
+      tableInfo:setSelectedCol(menu.selectedCols["infotable" .. instance])
+      menu.selectedCols["infotable" .. instance] = nil
+    end
+  end
+  menu.setrow    = nil
+  menu.settoprow = nil
+  menu.setcol    = nil
+end
 
 -- Add the estimated/current toggle dropdown row to the top of the table (below the title and info_focus rows).
 function spo.toggleEstimatedCurrent(tableInfo)
@@ -327,9 +378,6 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
 
   if not sectorMode then
     spo.toggleEstimatedCurrent(tableInfo)
-  end
-
-  if not sectorMode then
     spo.columnHeaders(tableInfo)
   end
 
@@ -575,18 +623,7 @@ function spo.createProductionSubmenu(inputframe, instance)
   -- temporary fix
 
   local frameHeight = inputframe.properties.height
-  -- infoSubmenuObject fallback (mirrors all vanilla info submenus)
-  if (not menu.infoSubmenuObject) or (menu.infoSubmenuObject == 0) then
-    for id in pairs(menu.selectedcomponents) do
-      menu.infoSubmenuObject = ConvertStringTo64Bit(tostring(id)); break
-    end
-    if (not menu.infoSubmenuObject) or (menu.infoSubmenuObject == 0) then
-      menu.infoSubmenuObject = ConvertStringTo64Bit(tostring(C.GetPlayerOccupiedShipID()))
-      if (not menu.infoSubmenuObject) or (menu.infoSubmenuObject == 0) then
-        menu.infoSubmenuObject = ConvertStringTo64Bit(tostring(C.GetPlayerContainerID()))
-      end
-    end
-  end
+  resolveInfoSubmenuObject()
 
   local infoBorder = nil
   if spo.isV9 then
@@ -600,26 +637,7 @@ function spo.createProductionSubmenu(inputframe, instance)
     Helper.setFrameBorderIcon(menu, infoBorder, instance, menu.sideBarWidth / 2)
   end
 
-  local tableInfo = inputframe:addTable(6, spo.isV9 and {
-    tabOrder          = 1,
-    x                 = Helper.standardContainerOffset,
-    width             = inputframe.properties.width - 2 * Helper.standardContainerOffset,
-    backgroundID      = "solid",
-    backgroundColor   = Color["container_subsection_background"] or nil,
-    backgroundPadding = 0,
-    frameborder       = infoBorder.id or nil,
-  } or {
-    tabOrder = 1,
-  })
-  tableInfo:setColWidthMinPercent(1, 30)          -- variable width; grows to fill space reserved for scrollbar
-  tableInfo:setColWidthPercent(2, 13)             -- Count
-  tableInfo:setColWidthPercent(3, 16)             -- Prod/h
-  tableInfo:setColWidthPercent(4, 16)             -- Cons/h
-  tableInfo:setColWidthPercent(5, 16)             -- Total/h
-  tableInfo:setColWidth(6, config.mapRowHeight)   -- focus button (auto-scaled)
-  tableInfo:setDefaultBackgroundColSpan(1, 6)
-  tableInfo:setDefaultCellProperties("text", { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize })
-  tableInfo:setDefaultCellProperties("button", { height = config.mapRowHeight })
+  local tableInfo = addInfoTable(inputframe, infoBorder)
 
   if not spo.isV9 then
     --- title ---
@@ -632,21 +650,7 @@ function spo.createProductionSubmenu(inputframe, instance)
 
   spo.setupProductionSubmenuRows(tableInfo, menu.infoSubmenuObject, instance, false)
 
-  if menu.selectedRows["infotable" .. instance] then
-    tableInfo:setSelectedRow(menu.selectedRows["infotable" .. instance])
-    menu.selectedRows["infotable" .. instance] = nil
-    if menu.topRows["infotable" .. instance] then
-      tableInfo:setTopRow(menu.topRows["infotable" .. instance])
-      menu.topRows["infotable" .. instance] = nil
-    end
-    if menu.selectedCols["infotable" .. instance] then
-      tableInfo:setSelectedCol(menu.selectedCols["infotable" .. instance])
-      menu.selectedCols["infotable" .. instance] = nil
-    end
-  end
-  menu.setrow            = nil
-  menu.settoprow         = nil
-  menu.setcol            = nil
+  restoreTableSelection(tableInfo, instance)
 
   local tableHeader      = spo.isV9 and menu.createOrdersMenuHeader(inputframe, infoBorder, instance) or
       menu.createOrdersMenuHeader(inputframe, instance)
@@ -794,17 +798,7 @@ function spo.createSectorProductionSubmenu(inputframe, instance)
   -- temporary fix
 
   local frameHeight = inputframe.properties.height
-  if (not menu.infoSubmenuObject) or (menu.infoSubmenuObject == 0) then
-    for id in pairs(menu.selectedcomponents) do
-      menu.infoSubmenuObject = ConvertStringTo64Bit(tostring(id)); break
-    end
-    if (not menu.infoSubmenuObject) or (menu.infoSubmenuObject == 0) then
-      menu.infoSubmenuObject = ConvertStringTo64Bit(tostring(C.GetPlayerOccupiedShipID()))
-      if (not menu.infoSubmenuObject) or (menu.infoSubmenuObject == 0) then
-        menu.infoSubmenuObject = ConvertStringTo64Bit(tostring(C.GetPlayerContainerID()))
-      end
-    end
-  end
+  resolveInfoSubmenuObject()
 
   local infoBorder = nil
   if spo.isV9 then
@@ -818,46 +812,13 @@ function spo.createSectorProductionSubmenu(inputframe, instance)
     Helper.setFrameBorderIcon(menu, infoBorder, instance, menu.sideBarWidth / 2)
   end
 
-  local tableInfo = inputframe:addTable(6, spo.isV9 and {
-    tabOrder          = 1,
-    x                 = Helper.standardContainerOffset,
-    width             = inputframe.properties.width - 2 * Helper.standardContainerOffset,
-    backgroundID      = "solid",
-    backgroundColor   = Color["container_subsection_background"] or nil,
-    backgroundPadding = 0,
-    frameborder       = infoBorder.id or nil,
-  } or {
-    tabOrder = 1,
-  })
-  tableInfo:setColWidthMinPercent(1, 30)
-  tableInfo:setColWidthPercent(2, 13)
-  tableInfo:setColWidthPercent(3, 16)
-  tableInfo:setColWidthPercent(4, 16)
-  tableInfo:setColWidthPercent(5, 16)
-  tableInfo:setColWidth(6, config.mapRowHeight)
-  tableInfo:setDefaultBackgroundColSpan(1, 6)
-  tableInfo:setDefaultCellProperties("text", { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize })
-  tableInfo:setDefaultCellProperties("button", { height = config.mapRowHeight })
+  local tableInfo = addInfoTable(inputframe, infoBorder)
 
   spo.setupSectorProductionSubmenuRows(tableInfo, menu.infoSubmenuObject, instance)
 
-  if menu.selectedRows["infotable" .. instance] then
-    tableInfo:setSelectedRow(menu.selectedRows["infotable" .. instance])
-    menu.selectedRows["infotable" .. instance] = nil
-    if menu.topRows["infotable" .. instance] then
-      tableInfo:setTopRow(menu.topRows["infotable" .. instance])
-      menu.topRows["infotable" .. instance] = nil
-    end
-    if menu.selectedCols["infotable" .. instance] then
-      tableInfo:setSelectedCol(menu.selectedCols["infotable" .. instance])
-      menu.selectedCols["infotable" .. instance] = nil
-    end
-  end
-  menu.setrow                           = nil
-  menu.settoprow                        = nil
-  menu.setcol                           = nil
+  restoreTableSelection(tableInfo, instance)
 
-  local tableHeader                     = spo.isV9 and menu.createOrdersMenuHeader(inputframe, infoBorder, instance) or
+  local tableHeader = spo.isV9 and menu.createOrdersMenuHeader(inputframe, infoBorder, instance) or
       menu.createOrdersMenuHeader(inputframe, instance)
   tableInfo.properties.y                = tableHeader.properties.y + tableHeader:getFullHeight() + Helper.borderSize
   tableInfo.properties.maxVisibleHeight = frameHeight - tableInfo.properties.y - Helper.frameBorder
