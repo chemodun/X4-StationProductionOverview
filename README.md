@@ -84,6 +84,11 @@ When viewing the info panel for a sector, a similar **Production Overview** tab 
 
 ## Changelog
 
+### [9.00.05] - 2026-04-02
+
+- **Fixed**
+  - Production overview table used too-small font for ware names and module counts on higher screen resolutions. Introduced in v9.00.04.
+
 ### [9.00.04] - 2026-04-01
 
 - **Improved**
