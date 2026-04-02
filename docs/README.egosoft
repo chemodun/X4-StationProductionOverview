@@ -88,6 +88,13 @@ When viewing the info panel for a sector, a similar [b]Production Overview[/b] t
 [/list]
 [size=130][u]Changelog[/u][/size]
 
+[size=125][u][9.00.05] - 2026-04-02[/u][/size]
+[list]
+[*] [b]Fixed[/b]
+[list]
+[*] Production overview table used too-small font for ware names and module counts on higher screen resolutions. Introduced in v9.00.04.
+[/list]
+[/list]
 [size=125][u][9.00.04] - 2026-04-01[/u][/size]
 [list]
 [*] [b]Improved[/b]
