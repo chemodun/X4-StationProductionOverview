@@ -569,9 +569,7 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
         end
         wareMouseover = table.concat(lines, "\n")
       end
-      local iconSize = menu.getShipIconWidth()
-      row[1]:createIcon(entry.icon, { scaling = false, width = iconSize, height = iconSize, mouseOverText = wareMouseover })
-          :setText(wareName, { halign = "left", x = iconSize + Helper.standardTextOffsetx })
+      row[1]:createText("\027[" .. entry.icon .. "] " .. wareName, { halign = "left", mouseOverText = wareMouseover })
       row[2]:createText(countStr, { halign = "right" })
       row[3]:createText(entry.productionCurrent > 0 and fmt(entry.productionCurrent) or "--", { halign = "right" })
       row[4]:createText(entry.consumptionCurrent > 0 and fmt(entry.consumptionCurrent) or "--",
