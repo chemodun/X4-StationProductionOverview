@@ -17,8 +17,11 @@ Adds a [b]Production Overview[/b] tab to the info panel tab strip in the map men
 [/list]
 [h2][b]Requirements[/b][/h2]
 [list]
-[*] [b]X4: Foundations[/b]: Version [b]9.00 beta 3[/b] or higher.
-[*] [b]UI Extensions and HUD[/b]: Version [b]v9.0.0.0.3[/b] or higher by [url=https://next.nexusmods.com/profile/kuertee?gameId=2659]kuertee[/url].
+[*] [b]X4: Foundations[/b]: Version [b]8.00HF4[/b] or higher and [b]UI Extensions and HUD[/b]: Version [b]v8.0.4.3[/b] or higher by [url=https://next.nexusmods.com/profile/kuertee?gameId=2659]kuertee[/url].
+[list]
+[*] Available on Nexus Mods: [url=https://www.nexusmods.com/x4foundations/mods/552]UI Extensions and HUD[/url]
+[/list]
+[*] [b]X4: Foundations[/b]: Version [b]9.00 beta 3[/b] or higher and [b]UI Extensions and HUD[/b]: Version [b]v9.0.0.0.3[/b] or higher by [url=https://next.nexusmods.com/profile/kuertee?gameId=2659]kuertee[/url].
 [list]
 [*] Available on Nexus Mods: [url=https://www.nexusmods.com/x4foundations/mods/552]UI Extensions and HUD[/url]
 [/list]
@@ -88,6 +91,13 @@ When viewing the info panel for a sector, a similar [b]Production Overview[/b] t
 [/list]
 [h2][b]Changelog[/b][/h2]
 
+[h2][9.00.06] - 2026-04-06[/h2]
+[list]
+[*] [b]Improved[/b]
+[list]
+[*] Added possibility to work under the v.8.00 of the game in case of usage the 8.0.4.3 version of the [b]UI Extensions and HUD[/b] mod.
+[/list]
+[/list]
 [h2][9.00.05] - 2026-04-02[/h2]
 [list]
 [*] [b]Fixed[/b]
