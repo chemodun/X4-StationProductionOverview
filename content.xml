@@ -3,12 +3,12 @@
   id="ws_3695609478"
   name="Station Production Overview"
   author="Chem O`Dun"
-  version="90005"
-  date="2026-04-02"
+  version="90006"
+  date="2026-04-06"
   save="false"
   sync="false"
   enabled="1"
-  lastupdate="1775151217"
+  lastupdate="1775425130"
   description="Adds a Production Overview tab to the info panel tab strip (alongside Object Info, Crew, etc.) for player-owned stations in the map menu. Shows per-ware production and consumption rates (live or estimated), groups wares into Products, Intermediates, and Resources, and previews the impact of planned modules.">
   <text language="7"
     description="Adds a Production Overview tab to the info panel tab strip (alongside Object Info, Crew, etc.) for player-owned stations in the map menu. Shows per-ware production and consumption rates (live or estimated), groups wares into Products, Intermediates, and Resources, and previews the impact of planned modules."></text>
@@ -54,7 +54,7 @@
   <!-- Ukrainian -->
   <text language="380"
     description="Додає вкладку Огляд виробництва до інформаційної панелі (поряд з Інфо про об'єкт, Екіпаж тощо) для станцій гравця в меню карти. Показує показники виробництва та споживання за товарами (наживо або оціночно), групує товари на Продукти, Напівпродукти та Ресурси та попередньо переглядає вплив запланованих модулів."></text>
-  <dependency version="900"></dependency>
-  <dependency id="kuerteeUIExtensionsAndHUD" optional="false" name="kuertee UI Extensions and HUD" version="900"></dependency>
+  <dependency version="800"></dependency>
+  <dependency id="kuerteeUIExtensionsAndHUD" optional="false" name="kuertee UI Extensions and HUD" version="804"></dependency>
   <dependency id="ws_2042901274" optional="false" name="SirNukes Mod Support APIs" version="195"></dependency>
 </content>
