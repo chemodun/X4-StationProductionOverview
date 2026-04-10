@@ -27,7 +27,7 @@ Adds a **Production Overview** tab to the info panel tab strip in the map menu (
 
 ## Installation
 
-- **Steam Workshop**: will be available later, after public release of game version 9.00
+- **Steam Workshop**: [Station Production Overview](https://steamcommunity.com/sharedfiles/filedetails/?id=3695609478) - only for **Game version 8.00** with latest Steam version of the `UI Extensions and HUD` mod (version 80.43 from April 8).
 - **Nexus Mods**: [Station Production Overview](https://www.nexusmods.com/x4foundations/mods/2049)
 
 ## Usage
@@ -84,6 +84,11 @@ When viewing the info panel for a sector, a similar **Production Overview** tab 
 - [SirNukes](https://next.nexusmods.com/profile/sirnukes?gameId=2659) — for the `Mod Support APIs` that power the UI hooks.
 
 ## Changelog
+
+### [9.00.07] - 2026-04-10
+
+- **Improved**
+  - Added possibility to be distributed via Steam after upgrade Steam version the `UI Extensions and HUD` mod.
 
 ### [9.00.06] - 2026-04-06
 
