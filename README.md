@@ -4,19 +4,15 @@ Adds a **Production Overview** tab to the info panel tab strip in the map menu (
 
 ## Features
 
-- **Production Overview Tab**: A dedicated tab in the station info panel shows all production and consumption data at a glance.
-- **Sector Production Overview**: A dedicated tab in the sector info panel shows all production stations within the sector with their respective production data, equal to the single station production overview.
-- **Per-ware rates**: For each ware the tab displays produced, consumed, and net total amounts per hour.
-- **Ware icons**: Each ware row shows the ware icon alongside its name for quick visual identification.
-- **Production issue indicators**: If any production modules for a ware are waiting for resources or waiting for storage, the ware name is highlighted in warning colour and a mouseover tooltip lists the exact issue counts per state.
-- **Live vs Estimated mode**: A dropdown lets you switch between *Current (live state)* (reflecting only active modules and workforce) and *Estimated (all modules active)* (the theoretical maximum output).
-- **Active module count**: In live mode the module count column shows how many modules are currently running out of the total installed (e.g. `3 (5)`).
-- **Ware grouping**: Wares are grouped into **Products** (not consumed on-site), **Intermediates** (produced and consumed on-site), and **Resources** (pure inputs, not produced on-site).
-- **Workforce resource consumption**: Wares consumed exclusively by workforce (food, medicine, and similar consumer goods) appear in the Resources group when no production module produces them. Otherwise they are shown according to their production modules places.
-- **Planned module preview**: When the construction plan contains new modules a second delta row per ware shows the expected impact once those modules are built.
-- **Empire balance**: For Products and Intermediates, an optional *All stations:* sub-row shows the total consumption of that ware across all your player-owned stations and a coloured balance indicating how much this station's production covers the empire-wide demand. Hidden by default; enable it with the **Show empire balance** checkbox below the mode dropdown. Respects the current Live / Estimated mode.
-- **Configurable data refresh**: A slider in the Extensions options menu (Extensions > Station Production Overview) controls how many UI ticks production data is cached before recomputing (1-10, default 3), reducing CPU overhead in large saves.
-- **Quick-navigation buttons**: *Configure Station* and *Station Overview* buttons are available at the bottom of the tab.
+- **Production Overview Tab**: Dedicated tab in the station info panel showing per-ware produced, consumed, and net total rates per hour.
+- **Sector Production Overview**: Same tab in the sector info panel, listing all player-owned production stations in the sector.
+- **Ware grouping**: Wares split into **Products**, **Intermediates**, and **Resources**; workforce-only consumer goods placed in Resources unless also produced on-site.
+- **Live vs Estimated mode**: Dropdown switches between actual running rates (with `active/total` module count) and theoretical maximum output.
+- **Production issue indicators**: Wares with modules waiting on resources or storage are highlighted, with a tooltip showing exact issue counts.
+- **Planned module preview**: A delta row per ware shows the production impact of unbuilt modules in the construction plan.
+- **Empire balance**: Optional *All stations:* sub-row (toggle via **Show empire balance** checkbox, single-station view only) shows empire-wide production, consumption, and coloured surplus/deficit for each Product and Intermediate.
+- **Configurable data refresh**: Slider in **Extension options > Station Production Overview** sets the cache duration in UI ticks (1-10, default 3).
+- **Quick-navigation buttons**: *Configure Station* and *Station Overview* at the bottom of the tab.
 
 ## Requirements
 
@@ -35,73 +31,47 @@ Adds a **Production Overview** tab to the info panel tab strip in the map menu (
 
 ## Usage
 
-Open the map, select a player-owned station, and click the **Production Overview** tab in the info panel on the left or right side.
-
-### Production Overview Tab
-
-The tab renders a table with one row per ware that is produced or consumed by the station's production and processing modules.
+Open the map, select a player-owned station, and click the **Production Overview** tab in the info panel (left or right side).
 
 ![Production Overview Tab](docs/images/production_overview_tab.png)
 
 ### Live vs Estimated mode
 
-Use the dropdown at the top of the tab to switch between two display modes:
+The dropdown switches between **Current (live state)** (actual running rates; Modules column shows `active/total`) and **Estimated (all modules active)** (theoretical maximum with workforce bonus).
 
 ![Production Calculation Type Dropdown](docs/images/production_calculation_type_dropdown.png)
-
-- **Current (live state) / hour**: uses the actual running rate from the engine, accounting for modules that are idle due to missing resources or workforce shortages. The Modules column shows `active (total)` when not all modules are running.
-- **Estimated (all modules active) / hour**: reports the theoretical rate assuming all installed modules run at full capacity with the current workforce bonus applied.
-
 ![Production Estimated](docs/images/production_estimated.png)
-
-### Planned module preview
-
-If the station's construction plan contains new production or processing modules that have not been built yet, a secondary delta row appears directly below the ware row. It shows:
-
-- `(+N)` in the Modules column: the number of planned new modules
-- The additional production/consumption contribution those modules would add once built
 
 ### Ware groups
 
-Wares are organized into three groups:
-
-- **Products**: wares produced at this station that are not also consumed as a resource by any other module here.
-- **Intermediates**: wares that are both produced and consumed internally (e.g. a station that refines ore into silicon and then uses that silicon further).
-- **Resources**: wares consumed as raw inputs that are not produced on-site.
-
-### Workforce resource consumption
-
-Wares that are consumed exclusively by workforce modules (e.g. food, medicine, and similar consumer goods) are shown in the Resources group when no production module produces them.
+- **Products**: produced here, not consumed on-site.
+- **Intermediates**: produced and consumed internally.
+- **Resources**: consumed as inputs, not produced on-site. Workforce-only consumer goods (food, medicine, etc.) also appear here unless produced on-site.
 
 ![Workforce Resource Usage Example](docs/images/workforce_resource_usage.png)
-
-If there are production modules for those wares, they are shown according to their production modules places, and the workforce consumption is shown in the consumption column for that ware.
-
 ![Workforce Resource Production Example](docs/images/workforce_resource_production.png)
+
+### Planned module preview
+
+If the construction plan has unbuilt modules, a delta row per ware shows `(+N)` planned modules and their additional production/consumption.
 
 ### Empire balance
 
-Below the mode dropdown (single-station view only) a **Show empire balance** checkbox controls whether an extra *All stations:* sub-row is shown for each Product and Intermediate ware. When enabled, the sub-row displays:
-
-- empire-wide production of that ware across all player-owned stations
-- empire-wide consumption of that ware across all player-owned stations
-- a coloured **balance** (green = surplus, red = deficit, grey = neutral)
+Enable the **Show empire balance** checkbox (single-station view only) to show an *All stations:* sub-row per Product/Intermediate with empire-wide production, consumption, and a coloured balance (green = surplus, red = deficit). Respects Live / Estimated mode.
 
 ![Empire Balance Example](docs/images/show_empire_balance.png)
 
-The balance respects the current Live / Estimated mode. The checkbox is hidden in Sector view.
-
 ### Extensions options
 
-Open **Extension options > Station Production Overview** in the game **Options Menu** to configure:
+**Options Menu > Extension options > Station Production Overview**:
 
-- **Data Refresh Interval**: how many UI ticks the cached production data is reused before a full recompute (1-10, default 3). Lower values give more up-to-date numbers; higher values reduce CPU usage.
+- **Data Refresh Interval** (1-10, default 3): UI ticks to reuse cached data before recomputing. Lower = more responsive, higher = less CPU.
 
 ![Extension options](docs/images/options.png)
 
 ### Sector Production Overview
 
-When viewing the info panel for a sector, a similar **Production Overview** tab lists all player-owned production stations in that sector with their respective production data, equal to the single station production overview.
+Select a sector in the map to get the same **Production Overview** tab listing all player-owned production stations in that sector.
 
 ![Sector Production Overview Tab](docs/images/sector_production_overview_tab.png)
 
@@ -121,7 +91,7 @@ When viewing the info panel for a sector, a similar **Production Overview** tab 
 ### [9.00.08] - 2026-04-19
 
 - **Added**
-  - Workforce resource consumption: food, medicine, and other wares consumed only by workforce modules now appear in the Resources group.
+  - Workforce resource consumption: food, medicine, and other wares consumed only by workforce now appear in the Resources group.
   - Empire balance: an optional *All stations:* sub-row shows empire-wide production and consumption for each Product and Intermediate ware with a coloured surplus/deficit balance. Available in single-station view only.
 - **Improved**
   - Data cache throttle: expensive C API calls are reused for `dataRefreshInterval` UI ticks before recomputing. Configurable in the Extensions options menu (default 3, range 1-10).
