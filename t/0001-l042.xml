@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- Czech -->
 <diff>
   <add sel="/language">
@@ -11,6 +11,7 @@
       <!-- dropdown mode options -->
       <t id="100">Aktuální živý stav \(± s moduly ve výstavbě\) / hodinu</t>
       <t id="101">Odhadovaný, tj. všechny moduly aktivní \(± s moduly ve výstavbě\) / hodinu</t>
+      <t id="102">Zobrazit říšskou bilanci</t>
       <!-- column headers -->
       <t id="110">Zboží</t>
       <t id="111">Moduly</t>
@@ -21,11 +22,16 @@
       <t id="120">Produkty</t>
       <t id="121">Meziprodukty</t>
       <t id="122">Zdroje</t>
+      <!-- empire consumption sub-row label -->
+      <t id="130">Všechny stanice:</t>
       <!-- status / empty messages -->
       <t id="1001">Vyberte stanici pro zobrazení výrobních dat.</t>
       <t id="1002">Nebyly nalezeny žádné výrobní moduly.</t>
       <t id="1003">Nebylo nalezeno žádné výrobní zboží.</t>
       <t id="1004">V tomto sektoru nebyly nalezeny žádné hráčské stanice s výrobními moduly.</t>
+      <!-- settings labels (90000+) -->
+      <t id="90001">Přehled výroby stanice</t>
+      <t id="90011">Interval obnovy dat:\n kolik UI tiků se znovu použijí uložená data výroby \(nižší = aktuálnější, vyšší = nižší zatížení CPU\)</t>
     </page>
   </add>
 </diff>

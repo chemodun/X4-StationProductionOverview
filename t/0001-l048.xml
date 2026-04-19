@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- Polish -->
 <diff>
   <add sel="/language">
@@ -11,6 +11,7 @@
       <!-- dropdown mode options -->
       <t id="100">Bieżący stan na żywo \(± z modułami w budowie\) / godzinę</t>
       <t id="101">Szacowany, tj. wszystkie moduły aktywne \(± z modułami w budowie\) / godzinę</t>
+      <t id="102">Pokaż bilans imperium</t>
       <!-- column headers -->
       <t id="110">Towar</t>
       <t id="111">Moduły</t>
@@ -21,11 +22,16 @@
       <t id="120">Produkty</t>
       <t id="121">Półprodukty</t>
       <t id="122">Zasoby</t>
+      <!-- empire consumption sub-row label -->
+      <t id="130">Wszystkie stacje:</t>
       <!-- status / empty messages -->
       <t id="1001">Wybierz stację, aby zobaczyć dane produkcyjne.</t>
       <t id="1002">Nie znaleziono modułów produkcyjnych.</t>
       <t id="1003">Nie znaleziono towarów produkcyjnych.</t>
       <t id="1004">W tym sektorze nie znaleziono stacji gracza z modułami produkcyjnymi.</t>
+      <!-- settings labels (90000+) -->
+      <t id="90001">Przegląd produkcji stacji</t>
+      <t id="90011">Interwał odświeżania danych:\n ile tyknięć UI dane produkcji są ponownie używane \(mniejszy = bardziej responsywny, większy = mniejsze użycie CPU\)</t>
     </page>
   </add>
 </diff>

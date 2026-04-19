@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- Chinese Simplified -->
 <diff>
   <add sel="/language">
@@ -11,6 +11,7 @@
       <!-- dropdown mode options -->
       <t id="100">当前实时状态 \(± 含建设中模块\) / 小时</t>
       <t id="101">估计，即所有模块激活 \(± 含建设中模块\) / 小时</t>
+      <t id="102">显示帝国平衡</t>
       <!-- column headers -->
       <t id="110">商品</t>
       <t id="111">模块</t>
@@ -21,11 +22,16 @@
       <t id="120">产品</t>
       <t id="121">中间产品</t>
       <t id="122">资源</t>
+      <!-- empire consumption sub-row label -->
+      <t id="130">所有空间站：</t>
       <!-- status / empty messages -->
       <t id="1001">选择一个空间站以查看生产数据。</t>
       <t id="1002">未找到生产模块。</t>
       <t id="1003">未找到生产商品。</t>
       <t id="1004">此星域内未找到拥有生产模块的玩家空间站。</t>
+      <!-- settings labels (90000+) -->
+      <t id="90001">空间站生产概览</t>
+      <t id="90011">数据刷新间隔:\n 缓存生产数据重复使用的 UI 时钟数 \(越低越实时，越高越省 CPU\)</t>
     </page>
   </add>
 </diff>

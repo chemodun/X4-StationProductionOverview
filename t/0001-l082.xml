@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- Korean -->
 <diff>
   <add sel="/language">
@@ -11,6 +11,7 @@
       <!-- dropdown mode options -->
       <t id="100">현재 실시간 상태 \(± 건설 중 모듈 포함\) / 시간당</t>
       <t id="101">추정, 즉 모든 모듈 활성 \(± 건설 중 모듈 포함\) / 시간당</t>
+      <t id="102">제국 균형 표시</t>
       <!-- column headers -->
       <t id="110">상품</t>
       <t id="111">모듈</t>
@@ -21,11 +22,16 @@
       <t id="120">제품</t>
       <t id="121">중간재</t>
       <t id="122">자원</t>
+      <!-- empire consumption sub-row label -->
+      <t id="130">모든 스테이션:</t>
       <!-- status / empty messages -->
       <t id="1001">생산 데이터를 보려면 스테이션을 선택하세요.</t>
       <t id="1002">생산 모듈을 찾을 수 없습니다.</t>
       <t id="1003">생산 상품을 찾을 수 없습니다.</t>
       <t id="1004">이 섹터에 생산 모듈이 있는 플레이어 스테이션을 찾을 수 없습니다.</t>
+      <!-- settings labels (90000+) -->
+      <t id="90001">스테이션 생산 개요</t>
+      <t id="90011">데이터 새로 고침 간격:\n 캐시된 생산 데이터를 재사용하는 UI 틱 수 \(낙을수록 반응성 향상, 높을수록 CPU 사용량 감소\)</t>
     </page>
   </add>
 </diff>

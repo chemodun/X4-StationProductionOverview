@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- Chinese Traditional -->
 <diff>
   <add sel="/language">
@@ -11,6 +11,7 @@
       <!-- dropdown mode options -->
       <t id="100">目前即時狀態 \(± 含建設中模組\) / 小時</t>
       <t id="101">估計，即所有模組啟動 \(± 含建設中模組\) / 小時</t>
+      <t id="102">顯示帝國平衡</t>
       <!-- column headers -->
       <t id="110">商品</t>
       <t id="111">模組</t>
@@ -21,11 +22,16 @@
       <t id="120">產品</t>
       <t id="121">中間產品</t>
       <t id="122">資源</t>
+      <!-- empire consumption sub-row label -->
+      <t id="130">所有空間站：</t>
       <!-- status / empty messages -->
       <t id="1001">選擇一個空間站以檢視生產資料。</t>
       <t id="1002">未找到生產模組。</t>
       <t id="1003">未找到生產商品。</t>
       <t id="1004">此星域內未找到擁有生產模組的玩家空間站。</t>
+      <!-- settings labels (90000+) -->
+      <t id="90001">空間站生產概覽</t>
+      <t id="90011">資料更新間隔:\n 快取生產資料重複使用的 UI 計時數 \(越低越即時，越高越省 CPU\)</t>
     </page>
   </add>
 </diff>

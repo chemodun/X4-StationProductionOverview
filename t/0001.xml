@@ -10,6 +10,7 @@
             <!-- dropdown mode options -->
             <t id="100">Current live state \(± with building modules\) / hour</t>
             <t id="101">Estimated, i.e. all modules active \(± with building modules\) / hour</t>
+            <t id="102">Show empire balance</t>
             <!-- column headers -->
             <t id="110">Ware</t>
             <t id="111">Modules</t>
@@ -20,11 +21,16 @@
             <t id="120">Products</t>
             <t id="121">Intermediates</t>
             <t id="122">Resources</t>
+            <!-- empire consumption sub-row label -->
+            <t id="130">All stations:</t>
             <!-- status / empty messages -->
             <t id="1001">Select a station to see production data.</t>
             <t id="1002">No production modules found.</t>
             <t id="1003">No production wares found.</t>
             <t id="1004">No player stations with production modules found in this sector.</t>
+            <!-- settings labels (90000+) -->
+            <t id="90001">Station Production Overview</t>
+            <t id="90011">Data Refresh Interval:\n how many UI ticks to reuse cached production data \(lower = more responsive, higher = lower CPU usage\)</t>
         </page>
     </add>
 </diff>

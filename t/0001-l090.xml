@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- Turkish -->
 <diff>
   <add sel="/language">
@@ -11,6 +11,7 @@
       <!-- dropdown mode options -->
       <t id="100">Mevcut canlı durum \(± yapım aşamasındaki modüllerle\) / saat</t>
       <t id="101">Tahmini, yani tüm modüller aktif \(± yapım aşamasındaki modüllerle\) / saat</t>
+      <t id="102">İmparatorluk dengesini göster</t>
       <!-- column headers -->
       <t id="110">Mal</t>
       <t id="111">Modüller</t>
@@ -21,11 +22,16 @@
       <t id="120">Ürünler</t>
       <t id="121">Ara Ürünler</t>
       <t id="122">Kaynaklar</t>
+      <!-- empire consumption sub-row label -->
+      <t id="130">Tüm istasyonlar:</t>
       <!-- status / empty messages -->
       <t id="1001">Üretim verilerini görmek için bir istasyon seçin.</t>
       <t id="1002">Üretim modülü bulunamadı.</t>
       <t id="1003">Üretim malı bulunamadı.</t>
       <t id="1004">Bu sektörde üretim modülü olan oyuncu istasyonu bulunamadı.</t>
+      <!-- settings labels (90000+) -->
+      <t id="90001">İstasyon Üretim Genel Bakışı</t>
+      <t id="90011">Veri Yenileme Aralığı:\n önbelleğe alınmış üretim verilerinin yeniden kullanılacağı UI tik sayısı \(düşük = daha duyarlı, yüksek = daha az CPU kullanımı\)</t>
     </page>
   </add>
 </diff>
