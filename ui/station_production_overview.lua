@@ -82,6 +82,7 @@ local config       = nil
 
 local spo          = {
   showEstimated  = false, -- false = live state, true = all modules active (ignorestate)
+  showEmpireData = false, -- false = hide empire balance sub-rows, true = show them
   isV9           = C.GetGameVersion().major >= 9,
   modeOptions = {
     { id = "live",      text = ReadText(1972092416, 100), icon = "", displayremoveoption = false },
@@ -376,7 +377,8 @@ local function restoreTableSelection(tableInfo, instance)
 end
 
 -- Add the estimated/current toggle dropdown row to the top of the table (below the title and info_focus rows).
-function spo.toggleEstimatedCurrent(tableInfo)
+-- sectorMode: when true, the empire-data checkbox is omitted (it has no effect in sector view).
+function spo.toggleEstimatedCurrent(tableInfo, sectorMode)
   -- ── estimated/current toggle row ──
   local row = tableInfo:addRow(true, { fixed = true })
   row[1]:setColSpan(6):createDropDown(spo.modeOptions,
@@ -393,6 +395,17 @@ function spo.toggleEstimatedCurrent(tableInfo)
     menu.refreshInfoFrame()
   end
   row[1].handlers.onDropDownActivated = function() menu.noupdate = true end
+
+  -- ── empire balance checkbox (single-station mode only) ──
+  if not sectorMode then
+    row = tableInfo:addRow(true, { fixed = true })
+    row[1]:createCheckBox(spo.showEmpireData, { height = config.mapRowHeight, width = config.mapRowHeight })
+    row[1].handlers.onClick = function(_, checked)
+      spo.showEmpireData = checked
+      menu.refreshInfoFrame()
+    end
+    row[2]:setColSpan(5):createText(ReadText(1972092416, 102), { halign = "left" })
+  end
 end
 
 -- Add the column headers row below the title and info_focus rows (and toggle row, if in station mode).
@@ -447,7 +460,7 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
 
 
   if not sectorMode then
-    spo.toggleEstimatedCurrent(tableInfo)
+    spo.toggleEstimatedCurrent(tableInfo, false)
     spo.columnHeaders(tableInfo)
   end
 
@@ -553,7 +566,7 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
   -- Computed once per render; used by renderGroup to show an empire balance sub-row.
   local empireConsumption = {}
   local empireProduction  = {}
-  if not sectorMode then
+  if not sectorMode and spo.showEmpireData then
     local wareSet = {}
     for ware in pairs(wareProduction) do wareSet[ware] = true end
     empireConsumption, empireProduction = collectEmpireDataForWares(wareSet, spo.showEstimated)
@@ -708,8 +721,8 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
   end
 
   local stationGroup = spo.isV9 and sectorMode and tableInfo:addRowGroup({}) or tableInfo
-  renderGroup(stationGroup, products,      ReadText(1972092416, 120), true)
-  renderGroup(stationGroup, intermediates, ReadText(1972092416, 121), true)
+  renderGroup(stationGroup, products,      ReadText(1972092416, 120), spo.showEmpireData)
+  renderGroup(stationGroup, intermediates, ReadText(1972092416, 121), spo.showEmpireData)
   renderGroup(stationGroup, resources,     ReadText(1972092416, 122), false)
 end
 
@@ -895,7 +908,7 @@ function spo.setupSectorProductionSubmenuRows(tableInfo, sector, instance)
 
   table.sort(stations, Helper.sortName)
 
-  spo.toggleEstimatedCurrent(tableInfo)
+  spo.toggleEstimatedCurrent(tableInfo, true)
   spo.columnHeaders(tableInfo)
   -- render each station block, followed by its action buttons
   for i = 1, #stations do
