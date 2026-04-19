@@ -407,8 +407,7 @@ function spo.toggleEstimatedCurrent(tableInfo, sectorMode)
         halign = "center",
         font = Helper.titleFont,
         fontsize = Helper.standardFontSize,
-        y = Helper
-            .headerRow1Offsety
+        y = Helper.headerRow1Offsety
       })
   row[1].handlers.onDropDownConfirmed = function(_, id)
     spo.showEstimated = (id == "estimated")
@@ -419,12 +418,20 @@ function spo.toggleEstimatedCurrent(tableInfo, sectorMode)
   -- ── empire balance checkbox (single-station mode only) ──
   if not sectorMode then
     row = tableInfo:addRow(true, { fixed = true })
-    row[1]:createCheckBox(spo.showEmpireData, { height = config.mapRowHeight, width = config.mapRowHeight })
-    row[1].handlers.onClick = function(_, checked)
+    row[1]:createText(ReadText(1972092416, 102), {
+      font = Helper.titleFont,
+      fontsize = Helper.standardFontSize,
+    })
+    row[2]:setColSpan(5):createCheckBox(spo.showEmpireData, {
+      height = config.mapRowHeight,
+      width = config.mapRowHeight,
+      mouseOverText = ReadText(1972092416, 102)
+    })
+    row[2].handlers.onClick = function(_, checked)
       spo.showEmpireData = checked
       menu.refreshInfoFrame()
     end
-    row[2]:setColSpan(5):createText(ReadText(1972092416, 102), { halign = "left" })
+
   end
 end
 
