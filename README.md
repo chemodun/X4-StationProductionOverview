@@ -46,7 +46,9 @@ The dropdown switches between **Current (live state)** (actual running rates; Mo
 
 - **Products**: produced here, not consumed on-site.
 - **Intermediates**: produced and consumed internally.
-- **Resources**: consumed as inputs, not produced on-site. Workforce-only consumer goods (food, medicine, etc.) also appear here unless produced on-site.
+- **Resources**: consumed as inputs, not produced on-site.
+
+Workforce-only consumer goods (food, medicine, etc.) also appear here unless produced on-site (from version 9.00.08).
 
 ![Workforce Resource Usage Example](docs/images/workforce_resource_usage.png)
 ![Workforce Resource Production Example](docs/images/workforce_resource_production.png)
