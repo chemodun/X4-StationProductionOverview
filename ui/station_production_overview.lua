@@ -235,7 +235,7 @@ end
 --- Consumption includes both production-module consumption (C.GetContainerWareConsumption) and
 --- workforce consumption. Calls GetWorkForceRaceResources once per station for efficiency.
 --- Returns two tables: consumption[ware], production[ware]
-local function collectEmpireDataForWares(wareSet)
+local function collectEmpireDataForWares(wareSet, theoretical)
   local consumption = {}
   local production  = {}
   if not next(wareSet) then return consumption, production end
@@ -243,26 +243,30 @@ local function collectEmpireDataForWares(wareSet)
     local s64 = ConvertIDTo64Bit(stationId)
     for ware in pairs(wareSet) do
       -- Production
-      local prod = C.GetContainerWareProduction(s64, ware, false)
+      local prod = C.GetContainerWareProduction(s64, ware, theoretical)
       production[ware] = (production[ware] or 0) + (prod or 0)
       -- Production/trade module consumption
-      local cons = C.GetContainerWareConsumption(s64, ware, false)
+      local cons = C.GetContainerWareConsumption(s64, ware, theoretical)
       consumption[ware] = (consumption[ware] or 0) + (cons or 0)
     end
     -- Workforce consumption (one call per station, not per ware)
+    -- When theoretical, use capacity (full workforce) instead of current (present workers).
     if type(GetWorkForceRaceResources) == "function" and C.IsComponentClass(s64, "container") then
       local resourceInfos = GetWorkForceRaceResources(s64)
       if resourceInfos then
         for _, ri in ipairs(resourceInfos) do
           local wfi = C.GetWorkForceInfo(s64, ri.race)
-          if wfi and tonumber(wfi.current) > 0 then
-            for _, resource in ipairs(ri.resources or {}) do
-              if wareSet[resource.ware] then
-                local amount = Helper.round(
-                  resource.cycle * 3600 / resource.cycleduration * tonumber(wfi.current) / ri.productamount
-                )
-                if amount > 0 then
-                  consumption[resource.ware] = (consumption[resource.ware] or 0) + amount
+          if wfi then
+            local workerCount = tonumber(theoretical and wfi.capacity or wfi.current)
+            if workerCount > 0 then
+              for _, resource in ipairs(ri.resources or {}) do
+                if wareSet[resource.ware] then
+                  local amount = Helper.round(
+                    resource.cycle * 3600 / resource.cycleduration * workerCount / ri.productamount
+                  )
+                  if amount > 0 then
+                    consumption[resource.ware] = (consumption[resource.ware] or 0) + amount
+                  end
                 end
               end
             end
@@ -552,7 +556,7 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
   if not sectorMode then
     local wareSet = {}
     for ware in pairs(wareProduction) do wareSet[ware] = true end
-    empireConsumption, empireProduction = collectEmpireDataForWares(wareSet)
+    empireConsumption, empireProduction = collectEmpireDataForWares(wareSet, spo.showEstimated)
   end
 
   -- ── classify produced wares as products or intermediates ──
