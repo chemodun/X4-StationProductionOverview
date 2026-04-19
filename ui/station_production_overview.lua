@@ -47,6 +47,7 @@ ffi.cdef [[
 	size_t       GetNumPlannedStationModules(UniverseID defensibleid, bool includeall);
 	uint32_t     GetNumStationModules(UniverseID stationid, bool includeconstructions, bool includewrecks);
 	UniverseID   GetPlayerContainerID(void);
+	UniverseID   GetPlayerID(void);
 	UniverseID   GetPlayerOccupiedShipID(void);
 	size_t       GetPlannedStationModules(UIConstructionPlanEntry* result, uint32_t resultlen, UniverseID defensibleid, bool includeall);
 	uint32_t     GetStationModules(UniverseID* result, uint32_t resultlen, UniverseID stationid, bool includeconstructions, bool includewrecks);
@@ -84,6 +85,7 @@ local spo          = {
   showEstimated  = false, -- false = live state, true = all modules active (ignorestate)
   showEmpireData = false, -- false = hide empire balance sub-rows, true = show them
   isV9           = C.GetGameVersion().major >= 9,
+  playerId       = nil,  -- set in init(); used to read MD blackboard config
   modeOptions = {
     { id = "live",      text = ReadText(1972092416, 100), icon = "", displayremoveoption = false },
     { id = "estimated", text = ReadText(1972092416, 101), icon = "", displayremoveoption = false },
@@ -96,6 +98,17 @@ local spo          = {
                                 --   empireConsumption, empireProduction, turnCounter,
                                 --   stationId, showEstimated, showEmpireData }
 }
+
+--- Read dataRefreshInterval from the MD-side player.entity.$spoConfig blackboard.
+--- Called on init and whenever the options menu slider is changed (SPO.ConfigChanged event).
+local function spoOnConfigChanged()
+  if spo.playerId == nil then return end
+  local cfg = GetNPCBlackboard(spo.playerId, "$stationProductionOverview")
+  if cfg and cfg.dataRefreshInterval then
+    spo.dataRefreshInterval = math.max(1, math.min(10, tonumber(cfg.dataRefreshInterval) or 3))
+    spo.dataCache = {}  -- invalidate so next render uses the new interval
+  end
+end
 
 -- ─── data collection ────────────────────────────────────────────────────────
 
@@ -1093,6 +1106,12 @@ local function init()
   menu.registerCallback("info_sub_menu_to_show", spo.onSectorInfoSubMenuToShow)
   menu.registerCallback("info_sub_menu_is_valid_for", spo.onSectorInfoSubMenuIsValidFor)
   menu.registerCallback("info_sub_menu_create", spo.onSectorInfoSubMenuCreate)
+
+  -- Options menu: read initial config and register for live updates.
+  spo.playerId = ConvertStringTo64Bit(tostring(C.GetPlayerID()))
+  AddUITriggeredEvent("StationProductionOverview", "Reloaded")
+  RegisterEvent("SPO.ConfigChanged", spoOnConfigChanged)
+  spoOnConfigChanged()
 end
 
 Register_OnLoad_Init(init)

@@ -29,6 +29,9 @@
             <t id="1002">No production modules found.</t>
             <t id="1003">No production wares found.</t>
             <t id="1004">No player stations with production modules found in this sector.</t>
+            <!-- settings labels (90000+) -->
+            <t id="90001">Station Production Overview</t>
+            <t id="90011">Data Refresh Interval:\n how many UI ticks to reuse cached production data \(lower = more responsive, higher = lower CPU usage\)</t>
         </page>
     </add>
 </diff>
