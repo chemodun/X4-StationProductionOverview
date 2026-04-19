@@ -21,6 +21,8 @@
             <t id="120">Products</t>
             <t id="121">Intermediates</t>
             <t id="122">Resources</t>
+            <!-- empire consumption sub-row label -->
+            <t id="130">All stations:</t>
             <!-- status / empty messages -->
             <t id="1001">Select a station to see production data.</t>
             <t id="1002">No production modules found.</t>

@@ -60,6 +60,16 @@ ffi.cdef [[
 		int minor;
 	} GameVersion;
 	GameVersion  GetGameVersion();
+
+	typedef struct {
+		uint32_t current;
+		uint32_t capacity;
+		uint32_t optimal;
+		uint32_t available;
+		uint32_t maxavailable;
+		double   timeuntilnextupdate;
+	} WorkForceInfo;
+	WorkForceInfo GetWorkForceInfo(UniverseID containerid, const char* raceid);
 ]]
 
 -- infoMode.left key that identifies our sub-tab (must be unique across mods)
@@ -221,6 +231,49 @@ local function collectModuleCountsForWares(stationId)
   return counts
 end
 
+--- Compute total consumption and production of each ware in wareSet across all player-owned stations.
+--- Consumption includes both production-module consumption (C.GetContainerWareConsumption) and
+--- workforce consumption. Calls GetWorkForceRaceResources once per station for efficiency.
+--- Returns two tables: consumption[ware], production[ware]
+local function collectEmpireDataForWares(wareSet)
+  local consumption = {}
+  local production  = {}
+  if not next(wareSet) then return consumption, production end
+  for _, stationId in ipairs(GetContainedStationsByOwner("player")) do
+    local s64 = ConvertIDTo64Bit(stationId)
+    for ware in pairs(wareSet) do
+      -- Production
+      local prod = C.GetContainerWareProduction(s64, ware, false)
+      production[ware] = (production[ware] or 0) + (prod or 0)
+      -- Production/trade module consumption
+      local cons = C.GetContainerWareConsumption(s64, ware, false)
+      consumption[ware] = (consumption[ware] or 0) + (cons or 0)
+    end
+    -- Workforce consumption (one call per station, not per ware)
+    if type(GetWorkForceRaceResources) == "function" and C.IsComponentClass(s64, "container") then
+      local resourceInfos = GetWorkForceRaceResources(s64)
+      if resourceInfos then
+        for _, ri in ipairs(resourceInfos) do
+          local wfi = C.GetWorkForceInfo(s64, ri.race)
+          if wfi and tonumber(wfi.current) > 0 then
+            for _, resource in ipairs(ri.resources or {}) do
+              if wareSet[resource.ware] then
+                local amount = Helper.round(
+                  resource.cycle * 3600 / resource.cycleduration * tonumber(wfi.current) / ri.productamount
+                )
+                if amount > 0 then
+                  consumption[resource.ware] = (consumption[resource.ware] or 0) + amount
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+  return consumption, production
+end
+
 -- ─── formatting helpers ──────────────────────────────────────────────────────
 
 local function fmt(n)
@@ -242,6 +295,19 @@ local function formatTotal(cur, pla)
     return s .. "\n(" .. coloured(pla) .. ")"
   end
   return s
+end
+
+--- Format an empire-level balance value using dimmer colours than the main row.
+--- Returns (text, color): for zero, text is plain and color is Color["text_inactive"];
+--- for non-zero, the colour is embedded inline via ColorText and color is nil.
+local function formatEmpireBalance(v)
+  if Helper.round(v) == 0 then
+    return fmt(v), Color["text_inactive"]
+  elseif v > 0 then
+    return ColorText["text_player_lowlight"] .. "+" .. fmt(v), nil  -- dark green
+  else
+    return ColorText["faction_xenon"] .. "-" .. fmt(math.abs(v)), nil  -- dark red (r=179)
+  end
 end
 
 -- ─── panel builder ───────────────────────────────────────────────────────────
@@ -440,6 +506,28 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
     end
   end
 
+  -- Add wares consumed exclusively by workforce (food, medicine, etc.) that do
+  -- not appear among any production module's inputs at this station.
+  if type(GetWorkForceRaceResources) == "function" then
+    local wfResourceInfos = GetWorkForceRaceResources(station)
+    if wfResourceInfos then
+      for _, ri in ipairs(wfResourceInfos) do
+        for _, resource in ipairs(ri.resources or {}) do
+          local ware = resource.ware
+          if not wareProduction[ware] and not resourceWares[ware] then
+            local resName, resIcon = GetWareData(ware, "name", "icon")
+            resourceWares[ware] = {
+              name         = resName or ware,
+              icon         = (resIcon and resIcon ~= "") and resIcon or "solid",
+              moduleCount  = -1,   -- sentinel: workforce-only, no production modules
+              plannedCount = -1,
+            }
+          end
+        end
+      end
+    end
+  end
+
   if next(wareProduction) == nil and next(resourceWares) == nil then
     row = tableInfo:addRow(true, {})
     row[1]:setColSpan(6):createText(ReadText(1972092416, 1003), { halign = "center", wordwrap = true })
@@ -456,6 +544,16 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
 
   local extraConsumption = extraConsumptionFromPlanned(moduleData)
   local moduleCounts     = not spo.showEstimated and collectModuleCountsForWares(station) or {}
+
+  -- Empire-wide consumption and production totals for product/intermediate wares (non-sector mode only).
+  -- Computed once per render; used by renderGroup to show an empire balance sub-row.
+  local empireConsumption = {}
+  local empireProduction  = {}
+  if not sectorMode then
+    local wareSet = {}
+    for ware in pairs(wareProduction) do wareSet[ware] = true end
+    empireConsumption, empireProduction = collectEmpireDataForWares(wareSet)
+  end
 
   -- ── classify produced wares as products or intermediates ──
   -- A ware is an "intermediate" if it also appears as a resource (input) consumed
@@ -490,6 +588,7 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
     end
     local mc = moduleCounts[ware] or { noRes = 0, waitStore = 0 }
     return {
+      ware               = ware,
       name               = wp.name,
       icon               = wp.icon,
       noRes              = mc.noRes,
@@ -538,7 +637,7 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
     end
   end
 
-  local function renderGroup(tableInfo, entries, label)
+  local function renderGroup(tableInfo, entries, label, showEmpireConsumption)
     if #entries == 0 then return end
     row = tableInfo:addRow(sectorMode, Helper.headerRowProperties)
     row[1]:setColSpan(6):createText(label, Helper.headerRowCenteredProperties)
@@ -547,7 +646,9 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
       -- main row: current figures (selectable — matches NPC name row in crew submenu)
       row = entryGroup:addRow(true, { bgColor = Color["row_background_unselectable"] })
       local countStr
-      if not spo.showEstimated and entry.activeCount < entry.moduleCount then
+      if entry.moduleCount < 0 then
+        countStr = "--"
+      elseif not spo.showEstimated and entry.activeCount < entry.moduleCount then
         countStr = tostring(entry.activeCount) .. " (" .. tostring(entry.moduleCount) .. ")"
       else
         countStr = tostring(entry.moduleCount)
@@ -585,13 +686,27 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
         row[4]:createText(formatDelta(consumptionDelta), { halign = "right" })
         row[5]:setColSpan(2):createText(formatDelta(entry.totalPlanned), { halign = "right" })
       end
+      -- Empire balance sub-row: empire production − empire consumption for this ware.
+      -- Only shown in single-station mode (showEmpireConsumption=true) when either
+      -- empire production or consumption is non-zero (the other defaults to 0).
+      if showEmpireConsumption then
+        local empireTotal = empireConsumption[entry.ware] or 0
+        local empireProd  = empireProduction[entry.ware] or 0
+        local empireBalance = empireProd - empireTotal
+        local balanceStr, balanceColor = formatEmpireBalance(empireBalance)
+        row = entryGroup:addRow(sectorMode, {})
+        row[1]:createText(ReadText(1972092416, 130), { halign = "right", color = Color["text_inactive"] })
+        row[3]:createText(fmt(empireProd),  { halign = "right", color = Color["text_inactive"] })
+        row[4]:createText(fmt(empireTotal), { halign = "right", color = Color["text_inactive"] })
+        row[5]:setColSpan(2):createText(balanceStr, { halign = "right", color = balanceColor })
+      end
     end
   end
 
   local stationGroup = spo.isV9 and sectorMode and tableInfo:addRowGroup({}) or tableInfo
-  renderGroup(stationGroup, products, ReadText(1972092416, 120))
-  renderGroup(stationGroup, intermediates, ReadText(1972092416, 121))
-  renderGroup(stationGroup, resources, ReadText(1972092416, 122))
+  renderGroup(stationGroup, products,      ReadText(1972092416, 120), true)
+  renderGroup(stationGroup, intermediates, ReadText(1972092416, 121), true)
+  renderGroup(stationGroup, resources,     ReadText(1972092416, 122), false)
 end
 
 --- Add the Configure Station and Station Overview buttons to the bottom of the production submenu.
