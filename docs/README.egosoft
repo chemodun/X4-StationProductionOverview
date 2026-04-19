@@ -4,19 +4,15 @@ Adds a [b]Production Overview[/b] tab to the info panel tab strip in the map men
 
 [size=130][u]Features[/u][/size]
 [list]
-[*] [b]Production Overview Tab[/b]: A dedicated tab in the station info panel shows all production and consumption data at a glance.
-[*] [b]Sector Production Overview[/b]: A dedicated tab in the sector info panel shows all production stations within the sector with their respective production data, equal to the single station production overview.
-[*] [b]Per-ware rates[/b]: For each ware the tab displays produced, consumed, and net total amounts per hour.
-[*] [b]Ware icons[/b]: Each ware row shows the ware icon alongside its name for quick visual identification.
-[*] [b]Production issue indicators[/b]: If any production modules for a ware are waiting for resources or waiting for storage, the ware name is highlighted in warning colour and a mouseover tooltip lists the exact issue counts per state.
-[*] [b]Live vs Estimated mode[/b]: A dropdown lets you switch between [i]Current (live state)[/i] (reflecting only active modules and workforce) and [i]Estimated (all modules active)[/i] (the theoretical maximum output).
-[*] [b]Active module count[/b]: In live mode the module count column shows how many modules are currently running out of the total installed (e.g. [b]3 (5)[/b]).
-[*] [b]Ware grouping[/b]: Wares are grouped into [b]Products[/b] (not consumed on-site), [b]Intermediates[/b] (produced and consumed on-site), and [b]Resources[/b] (pure inputs, not produced on-site).
-[*] [b]Workforce resource consumption[/b]: Wares consumed exclusively by workforce (food, medicine, and similar consumer goods) appear in the Resources group when no production module produces them. Otherwise they are shown according to their production modules places.
-[*] [b]Planned module preview[/b]: When the construction plan contains new modules a second delta row per ware shows the expected impact once those modules are built.
-[*] [b]Empire balance[/b]: For Products and Intermediates, an optional [i]All stations:[/i] sub-row shows the total consumption of that ware across all your player-owned stations and a coloured balance indicating how much this station's production covers the empire-wide demand. Hidden by default; enable it with the [b]Show empire balance[/b] checkbox below the mode dropdown. Respects the current Live / Estimated mode.
-[*] [b]Configurable data refresh[/b]: A slider in the Extensions options menu (Extensions > Station Production Overview) controls how many UI ticks production data is cached before recomputing (1-10, default 3), reducing CPU overhead in large saves.
-[*] [b]Quick-navigation buttons[/b]: [i]Configure Station[/i] and [i]Station Overview[/i] buttons are available at the bottom of the tab.
+[*] [b]Production Overview Tab[/b]: Dedicated tab in the station info panel showing per-ware produced, consumed, and net total rates per hour.
+[*] [b]Sector Production Overview[/b]: Same tab in the sector info panel, listing all player-owned production stations in the sector.
+[*] [b]Ware grouping[/b]: Wares split into [b]Products[/b], [b]Intermediates[/b], and [b]Resources[/b]; workforce-only consumer goods placed in Resources unless also produced on-site.
+[*] [b]Live vs Estimated mode[/b]: Dropdown switches between actual running rates (with [b]active/total[/b] module count) and theoretical maximum output.
+[*] [b]Production issue indicators[/b]: Wares with modules waiting on resources or storage are highlighted, with a tooltip showing exact issue counts.
+[*] [b]Planned module preview[/b]: A delta row per ware shows the production impact of unbuilt modules in the construction plan.
+[*] [b]Empire balance[/b]: Optional [i]All stations:[/i] sub-row (toggle via [b]Show empire balance[/b] checkbox, single-station view only) shows empire-wide production, consumption, and coloured surplus/deficit for each Product and Intermediate.
+[*] [b]Configurable data refresh[/b]: Slider in [b]Extension options > Station Production Overview[/b] sets the cache duration in UI ticks (1-10, default 3).
+[*] [b]Quick-navigation buttons[/b]: [i]Configure Station[/i] and [i]Station Overview[/i] at the bottom of the tab.
 [/list]
 [size=130][u]Requirements[/u][/size]
 [list]
@@ -41,73 +37,47 @@ Adds a [b]Production Overview[/b] tab to the info panel tab strip in the map men
 [/list]
 [size=130][u]Usage[/u][/size]
 
-Open the map, select a player-owned station, and click the [b]Production Overview[/b] tab in the info panel on the left or right side.
-
-[size=125][u]Production Overview Tab[/u][/size]
-
-The tab renders a table with one row per ware that is produced or consumed by the station's production and processing modules.
+Open the map, select a player-owned station, and click the [b]Production Overview[/b] tab in the info panel (left or right side).
 
 [spoiler][img]https://raw.githubusercontent.com/chemodun/X4-StationProductionOverview/refs/heads/main/docs/images/production_overview_tab.png[/img][/spoiler]
 
 [size=125][u]Live vs Estimated mode[/u][/size]
 
-Use the dropdown at the top of the tab to switch between two display modes:
+The dropdown switches between [b]Current (live state)[/b] (actual running rates; Modules column shows [b]active/total[/b]) and [b]Estimated (all modules active)[/b] (theoretical maximum with workforce bonus).
 
 [spoiler][img]https://raw.githubusercontent.com/chemodun/X4-StationProductionOverview/refs/heads/main/docs/images/production_calculation_type_dropdown.png[/img][/spoiler]
-[list]
-[*] [b]Current (live state) / hour[/b]: uses the actual running rate from the engine, accounting for modules that are idle due to missing resources or workforce shortages. The Modules column shows [b]active (total)[/b] when not all modules are running.
-[*] [b]Estimated (all modules active) / hour[/b]: reports the theoretical rate assuming all installed modules run at full capacity with the current workforce bonus applied.
-[/list]
 [spoiler][img]https://raw.githubusercontent.com/chemodun/X4-StationProductionOverview/refs/heads/main/docs/images/production_estimated.png[/img][/spoiler]
+
+[size=125][u]Ware groups[/u][/size]
+[list]
+[*] [b]Products[/b]: produced here, not consumed on-site.
+[*] [b]Intermediates[/b]: produced and consumed internally.
+[*] [b]Resources[/b]: consumed as inputs, not produced on-site. Workforce-only consumer goods (food, medicine, etc.) also appear here unless produced on-site.
+[/list]
+[spoiler][img]https://raw.githubusercontent.com/chemodun/X4-StationProductionOverview/refs/heads/main/docs/images/workforce_resource_usage.png[/img][/spoiler]
+[spoiler][img]https://raw.githubusercontent.com/chemodun/X4-StationProductionOverview/refs/heads/main/docs/images/workforce_resource_production.png[/img][/spoiler]
 
 [size=125][u]Planned module preview[/u][/size]
 
-If the station's construction plan contains new production or processing modules that have not been built yet, a secondary delta row appears directly below the ware row. It shows:
-[list]
-[*] [b](+N)[/b] in the Modules column: the number of planned new modules
-[*] The additional production/consumption contribution those modules would add once built
-[/list]
-[size=125][u]Ware groups[/u][/size]
-
-Wares are organized into three groups:
-[list]
-[*] [b]Products[/b]: wares produced at this station that are not also consumed as a resource by any other module here.
-[*] [b]Intermediates[/b]: wares that are both produced and consumed internally (e.g. a station that refines ore into silicon and then uses that silicon further).
-[*] [b]Resources[/b]: wares consumed as raw inputs that are not produced on-site.
-[/list]
-[size=125][u]Workforce resource consumption[/u][/size]
-
-Wares that are consumed exclusively by workforce modules (e.g. food, medicine, and similar consumer goods) are shown in the Resources group when no production module produces them.
-
-[spoiler][img]https://raw.githubusercontent.com/chemodun/X4-StationProductionOverview/refs/heads/main/docs/images/workforce_resource_usage.png[/img][/spoiler]
-
-If there are production modules for those wares, they are shown according to their production modules places, and the workforce consumption is shown in the consumption column for that ware.
-
-[spoiler][img]https://raw.githubusercontent.com/chemodun/X4-StationProductionOverview/refs/heads/main/docs/images/workforce_resource_production.png[/img][/spoiler]
+If the construction plan has unbuilt modules, a delta row per ware shows [b](+N)[/b] planned modules and their additional production/consumption.
 
 [size=125][u]Empire balance[/u][/size]
 
-Below the mode dropdown (single-station view only) a [b]Show empire balance[/b] checkbox controls whether an extra [i]All stations:[/i] sub-row is shown for each Product and Intermediate ware. When enabled, the sub-row displays:
-[list]
-[*] empire-wide production of that ware across all player-owned stations
-[*] empire-wide consumption of that ware across all player-owned stations
-[*] a coloured [b]balance[/b] (green = surplus, red = deficit, grey = neutral)
-[/list]
-[spoiler][img]https://raw.githubusercontent.com/chemodun/X4-StationProductionOverview/refs/heads/main/docs/images/show_empire_balance.png[/img][/spoiler]
+Enable the [b]Show empire balance[/b] checkbox (single-station view only) to show an [i]All stations:[/i] sub-row per Product/Intermediate with empire-wide production, consumption, and a coloured balance (green = surplus, red = deficit). Respects Live / Estimated mode.
 
-The balance respects the current Live / Estimated mode. The checkbox is hidden in Sector view.
+[spoiler][img]https://raw.githubusercontent.com/chemodun/X4-StationProductionOverview/refs/heads/main/docs/images/show_empire_balance.png[/img][/spoiler]
 
 [size=125][u]Extensions options[/u][/size]
 
-Open [b]Extension options > Station Production Overview[/b] in the game [b]Options Menu[/b] to configure:
+[b]Options Menu > Extension options > Station Production Overview[/b]:
 [list]
-[*] [b]Data Refresh Interval[/b]: how many UI ticks the cached production data is reused before a full recompute (1-10, default 3). Lower values give more up-to-date numbers; higher values reduce CPU usage.
+[*] [b]Data Refresh Interval[/b] (1-10, default 3): UI ticks to reuse cached data before recomputing. Lower = more responsive, higher = less CPU.
 [/list]
 [spoiler][img]https://raw.githubusercontent.com/chemodun/X4-StationProductionOverview/refs/heads/main/docs/images/options.png[/img][/spoiler]
 
 [size=125][u]Sector Production Overview[/u][/size]
 
-When viewing the info panel for a sector, a similar [b]Production Overview[/b] tab lists all player-owned production stations in that sector with their respective production data, equal to the single station production overview.
+Select a sector in the map to get the same [b]Production Overview[/b] tab listing all player-owned production stations in that sector.
 
 [spoiler][img]https://raw.githubusercontent.com/chemodun/X4-StationProductionOverview/refs/heads/main/docs/images/sector_production_overview_tab.png[/img][/spoiler]
 
@@ -128,7 +98,7 @@ When viewing the info panel for a sector, a similar [b]Production Overview[/b] t
 [list]
 [*] [b]Added[/b]
 [list]
-[*] Workforce resource consumption: food, medicine, and other wares consumed only by workforce modules now appear in the Resources group.
+[*] Workforce resource consumption: food, medicine, and other wares consumed only by workforce now appear in the Resources group.
 [*] Empire balance: an optional [i]All stations:[/i] sub-row shows empire-wide production and consumption for each Product and Intermediate ware with a coloured surplus/deficit balance. Available in single-station view only.
 [/list]
 [*] [b]Improved[/b]
