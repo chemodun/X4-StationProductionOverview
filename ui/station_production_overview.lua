@@ -89,9 +89,9 @@ local spo          = {
     { id = "estimated", text = ReadText(1972092416, 101), icon = "", displayremoveoption = false },
   },
   -- *** Data cache for throttled refresh ***
-  -- Recompute expensive C API data every DATA_REFRESH_INTERVAL renders;
+  -- Recompute expensive C API data every dataRefreshInterval renders;
   -- reuse cached results on the other turns.
-  DATA_REFRESH_INTERVAL = 3,
+  dataRefreshInterval = 3,
   dataCache             = {},   -- key: "station:instance" → { products, intermediates, resources,
                                 --   empireConsumption, empireProduction, turnCounter,
                                 --   stationId, showEstimated, showEmpireData }
@@ -485,7 +485,7 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
     return
   end
 
-  -- *** Cache check — reuse expensive data for DATA_REFRESH_INTERVAL turns ***
+  -- *** Cache check — reuse expensive data for dataRefreshInterval turns ***
   local cacheKey = tostring(station) .. ":" .. instance
   local cached   = spo.dataCache[cacheKey]
   local stationStr = tostring(station)
@@ -493,7 +493,7 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
     or (cached.stationStr    ~= stationStr)
     or (cached.showEstimated ~= spo.showEstimated)
     or (cached.showEmpireData ~= spo.showEmpireData)
-    or (cached.turnCounter   >= spo.DATA_REFRESH_INTERVAL)
+    or (cached.turnCounter   >= spo.dataRefreshInterval)
 
   local products, intermediates, resources, empireConsumption, empireProduction
 
@@ -762,8 +762,8 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
   end
 
   local stationGroup = spo.isV9 and sectorMode and tableInfo:addRowGroup({}) or tableInfo
-  renderGroup(stationGroup, products,      ReadText(1972092416, 120), spo.showEmpireData)
-  renderGroup(stationGroup, intermediates, ReadText(1972092416, 121), spo.showEmpireData)
+  renderGroup(stationGroup, products,      ReadText(1972092416, 120), spo.showEmpireData and not sectorMode)
+  renderGroup(stationGroup, intermediates, ReadText(1972092416, 121), spo.showEmpireData and not sectorMode)
   renderGroup(stationGroup, resources,     ReadText(1972092416, 122), false)
 end
 
