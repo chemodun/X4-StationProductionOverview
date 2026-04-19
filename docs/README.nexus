@@ -52,8 +52,10 @@ The dropdown switches between [b]Current (live state)[/b] (actual running rates;
 [list]
 [*] [b]Products[/b]: produced here, not consumed on-site.
 [*] [b]Intermediates[/b]: produced and consumed internally.
-[*] [b]Resources[/b]: consumed as inputs, not produced on-site. Workforce-only consumer goods (food, medicine, etc.) also appear here unless produced on-site.
+[*] [b]Resources[/b]: consumed as inputs, not produced on-site.
 [/list]
+Workforce-only consumer goods (food, medicine, etc.) also appear here unless produced on-site (from version 9.00.08).
+
 [img]https://raw.githubusercontent.com/chemodun/X4-StationProductionOverview/refs/heads/main/docs/images/workforce_resource_usage.png[/img]
 [img]https://raw.githubusercontent.com/chemodun/X4-StationProductionOverview/refs/heads/main/docs/images/workforce_resource_production.png[/img]
 
