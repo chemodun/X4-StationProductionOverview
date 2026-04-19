@@ -87,7 +87,14 @@ local spo          = {
   modeOptions = {
     { id = "live",      text = ReadText(1972092416, 100), icon = "", displayremoveoption = false },
     { id = "estimated", text = ReadText(1972092416, 101), icon = "", displayremoveoption = false },
-  }
+  },
+  -- *** Data cache for throttled refresh ***
+  -- Recompute expensive C API data every DATA_REFRESH_INTERVAL renders;
+  -- reuse cached results on the other turns.
+  DATA_REFRESH_INTERVAL = 3,
+  dataCache             = {},   -- key: "station:instance" → { products, intermediates, resources,
+                                --   empireConsumption, empireProduction, turnCounter,
+                                --   stationId, showEstimated, showEmpireData }
 }
 
 -- ─── data collection ────────────────────────────────────────────────────────
@@ -478,8 +485,28 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
     return
   end
 
-  -- ── aggregate per-ware production and resource-consumption data ──
-  -- workforceMultiplier: workforce raises output above the base theoretical rate.
+  -- *** Cache check — reuse expensive data for DATA_REFRESH_INTERVAL turns ***
+  local cacheKey = tostring(station) .. ":" .. instance
+  local cached   = spo.dataCache[cacheKey]
+  local stationStr = tostring(station)
+  local needsRefresh = (cached == nil)
+    or (cached.stationStr    ~= stationStr)
+    or (cached.showEstimated ~= spo.showEstimated)
+    or (cached.showEmpireData ~= spo.showEmpireData)
+    or (cached.turnCounter   >= spo.DATA_REFRESH_INTERVAL)
+
+  local products, intermediates, resources, empireConsumption, empireProduction
+
+  if not needsRefresh then
+    -- Reuse cached lists; just bump the counter.
+    cached.turnCounter = cached.turnCounter + 1
+    products         = cached.products
+    intermediates    = cached.intermediates
+    resources        = cached.resources
+    empireConsumption = cached.empireConsumption
+    empireProduction  = cached.empireProduction
+  else
+    -- ── aggregate per-ware production and resource-consumption data ──
   -- C.GetContainerWareProduction(station, ware, false) already returns the live
   -- effective rate (base * workforce bonus).  We use it directly for productionCurrent,
   -- and scale planned modules' base contribution by the same multiplier.
@@ -564,8 +591,8 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
 
   -- Empire-wide consumption and production totals for product/intermediate wares (non-sector mode only).
   -- Computed once per render; used by renderGroup to show an empire balance sub-row.
-  local empireConsumption = {}
-  local empireProduction  = {}
+  empireConsumption = {}
+  empireProduction  = {}
   if not sectorMode and spo.showEmpireData then
     local wareSet = {}
     for ware in pairs(wareProduction) do wareSet[ware] = true end
@@ -575,9 +602,9 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
   -- ── classify produced wares as products or intermediates ──
   -- A ware is an "intermediate" if it also appears as a resource (input) consumed
   -- by other modules on this same station; otherwise it is a "product".
-  local products         = {}
-  local intermediates    = {}
-  local resources        = {}
+  products         = {}
+  intermediates    = {}
+  resources        = {}
 
   local function makeEntry(ware, wp, productionCurrent, productionPlanned, moduleCount, plannedCount)
     local consumptionCurrentRaw = math.max(0, C.GetContainerWareConsumption(station, ware, spo.showEstimated))
@@ -641,6 +668,20 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
   table.sort(products, function(a, b) return a.name < b.name end)
   table.sort(intermediates, function(a, b) return a.name < b.name end)
   table.sort(resources, function(a, b) return a.name < b.name end)
+
+  -- Store computed data in the cache for the next turns.
+  spo.dataCache[cacheKey] = {
+    stationStr     = stationStr,
+    showEstimated  = spo.showEstimated,
+    showEmpireData = spo.showEmpireData,
+    turnCounter    = 1,
+    products       = products,
+    intermediates  = intermediates,
+    resources      = resources,
+    empireConsumption = empireConsumption,
+    empireProduction  = empireProduction,
+  }
+  end -- end cache else block
 
   -- ── render a group of ware rows under a labelled header ──
   -- Each ware gets a main row with current figures; if planned modules exist a
