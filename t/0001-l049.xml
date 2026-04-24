@@ -8,6 +8,7 @@
       <t id="2">Stationsproduktionsübersicht</t>
       <t id="3">Sektorproduktionsübersicht</t>
       <t id="4">Sektorproduktionsübersicht</t>
+      <t id="10">Station Production Overview</t>
       <!-- dropdown mode options -->
       <t id="100">Aktueller Live-Status \(± mit Baumodulen\) / Stunde</t>
       <t id="101">Geschätzt, d.h. alle Module aktiv \(± mit Baumodulen\) / Stunde</t>
@@ -36,6 +37,8 @@
       <t id="90200">Fehlerbehandlung:</t>
       <t id="90211">Fehler als Unterzeile anzeigen</t>
       <t id="90220">Fehler ignorieren:</t>
+      <t id="90300">Interoperabilität</t>
+      <t id="90301">Mit Production Stations Tab synchronisieren</t>
     </page>
   </add>
 </diff>

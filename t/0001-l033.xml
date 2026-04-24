@@ -8,6 +8,7 @@
       <t id="2">Aperçu de la production de station</t>
       <t id="3">Aperçu de la production du secteur</t>
       <t id="4">Aperçu de la production du secteur</t>
+      <t id="10">Station Production Overview</t>
       <!-- dropdown mode options -->
       <t id="100">État en direct actuel \(± avec modules en construction\) / heure</t>
       <t id="101">Estimé, c.-à-d. tous modules actifs \(± avec modules en construction\) / heure</t>
@@ -36,6 +37,8 @@
       <t id="90200">Gestion des erreurs :</t>
       <t id="90211">Afficher les erreurs en sous-ligne</t>
       <t id="90220">Ignorer les erreurs:</t>
+      <t id="90300">Interopérabilité</t>
+      <t id="90301">Synchroniser avec Production Stations Tab</t>
     </page>
   </add>
 </diff>

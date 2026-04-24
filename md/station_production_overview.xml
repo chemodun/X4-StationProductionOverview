@@ -5,19 +5,20 @@
     <cue name="Init" instantiate="false" version="1">
       <cues>
 
-        <!-- ── Config initialisation ────────────────────────────────────── -->
+        <!-- == Config initialisation == -->
         <!-- Loads player.entity.$stationProductionOverview, creating it with defaults if
              absent. Sets $config as a local alias. Callers must remove_value
              $config when done. -->
-        <library name="Get_Config" purpose="include_actions" version="2">
+        <library name="Get_Config" purpose="include_actions" version="3">
           <actions>
             <do_if value="@player.entity.$stationProductionOverview == null">
               <set_value name="player.entity.$stationProductionOverview" exact="table[
-                $version             = 2,
-                $dataRefreshInterval = 3,
-                $ignoreNoResources   = false,
-                $ignoreWaitStore     = false,
-                $showErrorsAsSubrow  = true,
+                $version                       = 3,
+                $dataRefreshInterval           = 3,
+                $ignoreNoResources             = false,
+                $ignoreWaitStore               = false,
+                $showErrorsAsSubrow            = true,
+                $syncStationProductionSettings = false,
               ]" />
             </do_if>
             <!-- v1 → v2: add error-display settings to existing saves -->
@@ -30,16 +31,22 @@
               <set_value name="player.entity.$stationProductionOverview.$showErrorsAsSubrow" exact="true" />
               <set_value name="player.entity.$stationProductionOverview.$version" exact="2" />
             </do_if>
+            <!-- v2 → v3: add sync setting -->
+            <do_if value="@player.entity.$stationProductionOverview.$version lt 3">
+              <set_value name="player.entity.$stationProductionOverview.$syncStationProductionSettings" exact="false" />
+              <set_value name="player.entity.$stationProductionOverview.$version" exact="3" />
+            </do_if>
             <set_value name="$config" exact="player.entity.$stationProductionOverview" />
           </actions>
         </library>
 
-        <!-- ── Options menu registration ───────────────────────────────── -->
+        <!-- == Options menu registration == -->
         <cue name="Register_Menu" instantiate="true" version="1">
           <conditions>
             <event_cue_signalled cue="md.Simple_Menu_API.Reloaded" />
           </conditions>
           <actions>
+            <include_actions ref="Get_Config" />
             <signal_cue_instantly cue="md.Simple_Menu_API.Register_Options_Menu"
               param="table[
                 $id      = 'station_production_overview_options',
@@ -47,10 +54,11 @@
                 $title   = {1972092416, 90001},
                 $onOpen  = Options_Menu_Open,
               ]" />
+            <remove_value name="$config" />
           </actions>
         </cue>
 
-        <!-- ── Options menu content ─────────────────────────────────────── -->
+        <!-- == Options menu content == -->
         <cue name="Options_Menu_Open" instantiate="true" version="2">
           <conditions>
             <event_cue_signalled />
@@ -59,11 +67,12 @@
             <include_actions ref="Get_Config" />
             <include_actions ref="Menu_Section_Performance" />
             <include_actions ref="Menu_Section_ModuleErrors" />
+            <include_actions ref="Menu_Section_Interoperability" />
             <remove_value name="$config" />
           </actions>
         </cue>
 
-        <!-- ── Performance section: data refresh interval ───────────────── -->
+        <!-- == Performance section: data refresh interval == -->
         <library name="Menu_Section_Performance" purpose="include_actions" version="1">
           <actions>
             <run_actions ref="Add_Title_Row">
@@ -82,7 +91,7 @@
           </actions>
         </library>
 
-        <!-- ── Module Errors section: ignore + display mode ─────────────── -->
+        <!-- == Module Errors section: ignore + display mode == -->
         <library name="Menu_Section_ModuleErrors" purpose="include_actions" version="1">
           <actions>
             <include_actions ref="Add_Empty_Row" />
@@ -125,7 +134,7 @@
           </actions>
         </library>
 
-        <!-- ── Generic checkbox handler ─────────────────────────────────── -->
+        <!-- == Generic checkbox handler == -->
         <cue name="Handle_Checkbox_Changed" instantiate="true" version="1">
           <conditions>
             <event_cue_signalled />
@@ -134,13 +143,19 @@
             <include_actions ref="Get_Config" />
             <set_value name="$valueId" exact="event.param.$echo.$valueId" />
             <set_value name="$config.{@$valueId}" exact="event.param.$checked" />
+            <do_if value="@$valueId == '$syncStationProductionSettings'">
+              <include_actions ref="Handle_Sync_Changed" />
+            </do_if>
+            <do_else>
+              <include_actions ref="Propagate_Sync" />
+            </do_else>
             <remove_value name="$valueId" />
             <remove_value name="$config" />
             <raise_lua_event name="'SPO.ConfigChanged'" />
           </actions>
         </cue>
 
-        <!-- ── Generic slider handler ────────────────────────────────────── -->
+        <!-- == Generic slider handler == -->
         <cue name="Handle_Slider_Changed" instantiate="true" version="2">
           <conditions>
             <event_cue_signalled />
@@ -149,13 +164,80 @@
             <include_actions ref="Get_Config" />
             <set_value name="$valueId" exact="event.param.$echo.$valueId" />
             <set_value name="$config.{@$valueId}" exact="event.param.$value" />
+            <include_actions ref="Propagate_Sync" />
             <remove_value name="$valueId" />
             <remove_value name="$config" />
             <raise_lua_event name="'SPO.ConfigChanged'" />
           </actions>
         </cue>
 
-        <!-- ── UI helper libraries (based on Notification Filter pattern) ── -->
+        <!-- == Sync propagation helper == -->
+        <!-- Requires $valueId and $config to be set by the caller.             -->
+        <!-- Mirrors the changed value to PST config if sync is enabled.        -->
+        <library name="Propagate_Sync" purpose="include_actions" version="1">
+          <actions>
+            <do_if value="@$config.$syncStationProductionSettings == true">
+              <set_value name="$oppositeConfig" exact="@player.entity.$productionStationsTab" />
+              <do_if value="@$oppositeConfig != null">
+                <set_value name="$syncableKeys" exact="['$ignoreNoResources', '$ignoreWaitStore', '$dataRefreshInterval']" />
+                <do_if value="$syncableKeys.indexof.{$valueId} != 0">
+                  <set_value name="$syncValue" exact="@$config.{@$valueId}" />
+                  <set_value name="$oppositeConfig.{@$valueId}" exact="$syncValue" />
+                  <remove_value name="$syncValue" />
+                  <raise_lua_event name="'PST.ConfigChanged'" />
+                </do_if>
+                <remove_value name="$syncableKeys" />
+              </do_if>
+              <remove_value name="$oppositeConfig" />
+            </do_if>
+          </actions>
+        </library>
+
+        <!-- == Interoperability section == -->
+        <library name="Menu_Section_Interoperability" purpose="include_actions" version="1">
+          <actions>
+            <include_actions ref="Add_Empty_Row" />
+            <run_actions ref="Add_Title_Row">
+              <param name="title" value="{1972092416, 90300}" />
+            </run_actions>
+            <set_value name="$oppositeConfig" exact="@player.entity.$productionStationsTab" />
+            <run_actions ref="Add_CheckBox">
+              <param name="id" value="'syncStationProductionSettings'" />
+              <param name="col" value="1" />
+              <param name="textColSpan" value="11" />
+              <param name="text" value="{1972092416, 90301}" />
+              <param name="data" value="@$config" />
+              <param name="active" value="@$oppositeConfig != null" />
+            </run_actions>
+            <remove_value name="$oppositeConfig" />
+          </actions>
+        </library>
+
+        <!-- == Interoperability sync handler == -->
+        <!-- $config and sync flag already set by caller.                      -->
+        <library name="Handle_Sync_Changed" purpose="include_actions" version="1">
+          <actions>
+            <set_value name="$oppositeConfig" exact="@player.entity.$productionStationsTab" />
+            <do_if value="@$oppositeConfig != null">
+              <do_if value="event.param.$checked">
+                <!-- Enabling sync: copy settings from PST to SPO -->
+                <set_value name="$oppositeConfig.$syncStationProductionSettings" exact="true" />
+                <set_value name="$config.$dataRefreshInterval" exact="@$oppositeConfig.$dataRefreshInterval" />
+                <set_value name="$config.$ignoreNoResources" exact="@$oppositeConfig.$ignoreNoResources" />
+                <set_value name="$config.$ignoreWaitStore" exact="@$oppositeConfig.$ignoreWaitStore" />
+                <signal_cue_instantly cue="md.Simple_Menu_API.Refresh_Menu" />
+              </do_if>
+              <do_else>
+                <!-- Disabling sync: flag already cleared -->
+                <set_value name="$oppositeConfig.$syncStationProductionSettings" exact="false" />
+              </do_else>
+              <raise_lua_event name="'PST.ConfigChanged'" />
+            </do_if>
+            <remove_value name="$oppositeConfig" />
+          </actions>
+        </library>
+
+        <!-- == UI helper libraries (based on Notification Filter pattern) == -->
 
         <library name="Add_CheckBox" purpose="run_actions">
           <params>
@@ -164,6 +246,7 @@
             <param name="textColSpan" default="1" />
             <param name="text" default="''" />
             <param name="data" />
+            <param name="active" default="true" />
           </params>
           <actions>
             <do_if value="@$id != null and $col? and $textColSpan? and @$text != null and @$data != null">
@@ -182,6 +265,7 @@
                   $height  = 'Helper.standardButtonHeight',
                   $onClick = Handle_Checkbox_Changed,
                   $echo    = table[ $valueId = @$valueId ],
+                  $active  = @$active,
                 ]" />
               <signal_cue_instantly cue="md.Simple_Menu_API.Make_Text"
                 param="table[

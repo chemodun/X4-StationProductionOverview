@@ -8,6 +8,7 @@
       <t id="2">空間站生產概覽</t>
       <t id="3">星域生產概覽</t>
       <t id="4">星域生產概覽</t>
+      <t id="10">Station Production Overview</t>
       <!-- dropdown mode options -->
       <t id="100">目前即時狀態 \(± 含建設中模組\) / 小時</t>
       <t id="101">估計，即所有模組啟動 \(± 含建設中模組\) / 小時</t>
@@ -36,6 +37,8 @@
       <t id="90200">錯誤處理:</t>
       <t id="90211">以子列顯示錯誤</t>
       <t id="90220">忽略錯誤:</t>
+      <t id="90300">互操作性</t>
+      <t id="90301">與Production Stations Tab同步</t>
     </page>
   </add>
 </diff>

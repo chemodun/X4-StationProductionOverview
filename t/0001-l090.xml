@@ -8,6 +8,7 @@
       <t id="2">İstasyon Üretim Özeti</t>
       <t id="3">Sektör Üretim Özeti</t>
       <t id="4">Sektör Üretim Özeti</t>
+      <t id="10">Station Production Overview</t>
       <!-- dropdown mode options -->
       <t id="100">Mevcut canlı durum \(± yapım aşamasındaki modüllerle\) / saat</t>
       <t id="101">Tahmini, yani tüm modüller aktif \(± yapım aşamasındaki modüllerle\) / saat</t>
@@ -36,6 +37,8 @@
       <t id="90200">Hata İşleme:</t>
       <t id="90211">Hataları alt satır olarak göster</t>
       <t id="90220">Hataları yoksay:</t>
+      <t id="90300">Birlikte Çalışabilirlik</t>
+      <t id="90301">Production Stations Tab ile senkronize et</t>
     </page>
   </add>
 </diff>

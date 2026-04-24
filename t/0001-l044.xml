@@ -8,6 +8,7 @@
       <t id="2">Station Production Overview</t>
       <t id="3">Sector Production Overview</t>
       <t id="4">Sector Production Overview</t>
+      <t id="10">Station Production Overview</t>
       <!-- dropdown mode options -->
       <t id="100">Current live state \(± with building modules\) / hour</t>
       <t id="101">Estimated, i.e. all modules active \(± with building modules\) / hour</t>
@@ -36,6 +37,8 @@
       <t id="90200">Errors Handling:</t>
       <t id="90211">Show errors as sub-row</t>
       <t id="90220">Ignore errors:</t>
+      <t id="90300">Interoperability</t>
+      <t id="90301">Sync with Production Stations Tab</t>
     </page>
   </add>
 </diff>

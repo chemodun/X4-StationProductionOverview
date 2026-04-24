@@ -8,6 +8,7 @@
       <t id="2">Resumen de producción de estación</t>
       <t id="3">Resumen de producción del sector</t>
       <t id="4">Resumen de producción del sector</t>
+      <t id="10">Station Production Overview</t>
       <!-- dropdown mode options -->
       <t id="100">Estado en vivo actual \(± con módulos en construcción\) / hora</t>
       <t id="101">Estimado, es decir, todos los módulos activos \(± con módulos en construcción\) / hora</t>
@@ -36,6 +37,8 @@
       <t id="90200">Gestión de errores:</t>
       <t id="90211">Mostrar errores como sub-fila</t>
       <t id="90220">Ignorar errores:</t>
+      <t id="90300">Interoperabilidad</t>
+      <t id="90301">Sincronizar con Production Stations Tab</t>
     </page>
   </add>
 </diff>

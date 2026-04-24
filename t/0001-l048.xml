@@ -8,6 +8,7 @@
       <t id="2">Przegląd produkcji stacji</t>
       <t id="3">Przegląd produkcji sektora</t>
       <t id="4">Przegląd produkcji sektora</t>
+      <t id="10">Station Production Overview</t>
       <!-- dropdown mode options -->
       <t id="100">Bieżący stan na żywo \(± z modułami w budowie\) / godzinę</t>
       <t id="101">Szacowany, tj. wszystkie moduły aktywne \(± z modułami w budowie\) / godzinę</t>
@@ -36,6 +37,8 @@
       <t id="90200">Obsługa błędów:</t>
       <t id="90211">Pokaż błędy jako podwiersz</t>
       <t id="90220">Ignoruj błędy:</t>
+      <t id="90300">Interoperacyjność</t>
+      <t id="90301">Synchronizuj z Production Stations Tab</t>
     </page>
   </add>
 </diff>
