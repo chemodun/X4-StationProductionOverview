@@ -74,19 +74,19 @@ ffi.cdef [[
 ]]
 
 -- infoMode.left key that identifies our sub-tab (must be unique across mods)
-local SPO_CATEGORY = "chem_station_prod_overview"
+local SPO_CATEGORY  = "chem_station_prod_overview"
 local SSPO_CATEGORY = "chem_sector_prod_overview"
 
 -- Resolved in init()
-local menu         = nil
-local config       = nil
+local menu          = nil
+local config        = nil
 
-local spo          = {
-  showEstimated  = false, -- false = live state, true = all modules active (ignorestate)
-  showEmpireData = false, -- false = hide empire balance sub-rows, true = show them
-  isV9           = C.GetGameVersion().major >= 9,
-  playerId       = nil,  -- set in init(); used to read MD blackboard config
-  modeOptions = {
+local spo           = {
+  showEstimated       = false, -- false = live state, true = all modules active (ignorestate)
+  showEmpireData      = false, -- false = hide empire balance sub-rows, true = show them
+  isV9                = C.GetGameVersion().major >= 9,
+  playerId            = nil, -- set in init(); used to read MD blackboard config
+  modeOptions         = {
     { id = "live",      text = ReadText(1972092416, 100), icon = "", displayremoveoption = false },
     { id = "estimated", text = ReadText(1972092416, 101), icon = "", displayremoveoption = false },
   },
@@ -94,9 +94,9 @@ local spo          = {
   -- Recompute expensive C API data every dataRefreshInterval renders;
   -- reuse cached results on the other turns.
   dataRefreshInterval = 3,
-  dataCache             = {},   -- key: "station:instance" → { products, intermediates, resources,
-                                --   empireConsumption, empireProduction, turnCounter,
-                                --   stationId, showEstimated, showEmpireData }
+  dataCache           = {},   -- key: "station:instance" → { products, intermediates, resources,
+  --   empireConsumption, empireProduction, turnCounter,
+  --   stationId, showEstimated, showEmpireData }
 }
 
 --- Read dataRefreshInterval from the MD-side player.entity.$spoConfig blackboard.
@@ -106,7 +106,7 @@ local function spoOnConfigChanged()
   local cfg = GetNPCBlackboard(spo.playerId, "$stationProductionOverview")
   if cfg and cfg.dataRefreshInterval then
     spo.dataRefreshInterval = math.max(1, math.min(10, tonumber(cfg.dataRefreshInterval) or 3))
-    spo.dataCache = {}  -- invalidate so next render uses the new interval
+    spo.dataCache = {} -- invalidate so next render uses the new interval
   end
 end
 
@@ -329,9 +329,9 @@ local function formatEmpireBalance(v)
   if Helper.round(v) == 0 then
     return fmt(v), Color["text_inactive"]
   elseif v > 0 then
-    return ColorText["text_player_lowlight"] .. "+" .. fmt(v), nil  -- dark green
+    return "+" .. fmt(v), Color["text_player_lowlight"]    -- dark green
   else
-    return ColorText["faction_xenon"] .. "-" .. fmt(math.abs(v)), nil  -- dark red (r=179)
+    return "-" .. fmt(math.abs(v)), Color["faction_xenon"] -- dark red (r=179)
   end
 end
 
@@ -365,12 +365,12 @@ local function addInfoTable(inputframe, infoBorder)
   } or {
     tabOrder = 1,
   })
-  tableInfo:setColWidthMinPercent(1, 30)          -- variable width; grows to fill space reserved for scrollbar
-  tableInfo:setColWidthPercent(2, 13)             -- Count
-  tableInfo:setColWidthPercent(3, 16)             -- Prod/h
-  tableInfo:setColWidthPercent(4, 16)             -- Cons/h
-  tableInfo:setColWidthPercent(5, 16)             -- Total/h
-  tableInfo:setColWidth(6, config.mapRowHeight)   -- focus button (auto-scaled)
+  tableInfo:setColWidthMinPercent(1, 30)        -- variable width; grows to fill space reserved for scrollbar
+  tableInfo:setColWidthPercent(2, 13)           -- Count
+  tableInfo:setColWidthPercent(3, 16)           -- Prod/h
+  tableInfo:setColWidthPercent(4, 16)           -- Cons/h
+  tableInfo:setColWidthPercent(5, 16)           -- Total/h
+  tableInfo:setColWidth(6, config.mapRowHeight) -- focus button (auto-scaled)
   tableInfo:setDefaultBackgroundColSpan(1, 6)
   tableInfo:setDefaultCellProperties("text", { minRowHeight = config.mapRowHeight, fontsize = config.mapFontSize })
   tableInfo:setDefaultCellProperties("button", { height = config.mapRowHeight })
@@ -431,7 +431,6 @@ function spo.toggleEstimatedCurrent(tableInfo, sectorMode)
       spo.showEmpireData = checked
       menu.refreshInfoFrame()
     end
-
   end
 end
 
@@ -506,201 +505,201 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
   end
 
   -- *** Cache check — reuse expensive data for dataRefreshInterval turns ***
-  local cacheKey = tostring(station) .. ":" .. instance
-  local cached   = spo.dataCache[cacheKey]
-  local stationStr = tostring(station)
+  local cacheKey     = tostring(station) .. ":" .. instance
+  local cached       = spo.dataCache[cacheKey]
+  local stationStr   = tostring(station)
   local needsRefresh = (cached == nil)
-    or (cached.stationStr    ~= stationStr)
-    or (cached.showEstimated ~= spo.showEstimated)
-    or (cached.showEmpireData ~= spo.showEmpireData)
-    or (cached.turnCounter   >= spo.dataRefreshInterval)
+      or (cached.stationStr ~= stationStr)
+      or (cached.showEstimated ~= spo.showEstimated)
+      or (cached.showEmpireData ~= spo.showEmpireData)
+      or (cached.turnCounter >= spo.dataRefreshInterval)
 
   local products, intermediates, resources, empireConsumption, empireProduction
 
   if not needsRefresh then
     -- Reuse cached lists; just bump the counter.
     cached.turnCounter = cached.turnCounter + 1
-    products         = cached.products
-    intermediates    = cached.intermediates
-    resources        = cached.resources
-    empireConsumption = cached.empireConsumption
-    empireProduction  = cached.empireProduction
+    products           = cached.products
+    intermediates      = cached.intermediates
+    resources          = cached.resources
+    empireConsumption  = cached.empireConsumption
+    empireProduction   = cached.empireProduction
   else
     -- ── aggregate per-ware production and resource-consumption data ──
-  -- C.GetContainerWareProduction(station, ware, false) already returns the live
-  -- effective rate (base * workforce bonus).  We use it directly for productionCurrent,
-  -- and scale planned modules' base contribution by the same multiplier.
-  local workforceBonus      = GetComponentData(station, "workforcebonus") or 0
-  local workforceMultiplier = 1 + workforceBonus
+    -- C.GetContainerWareProduction(station, ware, false) already returns the live
+    -- effective rate (base * workforce bonus).  We use it directly for productionCurrent,
+    -- and scale planned modules' base contribution by the same multiplier.
+    local workforceBonus      = GetComponentData(station, "workforcebonus") or 0
+    local workforceMultiplier = 1 + workforceBonus
 
-  local resourceWares       = {}   -- [ware] = { name, moduleCount, plannedCount }  (pure inputs)
-  local wareProduction      = {}   -- [ware] = { name, moduleCount, plannedCount, plannedBaseRate }
+    local resourceWares       = {} -- [ware] = { name, moduleCount, plannedCount }  (pure inputs)
+    local wareProduction      = {} -- [ware] = { name, moduleCount, plannedCount, plannedBaseRate }
 
-  for _, data in pairs(moduleData) do
-    local rates = getBaseRates(data.macro)
-    for _, rateInfo in ipairs(rates) do
-      local ware = rateInfo.ware
-      if not wareProduction[ware] then
-        local wareName, wareIcon = GetWareData(ware, "name", "icon")
-        wareProduction[ware] = {
-          name            = wareName or ware,
-          icon            = (wareIcon and wareIcon ~= "") and wareIcon or "solid",
-          moduleCount     = 0,
-          plannedCount    = 0,
-          plannedBaseRate = 0,           -- sum of ratePerModule * numplanned across all macros
-        }
-      end
-      local wp           = wareProduction[ware]
-      wp.moduleCount     = wp.moduleCount + data.count
-      wp.plannedCount    = wp.plannedCount + data.numPlanned
-      wp.plannedBaseRate = wp.plannedBaseRate + rateInfo.ratePerModule * data.numPlanned
-      for resourceWare in pairs(rateInfo.resources) do
-        if not resourceWares[resourceWare] then
-          local resName, resIcon = GetWareData(resourceWare, "name", "icon")
-          resourceWares[resourceWare] = {
-            name         = resName or resourceWare,
-            icon         = (resIcon and resIcon ~= "") and resIcon or "solid",
-            moduleCount  = 0,
-            plannedCount = 0,
+    for _, data in pairs(moduleData) do
+      local rates = getBaseRates(data.macro)
+      for _, rateInfo in ipairs(rates) do
+        local ware = rateInfo.ware
+        if not wareProduction[ware] then
+          local wareName, wareIcon = GetWareData(ware, "name", "icon")
+          wareProduction[ware] = {
+            name            = wareName or ware,
+            icon            = (wareIcon and wareIcon ~= "") and wareIcon or "solid",
+            moduleCount     = 0,
+            plannedCount    = 0,
+            plannedBaseRate = 0, -- sum of ratePerModule * numplanned across all macros
           }
         end
-        resourceWares[resourceWare].moduleCount  = resourceWares[resourceWare].moduleCount + data.count
-        resourceWares[resourceWare].plannedCount = resourceWares[resourceWare].plannedCount + data.numPlanned
+        local wp           = wareProduction[ware]
+        wp.moduleCount     = wp.moduleCount + data.count
+        wp.plannedCount    = wp.plannedCount + data.numPlanned
+        wp.plannedBaseRate = wp.plannedBaseRate + rateInfo.ratePerModule * data.numPlanned
+        for resourceWare in pairs(rateInfo.resources) do
+          if not resourceWares[resourceWare] then
+            local resName, resIcon = GetWareData(resourceWare, "name", "icon")
+            resourceWares[resourceWare] = {
+              name         = resName or resourceWare,
+              icon         = (resIcon and resIcon ~= "") and resIcon or "solid",
+              moduleCount  = 0,
+              plannedCount = 0,
+            }
+          end
+          resourceWares[resourceWare].moduleCount  = resourceWares[resourceWare].moduleCount + data.count
+          resourceWares[resourceWare].plannedCount = resourceWares[resourceWare].plannedCount + data.numPlanned
+        end
       end
     end
-  end
 
-  -- Add wares consumed exclusively by workforce (food, medicine, etc.) that do
-  -- not appear among any production module's inputs at this station.
-  if type(GetWorkForceRaceResources) == "function" then
-    local wfResourceInfos = GetWorkForceRaceResources(station)
-    if wfResourceInfos then
-      for _, ri in ipairs(wfResourceInfos) do
-        for _, resource in ipairs(ri.resources or {}) do
-          local ware = resource.ware
-          if not wareProduction[ware] and not resourceWares[ware] then
-            local resName, resIcon = GetWareData(ware, "name", "icon")
-            resourceWares[ware] = {
-              name         = resName or ware,
-              icon         = (resIcon and resIcon ~= "") and resIcon or "solid",
-              moduleCount  = -1,   -- sentinel: workforce-only, no production modules
-              plannedCount = -1,
-            }
+    -- Add wares consumed exclusively by workforce (food, medicine, etc.) that do
+    -- not appear among any production module's inputs at this station.
+    if type(GetWorkForceRaceResources) == "function" then
+      local wfResourceInfos = GetWorkForceRaceResources(station)
+      if wfResourceInfos then
+        for _, ri in ipairs(wfResourceInfos) do
+          for _, resource in ipairs(ri.resources or {}) do
+            local ware = resource.ware
+            if not wareProduction[ware] and not resourceWares[ware] then
+              local resName, resIcon = GetWareData(ware, "name", "icon")
+              resourceWares[ware] = {
+                name         = resName or ware,
+                icon         = (resIcon and resIcon ~= "") and resIcon or "solid",
+                moduleCount  = -1, -- sentinel: workforce-only, no production modules
+                plannedCount = -1,
+              }
+            end
           end
         end
       end
     end
-  end
 
-  if next(wareProduction) == nil and next(resourceWares) == nil then
-    row = tableInfo:addRow(true, {})
-    row[1]:setColSpan(6):createText(ReadText(1972092416, 1003), { halign = "center", wordwrap = true })
-    return
-  end
-
-  -- Populate live production figures from the engine (includes workforce bonus).
-  -- productionCurrent = current effective rate (C API, ignorestate=false).
-  -- productionPlanned = current effective + planned-module base contribution * workforceMultiplier.
-  for ware, wp in pairs(wareProduction) do
-    wp.productionCurrent = Helper.round(C.GetContainerWareProduction(station, ware, spo.showEstimated))
-    wp.productionPlanned = wp.productionCurrent + Helper.round(wp.plannedBaseRate * workforceMultiplier)
-  end
-
-  local extraConsumption = extraConsumptionFromPlanned(moduleData)
-  local moduleCounts     = not spo.showEstimated and collectModuleCountsForWares(station) or {}
-
-  -- Empire-wide consumption and production totals for product/intermediate wares (non-sector mode only).
-  -- Computed once per render; used by renderGroup to show an empire balance sub-row.
-  empireConsumption = {}
-  empireProduction  = {}
-  if not sectorMode and spo.showEmpireData then
-    local wareSet = {}
-    for ware in pairs(wareProduction) do wareSet[ware] = true end
-    empireConsumption, empireProduction = collectEmpireDataForWares(wareSet, spo.showEstimated)
-  end
-
-  -- ── classify produced wares as products or intermediates ──
-  -- A ware is an "intermediate" if it also appears as a resource (input) consumed
-  -- by other modules on this same station; otherwise it is a "product".
-  products         = {}
-  intermediates    = {}
-  resources        = {}
-
-  local function makeEntry(ware, wp, productionCurrent, productionPlanned, moduleCount, plannedCount)
-    local consumptionCurrentRaw = math.max(0, C.GetContainerWareConsumption(station, ware, spo.showEstimated))
-    local consumptionCurrent = consumptionCurrentRaw
-    if Helper.getWorkforceConsumption then
-      consumptionCurrent = consumptionCurrent + Helper.getWorkforceConsumption(station, ware)
+    if next(wareProduction) == nil and next(resourceWares) == nil then
+      row = tableInfo:addRow(true, {})
+      row[1]:setColSpan(6):createText(ReadText(1972092416, 1003), { halign = "center", wordwrap = true })
+      return
     end
-    local consumptionPlanned = consumptionCurrent + (extraConsumption[ware] or 0)
-    -- activeCount: number of modules currently running (live mode only)
-    local activeCount        = moduleCount
-    if not spo.showEstimated and moduleCount > 0 then
-      local productionMax = Helper.round(C.GetContainerWareProduction(station, ware, true))
-      if productionMax > 0 then
-        -- produced ware: ratio of live rate to theoretical-max gives running count
-        activeCount = math.min(moduleCount,
-          math.max(0, Helper.round(productionCurrent * moduleCount / productionMax)))
-      else
-        -- pure resource ware: use consumption ratio instead
-        local consumptionMax = math.max(0, C.GetContainerWareConsumption(station, ware, true))
-        if consumptionMax > 0 then
+
+    -- Populate live production figures from the engine (includes workforce bonus).
+    -- productionCurrent = current effective rate (C API, ignorestate=false).
+    -- productionPlanned = current effective + planned-module base contribution * workforceMultiplier.
+    for ware, wp in pairs(wareProduction) do
+      wp.productionCurrent = Helper.round(C.GetContainerWareProduction(station, ware, spo.showEstimated))
+      wp.productionPlanned = wp.productionCurrent + Helper.round(wp.plannedBaseRate * workforceMultiplier)
+    end
+
+    local extraConsumption = extraConsumptionFromPlanned(moduleData)
+    local moduleCounts     = not spo.showEstimated and collectModuleCountsForWares(station) or {}
+
+    -- Empire-wide consumption and production totals for product/intermediate wares (non-sector mode only).
+    -- Computed once per render; used by renderGroup to show an empire balance sub-row.
+    empireConsumption      = {}
+    empireProduction       = {}
+    if not sectorMode and spo.showEmpireData then
+      local wareSet = {}
+      for ware in pairs(wareProduction) do wareSet[ware] = true end
+      empireConsumption, empireProduction = collectEmpireDataForWares(wareSet, spo.showEstimated)
+    end
+
+    -- ── classify produced wares as products or intermediates ──
+    -- A ware is an "intermediate" if it also appears as a resource (input) consumed
+    -- by other modules on this same station; otherwise it is a "product".
+    products      = {}
+    intermediates = {}
+    resources     = {}
+
+    local function makeEntry(ware, wp, productionCurrent, productionPlanned, moduleCount, plannedCount)
+      local consumptionCurrentRaw = math.max(0, C.GetContainerWareConsumption(station, ware, spo.showEstimated))
+      local consumptionCurrent = consumptionCurrentRaw
+      if Helper.getWorkforceConsumption then
+        consumptionCurrent = consumptionCurrent + Helper.getWorkforceConsumption(station, ware)
+      end
+      local consumptionPlanned = consumptionCurrent + (extraConsumption[ware] or 0)
+      -- activeCount: number of modules currently running (live mode only)
+      local activeCount        = moduleCount
+      if not spo.showEstimated and moduleCount > 0 then
+        local productionMax = Helper.round(C.GetContainerWareProduction(station, ware, true))
+        if productionMax > 0 then
+          -- produced ware: ratio of live rate to theoretical-max gives running count
           activeCount = math.min(moduleCount,
-            math.max(0, Helper.round(consumptionCurrentRaw * moduleCount / consumptionMax)))
+            math.max(0, Helper.round(productionCurrent * moduleCount / productionMax)))
+        else
+          -- pure resource ware: use consumption ratio instead
+          local consumptionMax = math.max(0, C.GetContainerWareConsumption(station, ware, true))
+          if consumptionMax > 0 then
+            activeCount = math.min(moduleCount,
+              math.max(0, Helper.round(consumptionCurrentRaw * moduleCount / consumptionMax)))
+          end
         end
       end
+      local mc = moduleCounts[ware] or { noRes = 0, waitStore = 0 }
+      return {
+        ware               = ware,
+        name               = wp.name,
+        icon               = wp.icon,
+        noRes              = mc.noRes,
+        waitStore          = mc.waitStore,
+        moduleCount        = moduleCount,
+        plannedCount       = plannedCount,
+        activeCount        = activeCount,
+        productionCurrent  = productionCurrent,
+        productionPlanned  = productionPlanned,
+        consumptionCurrent = consumptionCurrent,
+        consumptionPlanned = consumptionPlanned,
+        totalCurrent       = productionCurrent - consumptionCurrent,
+        totalPlanned       = productionPlanned - consumptionPlanned,
+      }
     end
-    local mc = moduleCounts[ware] or { noRes = 0, waitStore = 0 }
-    return {
-      ware               = ware,
-      name               = wp.name,
-      icon               = wp.icon,
-      noRes              = mc.noRes,
-      waitStore          = mc.waitStore,
-      moduleCount        = moduleCount,
-      plannedCount       = plannedCount,
-      activeCount        = activeCount,
-      productionCurrent  = productionCurrent,
-      productionPlanned  = productionPlanned,
-      consumptionCurrent = consumptionCurrent,
-      consumptionPlanned = consumptionPlanned,
-      totalCurrent       = productionCurrent - consumptionCurrent,
-      totalPlanned       = productionPlanned - consumptionPlanned,
+
+    for ware, wp in pairs(wareProduction) do
+      local entry = makeEntry(ware, wp, wp.productionCurrent, wp.productionPlanned, wp.moduleCount, wp.plannedCount)
+      if resourceWares[ware] then
+        table.insert(intermediates, entry)
+      else
+        table.insert(products, entry)
+      end
+    end
+
+    -- Pure resource wares: not produced at this station
+    for ware, rd in pairs(resourceWares) do
+      if not wareProduction[ware] then
+        table.insert(resources, makeEntry(ware, rd, 0, 0, rd.moduleCount, rd.plannedCount))
+      end
+    end
+
+    table.sort(products, function(a, b) return a.name < b.name end)
+    table.sort(intermediates, function(a, b) return a.name < b.name end)
+    table.sort(resources, function(a, b) return a.name < b.name end)
+
+    -- Store computed data in the cache for the next turns.
+    spo.dataCache[cacheKey] = {
+      stationStr        = stationStr,
+      showEstimated     = spo.showEstimated,
+      showEmpireData    = spo.showEmpireData,
+      turnCounter       = 1,
+      products          = products,
+      intermediates     = intermediates,
+      resources         = resources,
+      empireConsumption = empireConsumption,
+      empireProduction  = empireProduction,
     }
-  end
-
-  for ware, wp in pairs(wareProduction) do
-    local entry = makeEntry(ware, wp, wp.productionCurrent, wp.productionPlanned, wp.moduleCount, wp.plannedCount)
-    if resourceWares[ware] then
-      table.insert(intermediates, entry)
-    else
-      table.insert(products, entry)
-    end
-  end
-
-  -- Pure resource wares: not produced at this station
-  for ware, rd in pairs(resourceWares) do
-    if not wareProduction[ware] then
-      table.insert(resources, makeEntry(ware, rd, 0, 0, rd.moduleCount, rd.plannedCount))
-    end
-  end
-
-  table.sort(products, function(a, b) return a.name < b.name end)
-  table.sort(intermediates, function(a, b) return a.name < b.name end)
-  table.sort(resources, function(a, b) return a.name < b.name end)
-
-  -- Store computed data in the cache for the next turns.
-  spo.dataCache[cacheKey] = {
-    stationStr     = stationStr,
-    showEstimated  = spo.showEstimated,
-    showEmpireData = spo.showEmpireData,
-    turnCounter    = 1,
-    products       = products,
-    intermediates  = intermediates,
-    resources      = resources,
-    empireConsumption = empireConsumption,
-    empireProduction  = empireProduction,
-  }
   end -- end cache else block
 
   -- ── render a group of ware rows under a labelled header ──
@@ -739,7 +738,7 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
       if hasIssue then
         local errColor   = Helper.convertColorToText(Color["text_error"])
         local resetColor = "\027X"
-        local lines = {}
+        local lines      = {}
         if entry.noRes > 0 then
           lines[#lines + 1] = errColor .. ReadText(1001, 8431) .. " (" .. entry.noRes .. ")" .. resetColor
         end
@@ -768,13 +767,13 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
       -- Only shown in single-station mode (showEmpireConsumption=true) when either
       -- empire production or consumption is non-zero (the other defaults to 0).
       if showEmpireConsumption then
-        local empireTotal = empireConsumption[entry.ware] or 0
-        local empireProd  = empireProduction[entry.ware] or 0
-        local empireBalance = empireProd - empireTotal
+        local empireTotal              = empireConsumption[entry.ware] or 0
+        local empireProd               = empireProduction[entry.ware] or 0
+        local empireBalance            = empireProd - empireTotal
         local balanceStr, balanceColor = formatEmpireBalance(empireBalance)
-        row = entryGroup:addRow(sectorMode, {})
+        row                            = entryGroup:addRow(sectorMode, {})
         row[1]:createText(ReadText(1972092416, 130), { halign = "right", color = Color["text_inactive"] })
-        row[3]:createText(fmt(empireProd),  { halign = "right", color = Color["text_inactive"] })
+        row[3]:createText(fmt(empireProd), { halign = "right", color = Color["text_inactive"] })
         row[4]:createText(fmt(empireTotal), { halign = "right", color = Color["text_inactive"] })
         row[5]:setColSpan(2):createText(balanceStr, { halign = "right", color = balanceColor })
       end
@@ -782,9 +781,9 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
   end
 
   local stationGroup = spo.isV9 and sectorMode and tableInfo:addRowGroup({}) or tableInfo
-  renderGroup(stationGroup, products,      ReadText(1972092416, 120), spo.showEmpireData and not sectorMode)
+  renderGroup(stationGroup, products, ReadText(1972092416, 120), spo.showEmpireData and not sectorMode)
   renderGroup(stationGroup, intermediates, ReadText(1972092416, 121), spo.showEmpireData and not sectorMode)
-  renderGroup(stationGroup, resources,     ReadText(1972092416, 122), false)
+  renderGroup(stationGroup, resources, ReadText(1972092416, 122), false)
 end
 
 --- Add the Configure Station and Station Overview buttons to the bottom of the production submenu.
@@ -798,8 +797,9 @@ function spo.addButtonsToProductionSubmenu(tableButton, station, sectorMode, act
     menu.cleanup()
   end
   local nextButtonCell = sectorMode and 3 or 2
-  row[nextButtonCell]:setColSpan(sectorMode and 4 or 1):createButton({ y = Helper.borderSize, active = active }):setText(ReadText(1001, 1138), { halign = "center" }) -- Station Overview
-  row[nextButtonCell].handlers.onClick  = function()
+  row[nextButtonCell]:setColSpan(sectorMode and 4 or 1):createButton({ y = Helper.borderSize, active = active }):setText(ReadText(1001, 1138),
+    { halign = "center" })                                                                                                                                            -- Station Overview
+  row[nextButtonCell].handlers.onClick = function()
     Helper.closeMenuAndOpenNewMenu(menu, "StationOverviewMenu", { 0, 0, station })
     menu.cleanup()
   end
@@ -1012,7 +1012,7 @@ function spo.createSectorProductionSubmenu(inputframe, instance)
 
   restoreTableSelection(tableInfo, instance)
 
-  local tableHeader = spo.isV9 and menu.createOrdersMenuHeader(inputframe, infoBorder, instance) or
+  local tableHeader                     = spo.isV9 and menu.createOrdersMenuHeader(inputframe, infoBorder, instance) or
       menu.createOrdersMenuHeader(inputframe, instance)
   tableInfo.properties.y                = tableHeader.properties.y + tableHeader:getFullHeight() + Helper.borderSize
   tableInfo.properties.maxVisibleHeight = frameHeight - tableInfo.properties.y - Helper.frameBorder
@@ -1082,8 +1082,8 @@ local function init()
     local stationTabIdx  = nil
     local sectorTabFound = false
     for i, entry in ipairs(config.infoCategories) do
-      if entry.category == "objectinfo"  then objectInfoIdx  = i end
-      if entry.category == SPO_CATEGORY  then stationTabIdx  = i end
+      if entry.category == "objectinfo" then objectInfoIdx = i end
+      if entry.category == SPO_CATEGORY then stationTabIdx = i end
       if entry.category == SSPO_CATEGORY then sectorTabFound = true end
     end
     if not stationTabIdx and objectInfoIdx then
