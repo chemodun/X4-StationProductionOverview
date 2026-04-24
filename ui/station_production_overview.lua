@@ -97,16 +97,25 @@ local spo           = {
   dataCache           = {},   -- key: "station:instance" → { products, intermediates, resources,
   --   empireConsumption, empireProduction, turnCounter,
   --   stationId, showEstimated, showEmpireData }
+  -- *** Module error display settings ***
+  ignoreNoResources  = false, -- when true, noRes modules are not highlighted as issues
+  ignoreWaitStore    = false, -- when true, waitStore modules are not highlighted as issues
+  showErrorsAsSubrow = true,  -- when true, errors shown as sub-row; when false, as mouseOver
 }
 
---- Read dataRefreshInterval from the MD-side player.entity.$spoConfig blackboard.
---- Called on init and whenever the options menu slider is changed (SPO.ConfigChanged event).
+--- Read config from the MD-side player.entity.$stationProductionOverview blackboard.
+--- Called on init and whenever any options menu control changes (SPO.ConfigChanged event).
 local function spoOnConfigChanged()
   if spo.playerId == nil then return end
   local cfg = GetNPCBlackboard(spo.playerId, "$stationProductionOverview")
-  if cfg and cfg.dataRefreshInterval then
-    spo.dataRefreshInterval = math.max(1, math.min(10, tonumber(cfg.dataRefreshInterval) or 3))
-    spo.dataCache = {} -- invalidate so next render uses the new interval
+  if cfg then
+    if cfg.dataRefreshInterval then
+      spo.dataRefreshInterval = math.max(1, math.min(10, tonumber(cfg.dataRefreshInterval) or 3))
+    end
+    spo.ignoreNoResources  = cfg.ignoreNoResources  == 1
+    spo.ignoreWaitStore    = cfg.ignoreWaitStore    == 1
+    spo.showErrorsAsSubrow = cfg.showErrorsAsSubrow ~= 0 -- nil or true → true
+    spo.dataCache = {} -- invalidate cache so next render reflects new settings
   end
 end
 
@@ -730,24 +739,24 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
       else
         countStr = tostring(entry.moduleCount)
       end
-      local hasIssue = entry.noRes > 0 or entry.waitStore > 0
+      local noResActive   = entry.noRes > 0   and not spo.ignoreNoResources
+      local waitStoreActive = entry.waitStore > 0 and not spo.ignoreWaitStore
+      local hasIssue = noResActive or waitStoreActive
       local wareName = hasIssue
           and (Helper.convertColorToText(Color["text_warning"]) .. entry.name .. "\027X")
           or entry.name
-      local wareMouseover = ""
-      if hasIssue then
-        local errColor   = Helper.convertColorToText(Color["text_error"])
-        local resetColor = "\027X"
-        local lines      = {}
-        if entry.noRes > 0 then
-          lines[#lines + 1] = errColor .. ReadText(1001, 8431) .. " (" .. entry.noRes .. ")" .. resetColor
-        end
-        if entry.waitStore > 0 then
-          lines[#lines + 1] = errColor .. ReadText(1001, 8432) .. " (" .. entry.waitStore .. ")" .. resetColor
-        end
-        wareMouseover = table.concat(lines, "\n")
+      local errLines = {}
+      if noResActive then
+        errLines[#errLines + 1] = Helper.convertColorToText(Color["text_error"])
+            .. ReadText(1001, 8431) .. " (" .. entry.noRes .. ")" .. "\027X"
       end
-      row[1]:createText("\027[" .. entry.icon .. "] " .. wareName, { halign = "left", mouseOverText = wareMouseover })
+      if waitStoreActive then
+        errLines[#errLines + 1] = Helper.convertColorToText(Color["text_error"])
+            .. ReadText(1001, 8432) .. " (" .. entry.waitStore .. ")" .. "\027X"
+      end
+      local errText   = table.concat(errLines, ";")
+      local mouseover = (hasIssue and not spo.showErrorsAsSubrow) and errText or ""
+      row[1]:createText("\027[" .. entry.icon .. "] " .. wareName, { halign = "left", mouseOverText = mouseover })
       row[2]:createText(countStr, { halign = "right" })
       row[3]:createText(entry.productionCurrent > 0 and fmt(entry.productionCurrent) or "--", { halign = "right" })
       row[4]:createText(entry.consumptionCurrent > 0 and fmt(entry.consumptionCurrent) or "--",
@@ -757,11 +766,16 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
       if entry.plannedCount > 0 then
         local productionDelta  = entry.productionPlanned - entry.productionCurrent
         local consumptionDelta = entry.consumptionPlanned - entry.consumptionCurrent
-        row                    = entryGroup:addRow(sectorMode, {})
+        row                    = entryGroup:addRow(sectorMode, { bgColor = Color["row_background_unselectable"] })
         row[2]:createText("(+" .. tostring(entry.plannedCount) .. ")", { halign = "right" })
         row[3]:createText(formatDelta(productionDelta), { halign = "right" })
         row[4]:createText(formatDelta(consumptionDelta), { halign = "right" })
         row[5]:setColSpan(2):createText(formatDelta(entry.totalPlanned), { halign = "right" })
+      end
+      -- error sub-row: shown below the main row when showErrorsAsSubrow is enabled
+      if hasIssue and spo.showErrorsAsSubrow then
+        row = entryGroup:addRow(sectorMode, { bgColor = Color["row_background_unselectable"] })
+        row[1]:setColSpan(6):createText(errText, { halign = "center" })
       end
       -- Empire balance sub-row: empire production − empire consumption for this ware.
       -- Only shown in single-station mode (showEmpireConsumption=true) when either

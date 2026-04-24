@@ -31,7 +31,11 @@
       <t id="1004">Nenhuma estação do jogador com módulos de produção encontrada neste setor.</t>
       <!-- settings labels (90000+) -->
       <t id="90001">Visão geral da produção da estação</t>
-      <t id="90011">Intervalo de atualização de dados:\n quantos tiques de UI os dados de produção em cache são reutilizados \(menor = mais responsivo, maior = menor uso de CPU\)</t>
+      <t id="90100">Desempenho</t>
+      <t id="90101">Intervalo de atualização de dados:\n quantos tiques de UI os dados de produção em cache são reutilizados \(menor = mais responsivo, maior = menor uso de CPU\)</t>
+      <t id="90200">Tratamento de erros:</t>
+      <t id="90211">Mostrar erros como sub-linha</t>
+      <t id="90220">Ignorar erros:</t>
     </page>
   </add>
 </diff>

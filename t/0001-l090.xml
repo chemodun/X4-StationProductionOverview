@@ -31,7 +31,11 @@
       <t id="1004">Bu sektörde üretim modülü olan oyuncu istasyonu bulunamadı.</t>
       <!-- settings labels (90000+) -->
       <t id="90001">İstasyon Üretim Genel Bakışı</t>
-      <t id="90011">Veri Yenileme Aralığı:\n önbelleğe alınmış üretim verilerinin yeniden kullanılacağı UI tik sayısı \(düşük = daha duyarlı, yüksek = daha az CPU kullanımı\)</t>
+      <t id="90100">Performans</t>
+      <t id="90101">Veri Yenileme Aralığı:\n önbelleğe alınmış üretim verilerinin yeniden kullanılacağı UI tik sayısı \(düşük = daha duyarlı, yüksek = daha az CPU kullanımı\)</t>
+      <t id="90200">Hata İşleme:</t>
+      <t id="90211">Hataları alt satır olarak göster</t>
+      <t id="90220">Hataları yoksay:</t>
     </page>
   </add>
 </diff>

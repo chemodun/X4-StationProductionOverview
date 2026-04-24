@@ -31,7 +31,11 @@
       <t id="1004">W tym sektorze nie znaleziono stacji gracza z modułami produkcyjnymi.</t>
       <!-- settings labels (90000+) -->
       <t id="90001">Przegląd produkcji stacji</t>
-      <t id="90011">Interwał odświeżania danych:\n ile tyknięć UI dane produkcji są ponownie używane \(mniejszy = bardziej responsywny, większy = mniejsze użycie CPU\)</t>
+      <t id="90100">Wydajność</t>
+      <t id="90101">Interwał odświeżania danych:\n ile tyknięć UI dane produkcji są ponownie używane \(mniejszy = bardziej responsywny, większy = mniejsze użycie CPU\)</t>
+      <t id="90200">Obsługa błędów:</t>
+      <t id="90211">Pokaż błędy jako podwiersz</t>
+      <t id="90220">Ignoruj błędy:</t>
     </page>
   </add>
 </diff>

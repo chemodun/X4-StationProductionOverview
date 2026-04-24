@@ -9,13 +9,26 @@
         <!-- Loads player.entity.$stationProductionOverview, creating it with defaults if
              absent. Sets $config as a local alias. Callers must remove_value
              $config when done. -->
-        <library name="Get_Config" purpose="include_actions" version="1">
+        <library name="Get_Config" purpose="include_actions" version="2">
           <actions>
             <do_if value="@player.entity.$stationProductionOverview == null">
-              <set_value name="player.entity.$stationProductionOverview" exact="table[ $dataRefreshInterval = 3]" />
+              <set_value name="player.entity.$stationProductionOverview" exact="table[
+                $version             = 2,
+                $dataRefreshInterval = 3,
+                $ignoreNoResources   = false,
+                $ignoreWaitStore     = false,
+                $showErrorsAsSubrow  = true,
+              ]" />
             </do_if>
-            <do_if value="player.entity.$stationProductionOverview.$dataRefreshInterval? == false">
-              <set_value name="player.entity.$stationProductionOverview.$dataRefreshInterval" exact="3" />
+            <!-- v1 → v2: add error-display settings to existing saves -->
+            <do_if value="@player.entity.$stationProductionOverview.$version lt 2">
+              <do_if value="player.entity.$stationProductionOverview.$dataRefreshInterval? == false">
+                <set_value name="player.entity.$stationProductionOverview.$dataRefreshInterval" exact="3" />
+              </do_if>
+              <set_value name="player.entity.$stationProductionOverview.$ignoreNoResources" exact="false" />
+              <set_value name="player.entity.$stationProductionOverview.$ignoreWaitStore" exact="false" />
+              <set_value name="player.entity.$stationProductionOverview.$showErrorsAsSubrow" exact="true" />
+              <set_value name="player.entity.$stationProductionOverview.$version" exact="2" />
             </do_if>
             <set_value name="$config" exact="player.entity.$stationProductionOverview" />
           </actions>
@@ -38,55 +51,220 @@
         </cue>
 
         <!-- ── Options menu content ─────────────────────────────────────── -->
-        <cue name="Options_Menu_Open" instantiate="true" version="1">
+        <cue name="Options_Menu_Open" instantiate="true" version="2">
           <conditions>
             <event_cue_signalled />
           </conditions>
           <actions>
             <include_actions ref="Get_Config" />
+            <include_actions ref="Menu_Section_Performance" />
+            <include_actions ref="Menu_Section_ModuleErrors" />
+            <remove_value name="$config" />
+          </actions>
+        </cue>
 
-            <!-- Slider label row (non-selectable) -->
+        <!-- ── Performance section: data refresh interval ───────────────── -->
+        <library name="Menu_Section_Performance" purpose="include_actions" version="1">
+          <actions>
+            <run_actions ref="Add_Title_Row">
+              <param name="title" value="{1972092416, 90100}" />
+            </run_actions>
+            <run_actions ref="Add_Slider">
+              <param name="id" value="'dataRefreshInterval'" />
+              <param name="text" value="{1972092416, 90101}" />
+              <param name="min" value="1" />
+              <param name="max" value="10" />
+              <param name="step" value="1" />
+              <param name="suffix" value="' ticks'" />
+              <param name="colSpan" value="12" />
+              <param name="data" value="@$config" />
+            </run_actions>
+          </actions>
+        </library>
+
+        <!-- ── Module Errors section: ignore + display mode ─────────────── -->
+        <library name="Menu_Section_ModuleErrors" purpose="include_actions" version="1">
+          <actions>
+            <include_actions ref="Add_Empty_Row" />
+            <run_actions ref="Add_Title_Row">
+              <param name="title" value="{1972092416, 90200}" />
+            </run_actions>
+            <!-- Show errors as sub-row toggle -->
+            <run_actions ref="Add_CheckBox">
+              <param name="id" value="'showErrorsAsSubrow'" />
+              <param name="col" value="1" />
+              <param name="textColSpan" value="11" />
+              <param name="text" value="{1972092416, 90211}" />
+              <param name="data" value="@$config" />
+            </run_actions>
+            <include_actions ref="Add_Empty_Row" />
+            <!-- "Ignore errors:" label (non-selectable) -->
             <signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" param="table[$selectable = false]" />
             <signal_cue_instantly cue="md.Simple_Menu_API.Make_Text"
               param="table[
                 $col     = 1,
                 $colSpan = 12,
                 $halign  = 'left',
-                $text    = {1972092416, 90011},
+                $text    = {1972092416, 90220},
               ]" />
-
-            <!-- Slider row -->
-            <signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" />
-            <signal_cue_instantly cue="md.Simple_Menu_API.Make_Slider"
-              param="table[
-                $id                  = 'spo_data_refresh_interval',
-                $col                 = 1,
-                $colSpan             = 12,
-                $min                 = 1,
-                $max                 = 10,
-                $step                = 1,
-                $start               = $config.$dataRefreshInterval,
-                $suffix              = ' ticks',
-                $onSliderCellConfirm = Handle_Slider_Changed,
-              ]" />
-
-            <remove_value name="$config" />
+            <!-- Two ignore checkboxes side by side -->
+            <run_actions ref="Add_CheckBox">
+              <param name="id" value="'ignoreNoResources'" />
+              <param name="col" value="1" />
+              <param name="textColSpan" value="5" />
+              <param name="text" value="{1001, 8431}" />
+              <param name="data" value="@$config" />
+            </run_actions>
+            <run_actions ref="Add_CheckBox">
+              <param name="id" value="'ignoreWaitStore'" />
+              <param name="col" value="7" />
+              <param name="textColSpan" value="5" />
+              <param name="text" value="{1001, 8432}" />
+              <param name="data" value="@$config" />
+            </run_actions>
           </actions>
-        </cue>
+        </library>
 
-        <!-- ── Slider change handler ────────────────────────────────────── -->
-        <cue name="Handle_Slider_Changed" instantiate="true" version="1">
+        <!-- ── Generic checkbox handler ─────────────────────────────────── -->
+        <cue name="Handle_Checkbox_Changed" instantiate="true" version="1">
           <conditions>
             <event_cue_signalled />
           </conditions>
           <actions>
             <include_actions ref="Get_Config" />
-            <set_value name="$config.$dataRefreshInterval" exact="event.param.$value" />
+            <set_value name="$valueId" exact="event.param.$echo.$valueId" />
+            <set_value name="$config.{@$valueId}" exact="event.param.$checked" />
+            <remove_value name="$valueId" />
             <remove_value name="$config" />
-            <!-- Notify the Lua side so it picks up the new value immediately -->
             <raise_lua_event name="'SPO.ConfigChanged'" />
           </actions>
         </cue>
+
+        <!-- ── Generic slider handler ────────────────────────────────────── -->
+        <cue name="Handle_Slider_Changed" instantiate="true" version="2">
+          <conditions>
+            <event_cue_signalled />
+          </conditions>
+          <actions>
+            <include_actions ref="Get_Config" />
+            <set_value name="$valueId" exact="event.param.$echo.$valueId" />
+            <set_value name="$config.{@$valueId}" exact="event.param.$value" />
+            <remove_value name="$valueId" />
+            <remove_value name="$config" />
+            <raise_lua_event name="'SPO.ConfigChanged'" />
+          </actions>
+        </cue>
+
+        <!-- ── UI helper libraries (based on Notification Filter pattern) ── -->
+
+        <library name="Add_CheckBox" purpose="run_actions">
+          <params>
+            <param name="id" />
+            <param name="col" default="1" />
+            <param name="textColSpan" default="1" />
+            <param name="text" default="''" />
+            <param name="data" />
+          </params>
+          <actions>
+            <do_if value="@$id != null and $col? and $textColSpan? and @$text != null and @$data != null">
+              <do_if value="@$col == 1">
+                <signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" />
+              </do_if>
+              <set_value name="$valueId" exact="'$%s' . [@$id]" />
+              <signal_cue_instantly cue="md.Simple_Menu_API.Make_CheckBox"
+                param="table[
+                  $id      = 'SPO_CheckBox_%s' . [@$id],
+                  $checked = @$data.{@$valueId} == true,
+                  $col     = @$col,
+                  $colSpan = 1,
+                  $x       = 20,
+                  $width   = 'Helper.standardButtonHeight',
+                  $height  = 'Helper.standardButtonHeight',
+                  $onClick = Handle_Checkbox_Changed,
+                  $echo    = table[ $valueId = @$valueId ],
+                ]" />
+              <signal_cue_instantly cue="md.Simple_Menu_API.Make_Text"
+                param="table[
+                  $col     = @$col + 1,
+                  $colSpan = @$textColSpan,
+                  $halign  = 'left',
+                  $text    = @$text,
+                ]" />
+            </do_if>
+          </actions>
+        </library>
+
+        <library name="Add_Slider" purpose="run_actions">
+          <params>
+            <param name="id" />
+            <param name="text" default="''" />
+            <param name="min" default="0" />
+            <param name="max" default="100" />
+            <param name="step" default="1" />
+            <param name="suffix" default="''" />
+            <param name="colSpan" default="12" />
+            <param name="data" />
+          </params>
+          <actions>
+            <do_if value="@$id != null and $min? and $max? and $step? and @$data != null">
+              <set_value name="$valueId" exact="'$%s' . [@$id]" />
+              <signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" param="table[$selectable = false]" />
+              <signal_cue_instantly cue="md.Simple_Menu_API.Make_Text"
+                param="table[
+                  $col     = 1,
+                  $colSpan = @$colSpan,
+                  $halign  = 'left',
+                  $text    = @$text,
+                ]" />
+              <signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" />
+              <signal_cue_instantly cue="md.Simple_Menu_API.Make_Slider"
+                param="table[
+                  $id                  = 'SPO_Slider_%s' . [@$id],
+                  $col                 = 1,
+                  $colSpan             = @$colSpan,
+                  $min                 = @$min,
+                  $max                 = @$max,
+                  $step                = @$step,
+                  $start               = @$data.{@$valueId},
+                  $suffix              = @$suffix,
+                  $onSliderCellConfirm = Handle_Slider_Changed,
+                  $echo                = table[ $valueId = @$valueId ],
+                ]" />
+            </do_if>
+          </actions>
+        </library>
+
+        <library name="Add_Title_Row" purpose="run_actions">
+          <params>
+            <param name="title" />
+          </params>
+          <actions>
+            <signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" param="table[$selectable = false]" />
+            <signal_cue_instantly cue="md.Simple_Menu_API.Make_Text"
+              param="table[
+                $col        = 1,
+                $colSpan    = 12,
+                $fontsize   = 'Helper.titleFontSize',
+                $titleColor = 'Color.text_normal',
+                $halign     = 'center',
+                $text       = $title,
+              ]" />
+            <include_actions ref="Add_Empty_Row" />
+          </actions>
+        </library>
+
+        <library name="Add_Empty_Row" purpose="include_actions">
+          <actions>
+            <signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" param="table[$selectable = false]" />
+            <signal_cue_instantly cue="md.Simple_Menu_API.Make_Text"
+              param="table[
+                $col      = 1,
+                $colSpan  = 12,
+                $height   = 'Helper.borderSize',
+                $fontsize = 'Helper.borderSize',
+              ]" />
+          </actions>
+        </library>
 
       </cues>
     </cue>

@@ -31,7 +31,11 @@
       <t id="1004">Nessuna stazione del giocatore con moduli di produzione trovata in questo settore.</t>
       <!-- settings labels (90000+) -->
       <t id="90001">Panoramica della produzione della stazione</t>
-      <t id="90011">Intervallo di aggiornamento dati:\n quanti tic UI riutilizzare i dati di produzione memorizzati \(minore = più reattivo, maggiore = meno carico CPU\)</t>
+      <t id="90100">Prestazioni</t>
+      <t id="90101">Intervallo di aggiornamento dati:\n quanti tic UI riutilizzare i dati di produzione memorizzati \(minore = più reattivo, maggiore = meno carico CPU\)</t>
+      <t id="90200">Gestione degli errori:</t>
+      <t id="90211">Mostra errori come sotto-riga</t>
+      <t id="90220">Ignora errori:</t>
     </page>
   </add>
 </diff>

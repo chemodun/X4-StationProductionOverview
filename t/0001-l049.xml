@@ -31,7 +31,11 @@
       <t id="1004">Keine Spielerstationen mit Produktionsmodulen in diesem Sektor gefunden.</t>
       <!-- settings labels (90000+) -->
       <t id="90001">Stationsproduktionsübersicht</t>
-      <t id="90011">Daten-Aktualisierungsintervall:\n wie viele UI-Ticks zwischengespeicherte Produktionsdaten wiederverwendet werden \(niedriger = aktueller, höher = weniger CPU-Last\)</t>
+      <t id="90100">Leistung</t>
+      <t id="90101">Daten-Aktualisierungsintervall:\n wie viele UI-Ticks zwischengespeicherte Produktionsdaten wiederverwendet werden \(niedriger = aktueller, höher = weniger CPU-Last\)</t>
+      <t id="90200">Fehlerbehandlung:</t>
+      <t id="90211">Fehler als Unterzeile anzeigen</t>
+      <t id="90220">Fehler ignorieren:</t>
     </page>
   </add>
 </diff>
