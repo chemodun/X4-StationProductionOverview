@@ -11,8 +11,11 @@ Adds a **Production Overview** tab to the info panel tab strip in the map menu (
 - **Production issue indicators**: Wares with modules waiting on resources or storage are highlighted, with a tooltip showing exact issue counts.
 - **Planned module preview**: A delta row per ware shows the production impact of unbuilt modules in the construction plan.
 - **Empire balance**: Optional *All stations:* sub-row (toggle via **Show empire balance** checkbox, single-station view only) shows empire-wide production, consumption, and coloured surplus/deficit for each Product and Intermediate.
-- **Configurable data refresh**: Slider in **Extension options > Station Production Overview** sets the cache duration in UI ticks (1-10, default 3).
 - **Quick-navigation buttons**: *Configure Station* and *Station Overview* at the bottom of the tab.
+- **Configurable data refresh**: Slider in options sets the cache duration in UI ticks (1-10, default 3).
+- **Error handling options**: Options to show production issues as sub-rows instead of tooltips, and to ignore specific module states when identifying issues.
+- **Interoperability option**: Option to synchronize data refresh interval and error handling settings with the `Production Stations Tab` mod (if installed).
+- **Supports the 9.00 beta**: Compatible with both 8.00 and 9.00 versions of the game.
 
 ## Requirements
 
@@ -68,6 +71,11 @@ Enable the **Show empire balance** checkbox (single-station view only) to show a
 **Options Menu > Extension options > Station Production Overview**:
 
 - **Data Refresh Interval** (1-10, default 3): UI ticks to reuse cached data before recomputing. Lower = more responsive, higher = less CPU.
+- **Show errors as sub-rows**: if checked, the error states of modules are shown as sub-rows under each ware instead of tooltips on the ware name.
+- **Ignore errors**:
+  - **Modules without resources**: if checked, this module state is ignored when identifying production issues,
+  - **Modules waiting for storage**: if checked, this module state is ignored when identifying production issues.
+- **Synchronize with Production Stations Tab**: if enabled, the data refresh interval and error handling settings are kept in sync between this mod and the `Production Stations Tab` mod (if installed).
 
 ![Extension options](docs/images/options.png)
 
@@ -76,6 +84,10 @@ Enable the **Show empire balance** checkbox (single-station view only) to show a
 Select a sector in the map to get the same **Production Overview** tab listing all player-owned production stations in that sector.
 
 ![Sector Production Overview Tab](docs/images/sector_production_overview_tab.png)
+
+## Video
+
+- [Station Production Overview and Production Stations Tab interoperability setting and usage](https://www.youtube.com/watch?v=f0apJSuumY0)
 
 ## Credits
 
@@ -89,6 +101,13 @@ Select a sector in the map to get the same **Production Overview** tab listing a
 - [SirNukes](https://next.nexusmods.com/profile/sirnukes?gameId=2659) — for the `Mod Support APIs` that power the UI hooks.
 
 ## Changelog
+
+### [9.00.09] - 2026-04-26
+
+- **Added**
+  - New option to display production issues as sub-rows under each ware instead of tooltips on the ware name.
+  - New option to ignore modules without resources and/or modules waiting for storage when identifying production issues.
+  - New option to synchronize data refresh interval and error handling settings with the `Production Stations Tab` mod (if installed).
 
 ### [9.00.08] - 2026-04-19
 
