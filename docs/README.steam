@@ -11,8 +11,11 @@ Adds a [b]Production Overview[/b] tab to the info panel tab strip in the map men
 [*] [b]Production issue indicators[/b]: Wares with modules waiting on resources or storage are highlighted, with a tooltip showing exact issue counts.
 [*] [b]Planned module preview[/b]: A delta row per ware shows the production impact of unbuilt modules in the construction plan.
 [*] [b]Empire balance[/b]: Optional [i]All stations:[/i] sub-row (toggle via [b]Show empire balance[/b] checkbox, single-station view only) shows empire-wide production, consumption, and coloured surplus/deficit for each Product and Intermediate.
-[*] [b]Configurable data refresh[/b]: Slider in [b]Extension options > Station Production Overview[/b] sets the cache duration in UI ticks (1-10, default 3).
 [*] [b]Quick-navigation buttons[/b]: [i]Configure Station[/i] and [i]Station Overview[/i] at the bottom of the tab.
+[*] [b]Configurable data refresh[/b]: Slider in options sets the cache duration in UI ticks (1-10, default 3).
+[*] [b]Error handling options[/b]: Options to show production issues as sub-rows instead of tooltips, and to ignore specific module states when identifying issues.
+[*] [b]Interoperability option[/b]: Option to synchronize data refresh interval and error handling settings with the [b]Production Stations Tab[/b] mod (if installed).
+[*] [b]Supports the 9.00 beta[/b]: Compatible with both 8.00 and 9.00 versions of the game.
 [/list]
 [h2][b]Requirements[/b][/h2]
 [list]
@@ -74,6 +77,13 @@ Enable the [b]Show empire balance[/b] checkbox (single-station view only) to sho
 [b]Options Menu > Extension options > Station Production Overview[/b]:
 [list]
 [*] [b]Data Refresh Interval[/b] (1-10, default 3): UI ticks to reuse cached data before recomputing. Lower = more responsive, higher = less CPU.
+[*] [b]Show errors as sub-rows[/b]: if checked, the error states of modules are shown as sub-rows under each ware instead of tooltips on the ware name.
+[*] [b]Ignore errors[/b]:
+[list]
+[*] [b]Modules without resources[/b]: if checked, this module state is ignored when identifying production issues,
+[*] [b]Modules waiting for storage[/b]: if checked, this module state is ignored when identifying production issues.
+[/list]
+[*] [b]Synchronize with Production Stations Tab[/b]: if enabled, the data refresh interval and error handling settings are kept in sync between this mod and the [b]Production Stations Tab[/b] mod (if installed).
 [/list]
 [img]https://raw.githubusercontent.com/chemodun/X4-StationProductionOverview/refs/heads/main/docs/images/options.png[/img]
 
@@ -83,6 +93,11 @@ Select a sector in the map to get the same [b]Production Overview[/b] tab listin
 
 [img]https://raw.githubusercontent.com/chemodun/X4-StationProductionOverview/refs/heads/main/docs/images/sector_production_overview_tab.png[/img]
 
+[h2][b]Video[/b][/h2]
+[list]
+[*] Station Production Overview and Production Stations Tab interoperability setting and usage
+[previewyoutube=f0apJSuumY0;full][/previewyoutube]
+[/list]
 [h2][b]Credits[/b][/h2]
 [list]
 [*] [b]Author[/b]: Chem O`Dun, on [url=https://next.nexusmods.com/profile/ChemODun/mods?gameId=2659]Nexus Mods[/url] and [url=https://steamcommunity.com/id/chemodun/myworkshopfiles/?appid=392160]Steam Workshop[/url]
@@ -96,6 +111,15 @@ Select a sector in the map to get the same [b]Production Overview[/b] tab listin
 [/list]
 [h2][b]Changelog[/b][/h2]
 
+[h2][9.00.09] - 2026-04-26[/h2]
+[list]
+[*] [b]Added[/b]
+[list]
+[*] New option to display production issues as sub-rows under each ware instead of tooltips on the ware name.
+[*] New option to ignore modules without resources and/or modules waiting for storage when identifying production issues.
+[*] New option to synchronize data refresh interval and error handling settings with the [b]Production Stations Tab[/b] mod (if installed).
+[/list]
+[/list]
 [h2][9.00.08] - 2026-04-19[/h2]
 [list]
 [*] [b]Added[/b]
