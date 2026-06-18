@@ -111,6 +111,13 @@ Select a sector in the map to get the same [b]Production Overview[/b] tab listin
 [/list]
 [h2][b]Changelog[/b][/h2]
 
+[h2][9.00.10] - 2026-06-18[/h2]
+[list]
+[*] [b]Changed[/b]
+[list]
+[*] On Steam: restricted to game version 9.0 or higher.
+[/list]
+[/list]
 [h2][9.00.09] - 2026-04-26[/h2]
 [list]
 [*] [b]Added[/b]
