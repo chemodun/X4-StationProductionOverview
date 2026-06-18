@@ -102,6 +102,11 @@ Select a sector in the map to get the same **Production Overview** tab listing a
 
 ## Changelog
 
+### [9.00.10] - 2026-06-18
+
+- **Changed**
+  - On Steam: restricted to game version 9.0 or higher.
+
 ### [9.00.09] - 2026-04-26
 
 - **Added**
