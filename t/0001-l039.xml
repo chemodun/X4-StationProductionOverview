@@ -13,6 +13,7 @@
       <t id="100">Stato live attuale \(± con moduli in costruzione\) / ora</t>
       <t id="101">Stimato, ovvero tutti i moduli attivi \(± con moduli in costruzione\) / ora</t>
       <t id="102">Mostra bilancio dell'impero</t>
+      <t id="103">Mostra magazzino</t>
       <!-- column headers -->
       <t id="110">Merce</t>
       <t id="111">Moduli</t>
@@ -25,6 +26,13 @@
       <t id="122">Risorse</t>
       <!-- empire consumption sub-row label -->
       <t id="130">Tutte le stazioni:</t>
+      <!-- stock and storage sub-rows, sector total -->
+      <t id="132">Vuoto tra %s</t>
+      <t id="133">Pieno tra %s</t>
+      <t id="134">Vuoto</t>
+      <t id="135">Pieno</t>
+      <t id="136">Nessun magazzino di questo tipo</t>
+      <t id="140">Totale settore</t>
       <!-- status / empty messages -->
       <t id="1001">Seleziona una stazione per vedere i dati di produzione.</t>
       <t id="1002">Nessun modulo di produzione trovato.</t>
@@ -39,6 +47,15 @@
       <t id="90220">Ignora errori:</t>
       <t id="90300">Interoperabilità</t>
       <t id="90301">Sincronizza con Production Stations Tab</t>
+      <t id="90400">Visualizzazione</t>
+      <t id="90412">Bilancio \(prima il deficit\)</t>
+      <t id="90413">Rosso: vuoto o pieno entro</t>
+      <t id="90414">Giallo: vuoto o pieno entro</t>
+      <t id="90900">Debug</t>
+      <t id="90910">Livello di debug</t>
+      <t id="90911">Nessuno</t>
+      <t id="90912">Debug</t>
+      <t id="90913">Traccia</t>
     </page>
   </add>
 </diff>

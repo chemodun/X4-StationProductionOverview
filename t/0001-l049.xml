@@ -13,6 +13,7 @@
       <t id="100">Aktueller Live-Status \(± mit Baumodulen\) / Stunde</t>
       <t id="101">Geschätzt, d.h. alle Module aktiv \(± mit Baumodulen\) / Stunde</t>
       <t id="102">Reichsbalance anzeigen</t>
+      <t id="103">Lager anzeigen</t>
       <!-- column headers -->
       <t id="110">Ware</t>
       <t id="111">Module</t>
@@ -25,6 +26,13 @@
       <t id="122">Ressourcen</t>
       <!-- empire consumption sub-row label -->
       <t id="130">Alle Stationen:</t>
+      <!-- stock and storage sub-rows, sector total -->
+      <t id="132">Leer in %s</t>
+      <t id="133">Voll in %s</t>
+      <t id="134">Leer</t>
+      <t id="135">Voll</t>
+      <t id="136">Kein Lager dieses Typs</t>
+      <t id="140">Sektor gesamt</t>
       <!-- status / empty messages -->
       <t id="1001">Wählen Sie eine Station aus, um Produktionsdaten anzuzeigen.</t>
       <t id="1002">Keine Produktionsmodule gefunden.</t>
@@ -39,6 +47,15 @@
       <t id="90220">Fehler ignorieren:</t>
       <t id="90300">Interoperabilität</t>
       <t id="90301">Mit Production Stations Tab synchronisieren</t>
+      <t id="90400">Anzeige</t>
+      <t id="90412">Bilanz \(Defizit zuerst\)</t>
+      <t id="90413">Rot: leer oder voll innerhalb von</t>
+      <t id="90414">Gelb: leer oder voll innerhalb von</t>
+      <t id="90900">Debug</t>
+      <t id="90910">Debug-Stufe</t>
+      <t id="90911">Keine</t>
+      <t id="90912">Debug</t>
+      <t id="90913">Ablaufverfolgung</t>
     </page>
   </add>
 </diff>

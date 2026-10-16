@@ -13,6 +13,7 @@
       <t id="100">Mevcut canlı durum \(± yapım aşamasındaki modüllerle\) / saat</t>
       <t id="101">Tahmini, yani tüm modüller aktif \(± yapım aşamasındaki modüllerle\) / saat</t>
       <t id="102">İmparatorluk dengesini göster</t>
+      <t id="103">Depolamayı göster</t>
       <!-- column headers -->
       <t id="110">Mal</t>
       <t id="111">Modüller</t>
@@ -25,6 +26,13 @@
       <t id="122">Kaynaklar</t>
       <!-- empire consumption sub-row label -->
       <t id="130">Tüm istasyonlar:</t>
+      <!-- stock and storage sub-rows, sector total -->
+      <t id="132">%s içinde boşalır</t>
+      <t id="133">%s içinde dolar</t>
+      <t id="134">Boş</t>
+      <t id="135">Dolu</t>
+      <t id="136">Bu türde depolama yok</t>
+      <t id="140">Sektör toplamı</t>
       <!-- status / empty messages -->
       <t id="1001">Üretim verilerini görmek için bir istasyon seçin.</t>
       <t id="1002">Üretim modülü bulunamadı.</t>
@@ -39,6 +47,15 @@
       <t id="90220">Hataları yoksay:</t>
       <t id="90300">Birlikte Çalışabilirlik</t>
       <t id="90301">Production Stations Tab ile senkronize et</t>
+      <t id="90400">Görünüm</t>
+      <t id="90412">Bakiye \(önce açık\)</t>
+      <t id="90413">Kırmızı: boşalmaya veya dolmaya kalan süre</t>
+      <t id="90414">Sarı: boşalmaya veya dolmaya kalan süre</t>
+      <t id="90900">Hata Ayıklama</t>
+      <t id="90910">Hata Ayıklama Seviyesi</t>
+      <t id="90911">Yok</t>
+      <t id="90912">Hata Ayıklama</t>
+      <t id="90913">İzleme</t>
     </page>
   </add>
 </diff>

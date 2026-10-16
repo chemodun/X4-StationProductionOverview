@@ -13,6 +13,7 @@
       <t id="100">État en direct actuel \(± avec modules en construction\) / heure</t>
       <t id="101">Estimé, c.-à-d. tous modules actifs \(± avec modules en construction\) / heure</t>
       <t id="102">Afficher la balance de l'empire</t>
+      <t id="103">Afficher le stockage</t>
       <!-- column headers -->
       <t id="110">Marchandise</t>
       <t id="111">Modules</t>
@@ -25,6 +26,13 @@
       <t id="122">Ressources</t>
       <!-- empire consumption sub-row label -->
       <t id="130">Toutes les stations:</t>
+      <!-- stock and storage sub-rows, sector total -->
+      <t id="132">Vide dans %s</t>
+      <t id="133">Plein dans %s</t>
+      <t id="134">Vide</t>
+      <t id="135">Plein</t>
+      <t id="136">Aucun stockage de ce type</t>
+      <t id="140">Total du secteur</t>
       <!-- status / empty messages -->
       <t id="1001">Sélectionnez une station pour voir les données de production.</t>
       <t id="1002">Aucun module de production trouvé.</t>
@@ -39,6 +47,15 @@
       <t id="90220">Ignorer les erreurs:</t>
       <t id="90300">Interopérabilité</t>
       <t id="90301">Synchroniser avec Production Stations Tab</t>
+      <t id="90400">Affichage</t>
+      <t id="90412">Solde \(déficit d'abord\)</t>
+      <t id="90413">Rouge : vide ou plein d'ici</t>
+      <t id="90414">Jaune : vide ou plein d'ici</t>
+      <t id="90900">Débogage</t>
+      <t id="90910">Niveau de débogage</t>
+      <t id="90911">Aucun</t>
+      <t id="90912">Débogage</t>
+      <t id="90913">Trace</t>
     </page>
   </add>
 </diff>

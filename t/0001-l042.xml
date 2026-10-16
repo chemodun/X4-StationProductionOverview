@@ -13,6 +13,7 @@
       <t id="100">Aktuální živý stav \(± s moduly ve výstavbě\) / hodinu</t>
       <t id="101">Odhadovaný, tj. všechny moduly aktivní \(± s moduly ve výstavbě\) / hodinu</t>
       <t id="102">Zobrazit říšskou bilanci</t>
+      <t id="103">Zobrazit sklad</t>
       <!-- column headers -->
       <t id="110">Zboží</t>
       <t id="111">Moduly</t>
@@ -25,6 +26,13 @@
       <t id="122">Zdroje</t>
       <!-- empire consumption sub-row label -->
       <t id="130">Všechny stanice:</t>
+      <!-- stock and storage sub-rows, sector total -->
+      <t id="132">Prázdné za %s</t>
+      <t id="133">Plné za %s</t>
+      <t id="134">Prázdné</t>
+      <t id="135">Plné</t>
+      <t id="136">Žádný sklad tohoto typu</t>
+      <t id="140">Celkem za sektor</t>
       <!-- status / empty messages -->
       <t id="1001">Vyberte stanici pro zobrazení výrobních dat.</t>
       <t id="1002">Nebyly nalezeny žádné výrobní moduly.</t>
@@ -39,6 +47,15 @@
       <t id="90220">Ignorovat chyby:</t>
       <t id="90300">Interoperabilita</t>
       <t id="90301">Synchronizovat s Production Stations Tab</t>
+      <t id="90400">Zobrazení</t>
+      <t id="90412">Saldo \(nejdříve deficit\)</t>
+      <t id="90413">Červená: prázdné nebo plné do</t>
+      <t id="90414">Žlutá: prázdné nebo plné do</t>
+      <t id="90900">Ladění</t>
+      <t id="90910">Úroveň ladění</t>
+      <t id="90911">Žádná</t>
+      <t id="90912">Ladění</t>
+      <t id="90913">Trasování</t>
     </page>
   </add>
 </diff>

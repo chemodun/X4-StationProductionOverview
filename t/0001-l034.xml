@@ -13,6 +13,7 @@
       <t id="100">Estado en vivo actual \(± con módulos en construcción\) / hora</t>
       <t id="101">Estimado, es decir, todos los módulos activos \(± con módulos en construcción\) / hora</t>
       <t id="102">Mostrar balance del imperio</t>
+      <t id="103">Mostrar almacenamiento</t>
       <!-- column headers -->
       <t id="110">Mercancía</t>
       <t id="111">Módulos</t>
@@ -25,6 +26,13 @@
       <t id="122">Recursos</t>
       <!-- empire consumption sub-row label -->
       <t id="130">Todas las estaciones:</t>
+      <!-- stock and storage sub-rows, sector total -->
+      <t id="132">Vacío en %s</t>
+      <t id="133">Lleno en %s</t>
+      <t id="134">Vacío</t>
+      <t id="135">Lleno</t>
+      <t id="136">Sin almacenamiento de este tipo</t>
+      <t id="140">Total del sector</t>
       <!-- status / empty messages -->
       <t id="1001">Seleccione una estación para ver los datos de producción.</t>
       <t id="1002">No se encontraron módulos de producción.</t>
@@ -39,6 +47,15 @@
       <t id="90220">Ignorar errores:</t>
       <t id="90300">Interoperabilidad</t>
       <t id="90301">Sincronizar con Production Stations Tab</t>
+      <t id="90400">Visualización</t>
+      <t id="90412">Balance \(déficit primero\)</t>
+      <t id="90413">Rojo: vacío o lleno en menos de</t>
+      <t id="90414">Amarillo: vacío o lleno en menos de</t>
+      <t id="90900">Depuración</t>
+      <t id="90910">Nivel de depuración</t>
+      <t id="90911">Ninguno</t>
+      <t id="90912">Depuración</t>
+      <t id="90913">Rastreo</t>
     </page>
   </add>
 </diff>

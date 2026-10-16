@@ -5,23 +5,24 @@
     <cue name="Init" instantiate="false" version="1">
       <cues>
 
-        <!-- == Config initialisation == -->
-        <!-- Loads player.entity.$stationProductionOverview, creating it with defaults if
-             absent. Sets $config as a local alias. Callers must remove_value
-             $config when done. -->
-        <library name="Get_Config" purpose="include_actions" version="3">
+        <!-- Loads player.entity.$stationProductionOverview into $config, creating or migrating it; callers remove $config. -->
+        <library name="Get_Config" purpose="include_actions" version="5">
           <actions>
             <do_if value="@player.entity.$stationProductionOverview == null">
               <set_value name="player.entity.$stationProductionOverview" exact="table[
-                $version                       = 3,
+                $version                       = 5,
                 $dataRefreshInterval           = 3,
                 $ignoreNoResources             = false,
                 $ignoreWaitStore               = false,
+                $ignorePaused                  = false,
                 $showErrorsAsSubrow            = true,
                 $syncStationProductionSettings = false,
+                $sortBy                        = 'name',
+                $forecastRedHours              = 2,
+                $forecastYellowHours           = 6,
+                $debugLevel                    = 'none',
               ]" />
             </do_if>
-            <!-- v1 → v2: add error-display settings to existing saves -->
             <do_if value="@player.entity.$stationProductionOverview.$version lt 2">
               <do_if value="player.entity.$stationProductionOverview.$dataRefreshInterval? == false">
                 <set_value name="player.entity.$stationProductionOverview.$dataRefreshInterval" exact="3" />
@@ -31,22 +32,45 @@
               <set_value name="player.entity.$stationProductionOverview.$showErrorsAsSubrow" exact="true" />
               <set_value name="player.entity.$stationProductionOverview.$version" exact="2" />
             </do_if>
-            <!-- v2 → v3: add sync setting -->
             <do_if value="@player.entity.$stationProductionOverview.$version lt 3">
               <set_value name="player.entity.$stationProductionOverview.$syncStationProductionSettings" exact="false" />
               <set_value name="player.entity.$stationProductionOverview.$version" exact="3" />
+            </do_if>
+            <do_if value="@player.entity.$stationProductionOverview.$version lt 4">
+              <set_value name="player.entity.$stationProductionOverview.$ignorePaused" exact="false" />
+              <set_value name="player.entity.$stationProductionOverview.$sortBy" exact="'name'" />
+              <set_value name="player.entity.$stationProductionOverview.$debugLevel" exact="'none'" />
+              <set_value name="player.entity.$stationProductionOverview.$version" exact="4" />
+            </do_if>
+            <do_if value="@player.entity.$stationProductionOverview.$version lt 5">
+              <set_value name="player.entity.$stationProductionOverview.$forecastRedHours" exact="2" />
+              <set_value name="player.entity.$stationProductionOverview.$forecastYellowHours" exact="6" />
+              <set_value name="player.entity.$stationProductionOverview.$version" exact="5" />
             </do_if>
             <set_value name="$config" exact="player.entity.$stationProductionOverview" />
           </actions>
         </library>
 
-        <!-- == Options menu registration == -->
-        <cue name="Register_Menu" instantiate="true" version="1">
+        <!-- Sets $debugChance and $traceChance; callers remove both. -->
+        <library name="Read_Debug_Chances" purpose="include_actions">
+          <actions>
+            <set_value name="$debugLevel" exact="@player.entity.$stationProductionOverview.$debugLevel" />
+            <set_value name="$debugChance" exact="if $debugLevel == 'debug' or $debugLevel == 'trace' then 100 else 0" />
+            <set_value name="$traceChance" exact="if $debugLevel == 'trace' then 100 else 0" />
+            <remove_value name="$debugLevel" />
+          </actions>
+        </library>
+
+        <cue name="Register_Menu" instantiate="true" version="2">
           <conditions>
             <event_cue_signalled cue="md.Simple_Menu_API.Reloaded" />
           </conditions>
           <actions>
             <include_actions ref="Get_Config" />
+            <include_actions ref="Read_Debug_Chances" />
+            <debug_text text="'StationProductionOverview: registering options menu, config version %s'.[$config.$version]" chance="$debugChance" />
+            <remove_value name="$debugChance" />
+            <remove_value name="$traceChance" />
             <signal_cue_instantly cue="md.Simple_Menu_API.Register_Options_Menu"
               param="table[
                 $id      = 'station_production_overview_options',
@@ -55,30 +79,31 @@
                 $onOpen  = Options_Menu_Open,
               ]" />
             <remove_value name="$config" />
+            <raise_lua_event name="'SPO.ConfigChanged'" />
           </actions>
         </cue>
 
-        <!-- == Options menu content == -->
-        <cue name="Options_Menu_Open" instantiate="true" version="2">
+        <cue name="Options_Menu_Open" instantiate="true" version="3">
           <conditions>
             <event_cue_signalled />
           </conditions>
           <actions>
             <include_actions ref="Get_Config" />
             <include_actions ref="Menu_Section_Performance" />
+            <include_actions ref="Menu_Section_Display" />
             <include_actions ref="Menu_Section_ModuleErrors" />
             <include_actions ref="Menu_Section_Interoperability" />
+            <include_actions ref="Menu_Section_Debug" />
             <remove_value name="$config" />
           </actions>
         </cue>
 
-        <!-- == Performance section: data refresh interval == -->
-        <library name="Menu_Section_Performance" purpose="include_actions" version="1">
+        <library name="Menu_Section_Performance" purpose="include_actions" version="2">
           <actions>
-            <run_actions ref="Add_Title_Row">
+            <run_actions ref="md.Options_Helper.Add_Title_Row">
               <param name="title" value="{1972092416, 90100}" />
             </run_actions>
-            <run_actions ref="Add_Slider">
+            <run_actions ref="md.Options_Helper.Add_Slider">
               <param name="id" value="'dataRefreshInterval'" />
               <param name="text" value="{1972092416, 90101}" />
               <param name="min" value="1" />
@@ -86,28 +111,76 @@
               <param name="step" value="1" />
               <param name="suffix" value="' ticks'" />
               <param name="colSpan" value="12" />
-              <param name="data" value="@$config" />
+              <param name="data" value="$config" />
+              <param name="handle" value="Handle_Slider_Changed" />
             </run_actions>
           </actions>
         </library>
 
-        <!-- == Module Errors section: ignore + display mode == -->
-        <library name="Menu_Section_ModuleErrors" purpose="include_actions" version="1">
+        <library name="Menu_Section_Display" purpose="include_actions">
           <actions>
-            <include_actions ref="Add_Empty_Row" />
-            <run_actions ref="Add_Title_Row">
+            <include_actions ref="md.Options_Helper.Add_Empty_Row" />
+            <run_actions ref="md.Options_Helper.Add_Title_Row">
+              <param name="title" value="{1972092416, 90400}" />
+            </run_actions>
+            <set_value name="$sortOptions" exact="[
+              table[$text = {1001, 2809}, $value = 'name'],
+              table[$text = {1972092416, 90412}, $value = 'balance']
+            ]" />
+            <run_actions ref="md.Options_Helper.Add_Dropdown">
+              <param name="id" value="'sortBy'" />
+              <param name="options" value="$sortOptions" />
+              <param name="currentIndex" value="if @$config.$sortBy == 'balance' then 2 else 1" />
+              <param name="col" value="1" />
+              <param name="textColSpan" value="6" />
+              <param name="text" value="{1001, 2906}" />
+              <param name="dropdownColSpan" value="6" />
+              <param name="handle" value="Handle_Dropdown_Changed" />
+            </run_actions>
+            <remove_value name="$sortOptions" />
+            <!-- Each forecast slider is bounded by the other's current value. -->
+            <run_actions ref="md.Options_Helper.Add_Slider">
+              <param name="id" value="'forecastRedHours'" />
+              <param name="text" value="{1972092416, 90413}" />
+              <param name="textColSpan" value="6" />
+              <param name="colSpan" value="6" />
+              <param name="min" value="1" />
+              <param name="max" value="$config.$forecastYellowHours" />
+              <param name="step" value="1" />
+              <param name="suffix" value="' ' + {1001, 102}" />
+              <param name="data" value="$config" />
+              <param name="handle" value="Handle_Slider_Changed" />
+            </run_actions>
+            <run_actions ref="md.Options_Helper.Add_Slider">
+              <param name="id" value="'forecastYellowHours'" />
+              <param name="text" value="{1972092416, 90414}" />
+              <param name="textColSpan" value="6" />
+              <param name="colSpan" value="6" />
+              <param name="min" value="$config.$forecastRedHours" />
+              <param name="max" value="24" />
+              <param name="step" value="1" />
+              <param name="suffix" value="' ' + {1001, 102}" />
+              <param name="data" value="$config" />
+              <param name="handle" value="Handle_Slider_Changed" />
+            </run_actions>
+          </actions>
+        </library>
+
+        <library name="Menu_Section_ModuleErrors" purpose="include_actions" version="2">
+          <actions>
+            <include_actions ref="md.Options_Helper.Add_Empty_Row" />
+            <run_actions ref="md.Options_Helper.Add_Title_Row">
               <param name="title" value="{1972092416, 90200}" />
             </run_actions>
-            <!-- Show errors as sub-row toggle -->
-            <run_actions ref="Add_CheckBox">
+            <run_actions ref="md.Options_Helper.Add_Checkbox">
               <param name="id" value="'showErrorsAsSubrow'" />
               <param name="col" value="1" />
               <param name="textColSpan" value="11" />
               <param name="text" value="{1972092416, 90211}" />
-              <param name="data" value="@$config" />
+              <param name="data" value="$config" />
+              <param name="handle" value="Handle_Checkbox_Changed" />
             </run_actions>
-            <include_actions ref="Add_Empty_Row" />
-            <!-- "Ignore errors:" label (non-selectable) -->
+            <include_actions ref="md.Options_Helper.Add_Empty_Row" />
             <signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" param="table[$selectable = false]" />
             <signal_cue_instantly cue="md.Simple_Menu_API.Make_Text"
               param="table[
@@ -116,64 +189,147 @@
                 $halign  = 'left',
                 $text    = {1972092416, 90220},
               ]" />
-            <!-- Two ignore checkboxes side by side -->
-            <run_actions ref="Add_CheckBox">
+            <run_actions ref="md.Options_Helper.Add_Checkbox">
               <param name="id" value="'ignoreNoResources'" />
               <param name="col" value="1" />
               <param name="textColSpan" value="5" />
               <param name="text" value="{1001, 8431}" />
-              <param name="data" value="@$config" />
+              <param name="data" value="$config" />
+              <param name="handle" value="Handle_Checkbox_Changed" />
             </run_actions>
-            <run_actions ref="Add_CheckBox">
+            <run_actions ref="md.Options_Helper.Add_Checkbox">
               <param name="id" value="'ignoreWaitStore'" />
               <param name="col" value="7" />
               <param name="textColSpan" value="5" />
               <param name="text" value="{1001, 8432}" />
-              <param name="data" value="@$config" />
+              <param name="data" value="$config" />
+              <param name="handle" value="Handle_Checkbox_Changed" />
+            </run_actions>
+            <run_actions ref="md.Options_Helper.Add_Checkbox">
+              <param name="id" value="'ignorePaused'" />
+              <param name="col" value="1" />
+              <param name="textColSpan" value="5" />
+              <param name="text" value="{1001, 8448}" />
+              <param name="data" value="$config" />
+              <param name="handle" value="Handle_Checkbox_Changed" />
             </run_actions>
           </actions>
         </library>
 
-        <!-- == Generic checkbox handler == -->
-        <cue name="Handle_Checkbox_Changed" instantiate="true" version="1">
+        <library name="Menu_Section_Interoperability" purpose="include_actions" version="2">
+          <actions>
+            <include_actions ref="md.Options_Helper.Add_Empty_Row" />
+            <run_actions ref="md.Options_Helper.Add_Title_Row">
+              <param name="title" value="{1972092416, 90300}" />
+            </run_actions>
+            <run_actions ref="md.Options_Helper.Add_Checkbox">
+              <param name="id" value="'syncStationProductionSettings'" />
+              <param name="col" value="1" />
+              <param name="textColSpan" value="11" />
+              <param name="text" value="{1972092416, 90301}" />
+              <param name="data" value="$config" />
+              <param name="active" value="@player.entity.$productionStationsTab != null" />
+              <param name="handle" value="Handle_Checkbox_Changed" />
+            </run_actions>
+          </actions>
+        </library>
+
+        <library name="Menu_Section_Debug" purpose="include_actions">
+          <actions>
+            <include_actions ref="md.Options_Helper.Add_Empty_Row" />
+            <run_actions ref="md.Options_Helper.Add_Title_Row">
+              <param name="title" value="{1972092416, 90900}" />
+            </run_actions>
+            <set_value name="$debugLevelOptions" exact="[
+              table[$text = {1972092416, 90911}, $value = 'none'],
+              table[$text = {1972092416, 90912}, $value = 'debug'],
+              table[$text = {1972092416, 90913}, $value = 'trace']
+            ]" />
+            <set_value name="$debugLevelIndex" exact="['none', 'debug', 'trace'].indexof.{@$config.$debugLevel}" />
+            <run_actions ref="md.Options_Helper.Add_Dropdown">
+              <param name="id" value="'debugLevel'" />
+              <param name="options" value="$debugLevelOptions" />
+              <param name="currentIndex" value="if $debugLevelIndex == 0 then 1 else $debugLevelIndex" />
+              <param name="col" value="1" />
+              <param name="textColSpan" value="6" />
+              <param name="text" value="{1972092416, 90910}" />
+              <param name="dropdownColSpan" value="6" />
+              <param name="handle" value="Handle_Dropdown_Changed" />
+            </run_actions>
+            <remove_value name="$debugLevelOptions" />
+            <remove_value name="$debugLevelIndex" />
+          </actions>
+        </library>
+
+        <cue name="Handle_Checkbox_Changed" instantiate="true" version="2">
           <conditions>
             <event_cue_signalled />
           </conditions>
           <actions>
             <include_actions ref="Get_Config" />
+            <set_value name="$resultTable" exact="$config" />
+            <include_actions ref="md.Options_Helper.Process_Checkbox_Changed" />
+            <remove_value name="$resultTable" />
             <set_value name="$valueId" exact="event.param.$echo.$valueId" />
-            <set_value name="$config.{@$valueId}" exact="event.param.$checked" />
             <do_if value="@$valueId == '$syncStationProductionSettings'">
               <include_actions ref="Handle_Sync_Changed" />
             </do_if>
             <do_else>
               <include_actions ref="Propagate_Sync" />
             </do_else>
+            <include_actions ref="Read_Debug_Chances" />
+            <debug_text text="'StationProductionOverview: option %s set to %s'.[$valueId, event.param.$checked]" chance="$debugChance" />
+            <remove_value name="$debugChance" />
+            <remove_value name="$traceChance" />
             <remove_value name="$valueId" />
             <remove_value name="$config" />
             <raise_lua_event name="'SPO.ConfigChanged'" />
           </actions>
         </cue>
 
-        <!-- == Generic slider handler == -->
-        <cue name="Handle_Slider_Changed" instantiate="true" version="2">
+        <cue name="Handle_Slider_Changed" instantiate="true" version="3">
           <conditions>
             <event_cue_signalled />
           </conditions>
           <actions>
             <include_actions ref="Get_Config" />
+            <set_value name="$resultTable" exact="$config" />
+            <include_actions ref="md.Options_Helper.Process_Slider_Changed" />
+            <remove_value name="$resultTable" />
             <set_value name="$valueId" exact="event.param.$echo.$valueId" />
-            <set_value name="$config.{@$valueId}" exact="event.param.$value" />
             <include_actions ref="Propagate_Sync" />
+            <do_if value="$valueId == '$forecastRedHours' or $valueId == '$forecastYellowHours'">
+              <signal_cue_instantly cue="md.Simple_Menu_API.Refresh_Menu" />
+            </do_if>
+            <include_actions ref="Read_Debug_Chances" />
+            <debug_text text="'StationProductionOverview: option %s set to %s'.[$valueId, event.param.$value]" chance="$debugChance" />
+            <remove_value name="$debugChance" />
+            <remove_value name="$traceChance" />
             <remove_value name="$valueId" />
             <remove_value name="$config" />
             <raise_lua_event name="'SPO.ConfigChanged'" />
           </actions>
         </cue>
 
-        <!-- == Sync propagation helper == -->
-        <!-- Requires $valueId and $config to be set by the caller.             -->
-        <!-- Mirrors the changed value to PST config if sync is enabled.        -->
+        <cue name="Handle_Dropdown_Changed" instantiate="true">
+          <conditions>
+            <event_cue_signalled />
+          </conditions>
+          <actions>
+            <include_actions ref="Get_Config" />
+            <set_value name="$resultTable" exact="$config" />
+            <include_actions ref="md.Options_Helper.Process_Dropdown_Changed" />
+            <remove_value name="$resultTable" />
+            <include_actions ref="Read_Debug_Chances" />
+            <debug_text text="'StationProductionOverview: option %s set to %s'.[event.param.$echo.$valueId, @event.param.$option.$value]" chance="$debugChance" />
+            <remove_value name="$debugChance" />
+            <remove_value name="$traceChance" />
+            <remove_value name="$config" />
+            <raise_lua_event name="'SPO.ConfigChanged'" />
+          </actions>
+        </cue>
+
+        <!-- Mirrors the changed value ($valueId, $config) to the Production Stations Tab config when sync is on. -->
         <library name="Propagate_Sync" purpose="include_actions" version="1">
           <actions>
             <do_if value="@$config.$syncStationProductionSettings == true">
@@ -193,34 +349,12 @@
           </actions>
         </library>
 
-        <!-- == Interoperability section == -->
-        <library name="Menu_Section_Interoperability" purpose="include_actions" version="1">
-          <actions>
-            <include_actions ref="Add_Empty_Row" />
-            <run_actions ref="Add_Title_Row">
-              <param name="title" value="{1972092416, 90300}" />
-            </run_actions>
-            <set_value name="$oppositeConfig" exact="@player.entity.$productionStationsTab" />
-            <run_actions ref="Add_CheckBox">
-              <param name="id" value="'syncStationProductionSettings'" />
-              <param name="col" value="1" />
-              <param name="textColSpan" value="11" />
-              <param name="text" value="{1972092416, 90301}" />
-              <param name="data" value="@$config" />
-              <param name="active" value="@$oppositeConfig != null" />
-            </run_actions>
-            <remove_value name="$oppositeConfig" />
-          </actions>
-        </library>
-
-        <!-- == Interoperability sync handler == -->
-        <!-- $config and sync flag already set by caller.                      -->
+        <!-- The sync flag itself changed; enabling it copies the Production Stations Tab settings over. -->
         <library name="Handle_Sync_Changed" purpose="include_actions" version="1">
           <actions>
             <set_value name="$oppositeConfig" exact="@player.entity.$productionStationsTab" />
             <do_if value="@$oppositeConfig != null">
               <do_if value="event.param.$checked">
-                <!-- Enabling sync: copy settings from PST to SPO -->
                 <set_value name="$oppositeConfig.$syncStationProductionSettings" exact="true" />
                 <set_value name="$config.$dataRefreshInterval" exact="@$oppositeConfig.$dataRefreshInterval" />
                 <set_value name="$config.$ignoreNoResources" exact="@$oppositeConfig.$ignoreNoResources" />
@@ -228,125 +362,11 @@
                 <signal_cue_instantly cue="md.Simple_Menu_API.Refresh_Menu" />
               </do_if>
               <do_else>
-                <!-- Disabling sync: flag already cleared -->
                 <set_value name="$oppositeConfig.$syncStationProductionSettings" exact="false" />
               </do_else>
               <raise_lua_event name="'PST.ConfigChanged'" />
             </do_if>
             <remove_value name="$oppositeConfig" />
-          </actions>
-        </library>
-
-        <!-- == UI helper libraries (based on Notification Filter pattern) == -->
-
-        <library name="Add_CheckBox" purpose="run_actions">
-          <params>
-            <param name="id" />
-            <param name="col" default="1" />
-            <param name="textColSpan" default="1" />
-            <param name="text" default="''" />
-            <param name="data" />
-            <param name="active" default="true" />
-          </params>
-          <actions>
-            <do_if value="@$id != null and $col? and $textColSpan? and @$text != null and @$data != null">
-              <do_if value="@$col == 1">
-                <signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" />
-              </do_if>
-              <set_value name="$valueId" exact="'$%s' . [@$id]" />
-              <signal_cue_instantly cue="md.Simple_Menu_API.Make_CheckBox"
-                param="table[
-                  $id      = 'SPO_CheckBox_%s' . [@$id],
-                  $checked = @$data.{@$valueId} == true,
-                  $col     = @$col,
-                  $colSpan = 1,
-                  $x       = 20,
-                  $width   = 'Helper.standardButtonHeight',
-                  $height  = 'Helper.standardButtonHeight',
-                  $onClick = Handle_Checkbox_Changed,
-                  $echo    = table[ $valueId = @$valueId ],
-                  $active  = @$active,
-                ]" />
-              <signal_cue_instantly cue="md.Simple_Menu_API.Make_Text"
-                param="table[
-                  $col     = @$col + 1,
-                  $colSpan = @$textColSpan,
-                  $halign  = 'left',
-                  $text    = @$text,
-                ]" />
-            </do_if>
-          </actions>
-        </library>
-
-        <library name="Add_Slider" purpose="run_actions">
-          <params>
-            <param name="id" />
-            <param name="text" default="''" />
-            <param name="min" default="0" />
-            <param name="max" default="100" />
-            <param name="step" default="1" />
-            <param name="suffix" default="''" />
-            <param name="colSpan" default="12" />
-            <param name="data" />
-          </params>
-          <actions>
-            <do_if value="@$id != null and $min? and $max? and $step? and @$data != null">
-              <set_value name="$valueId" exact="'$%s' . [@$id]" />
-              <signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" param="table[$selectable = false]" />
-              <signal_cue_instantly cue="md.Simple_Menu_API.Make_Text"
-                param="table[
-                  $col     = 1,
-                  $colSpan = @$colSpan,
-                  $halign  = 'left',
-                  $text    = @$text,
-                ]" />
-              <signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" />
-              <signal_cue_instantly cue="md.Simple_Menu_API.Make_Slider"
-                param="table[
-                  $id                  = 'SPO_Slider_%s' . [@$id],
-                  $col                 = 1,
-                  $colSpan             = @$colSpan,
-                  $min                 = @$min,
-                  $max                 = @$max,
-                  $step                = @$step,
-                  $start               = @$data.{@$valueId},
-                  $suffix              = @$suffix,
-                  $onSliderCellConfirm = Handle_Slider_Changed,
-                  $echo                = table[ $valueId = @$valueId ],
-                ]" />
-            </do_if>
-          </actions>
-        </library>
-
-        <library name="Add_Title_Row" purpose="run_actions">
-          <params>
-            <param name="title" />
-          </params>
-          <actions>
-            <signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" param="table[$selectable = false]" />
-            <signal_cue_instantly cue="md.Simple_Menu_API.Make_Text"
-              param="table[
-                $col        = 1,
-                $colSpan    = 12,
-                $fontsize   = 'Helper.titleFontSize',
-                $titleColor = 'Color.text_normal',
-                $halign     = 'center',
-                $text       = $title,
-              ]" />
-            <include_actions ref="Add_Empty_Row" />
-          </actions>
-        </library>
-
-        <library name="Add_Empty_Row" purpose="include_actions">
-          <actions>
-            <signal_cue_instantly cue="md.Simple_Menu_API.Add_Row" param="table[$selectable = false]" />
-            <signal_cue_instantly cue="md.Simple_Menu_API.Make_Text"
-              param="table[
-                $col      = 1,
-                $colSpan  = 12,
-                $height   = 'Helper.borderSize',
-                $fontsize = 'Helper.borderSize',
-              ]" />
           </actions>
         </library>
 

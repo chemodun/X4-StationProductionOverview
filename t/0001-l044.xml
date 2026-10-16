@@ -13,6 +13,7 @@
       <t id="100">Current live state \(± with building modules\) / hour</t>
       <t id="101">Estimated, i.e. all modules active \(± with building modules\) / hour</t>
       <t id="102">Show empire balance</t>
+      <t id="103">Show storage</t>
       <!-- column headers -->
       <t id="110">Ware</t>
       <t id="111">Modules</t>
@@ -25,6 +26,13 @@
       <t id="122">Resources</t>
       <!-- empire consumption sub-row label -->
       <t id="130">All stations:</t>
+      <!-- stock and storage sub-rows, sector total -->
+      <t id="132">Empty in %s</t>
+      <t id="133">Full in %s</t>
+      <t id="134">Empty</t>
+      <t id="135">Full</t>
+      <t id="136">No storage of this type</t>
+      <t id="140">Sector total</t>
       <!-- status / empty messages -->
       <t id="1001">Select a station to see production data.</t>
       <t id="1002">No production modules found.</t>
@@ -39,6 +47,15 @@
       <t id="90220">Ignore errors:</t>
       <t id="90300">Interoperability</t>
       <t id="90301">Sync with Production Stations Tab</t>
+      <t id="90400">Display</t>
+      <t id="90412">Balance \(deficit first\)</t>
+      <t id="90413">Red: empty or full within</t>
+      <t id="90414">Yellow: empty or full within</t>
+      <t id="90900">Debug</t>
+      <t id="90910">Debug Level</t>
+      <t id="90911">None</t>
+      <t id="90912">Debug</t>
+      <t id="90913">Trace</t>
     </page>
   </add>
 </diff>
