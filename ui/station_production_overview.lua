@@ -88,8 +88,7 @@ local spo           = {
   showErrorsAsSubrow  = true,
   sortBy              = "name",
   forecastRedHours    = 2,
-  forecastYellowHours = 6,
-}
+  forecastYellowHours = 6,}
 
 -- Module states in vanilla station overview order; ignore names the spo flag that hides the state.
 local ISSUES        = {
@@ -105,18 +104,25 @@ local FLOW_KEYS     = { "productionCurrent", "productionPlanned", "consumptionCu
 
 local STORAGE_NAMES = { container = 101, solid = 301, liquid = 601, condensate = 9801 } -- page 20109
 
-local function write(message, ...)
+-- Visible-sectors view: a sector counts with half of its hex on screen, else the one covering most of the screen
+local MAP_VISIBLE_SECTORS    = "1.00"
+local VS                     = __MAP_VISIBLE_SECTORS[MAP_VISIBLE_SECTORS]
+local VISIBLE_RULE           = { minHexShare = 0.5, largest = true }
+local VISIBLE_CHECK_INTERVAL = 0.5 -- seconds
+local MAX_INFO_TABS          = 10  -- the info tab row is a table of 13 columns, 3 of them no tabs
+
+local function logLine(message, ...)
   if select("#", ...) > 0 then
     message = string.format(message, ...)
   end
-  DebugError("StationProductionOverview: " .. message)
+  return "StationProductionOverview: " .. message
 end
 
-function spo.Error(message, ...) write(message, ...) end
+function spo.Error(message, ...) UIError(logLine(message, ...)) end
 
-function spo.Debug(message, ...) if spo.debugLevel ~= "none" then write(message, ...) end end
+function spo.Debug(message, ...) if spo.debugLevel ~= "none" then UIDebug(logLine(message, ...)) end end
 
-function spo.Trace(message, ...) if spo.debugLevel == "trace" then write(message, ...) end end
+function spo.Trace(message, ...) if spo.debugLevel == "trace" then UITrace(logLine(message, ...)) end end
 
 local function spoOnConfigChanged()
   if spo.playerId == nil then return end
@@ -893,7 +899,7 @@ function spo.setupProductionSubmenuRows(tableInfo, station, instance, sectorMode
               (Helper.headerRow1Height - config.mapRowHeight) / 2 or nil
         }
       )
-  row[6].handlers.onClick = function() return C.SetFocusMapComponent(menu.holomap, menu.infoSubmenuObject, true) end
+  row[6].handlers.onClick = function() return C.SetFocusMapComponent(menu.holomap, station, true) end
 
   row[1]:setBackgroundColSpan(5):setColSpan(3):createText(objectName, spo.isV9 and { fontsize = Helper.headerRow1FontSize } or Helper.headerRow1Properties)
   row[1].properties.color = titleColor
@@ -1026,12 +1032,38 @@ function spo.createProductionSubmenu(inputframe, instance)
   tableButton:addConnection(isLeft and 4 or 3, isLeft and 2 or 3)
 end
 
+-- ─── visible sectors ─────────────────────────────────────────────────────────
+
+--- Known sectors on the map view and the key of that set.
+local function getVisibleSectors()
+  return VS.get(menu.holomap, menu.rendertargetWidth, menu.rendertargetHeight, VISIBLE_RULE)
+end
+
+--- Title of a visible-sectors view; as a cell function it asks for a re-render once the sectors on the map changed.
+local function visibleSectorsTitle(title, renderedKey)
+  local nextCheck = 0
+  return function()
+    local curTime = getElapsedTime()
+    if curTime >= nextCheck then
+      nextCheck = curTime + VISIBLE_CHECK_INTERVAL
+      if not menu.refreshIF then
+        local _, key = getVisibleSectors()
+        if key ~= renderedKey then
+          spo.Debug("visible sectors changed, refreshing")
+          menu.refreshIF = curTime
+        end
+      end
+    end
+    return title
+  end
+end
+
 -- ─── sector panel builder ────────────────────────────────────────────────────
 
---- Sector total block: the station entries summed per ware.
-function spo.renderSectorTotal(tableInfo, stations)
+--- Total block: the station entries summed per ware.
+function spo.renderSectorTotal(tableInfo, stations, title)
   local row = tableInfo:addRow(true, { bgColor = not spo.isV9 and Color["row_title_background"] or nil })
-  row[1]:setColSpan(6):createText(ReadText(PAGE, 140), spo.isV9 and { fontsize = Helper.headerRow1FontSize } or Helper.headerRow1Properties)
+  row[1]:setColSpan(6):createText(title, spo.isV9 and { fontsize = Helper.headerRow1FontSize } or Helper.headerRow1Properties)
   local products, intermediates, resources = sumSectorEntries(stations)
   local group = spo.isV9 and tableInfo:addRowGroup({}) or tableInfo
   local ctx = { sectorMode = true }
@@ -1040,13 +1072,18 @@ function spo.renderSectorTotal(tableInfo, stations)
   spo.renderGroup(group, resources, ReadText(PAGE, 122), ctx)
 end
 
---- All player stations of a sector with production modules: an optional sector total, then one block each.
+--- All player stations with production modules of a sector, or of the sectors on the map view when the info
+--- object is no sector: an optional total, then one block each.
 function spo.setupSectorProductionSubmenuRows(tableInfo, sector, instance)
   local isSector = sector and (tonumber(sector) ~= 0)
       and C.IsComponentClass(sector, "sector")
+  local sectors, visibleKey = { sector }, nil
+  if not isSector then
+    sectors, visibleKey = getVisibleSectors()
+  end
 
   local titleColor = Color["text_normal"]
-  if not spo.isV9 then
+  if isSector and not spo.isV9 then
     local isPlayerOwned, isEnemy, isHostile = GetComponentData(sector, "isplayerowned", "isenemy", "ishostile")
     if isPlayerOwned then
       titleColor = menu.holomapcolor.playercolor
@@ -1066,65 +1103,77 @@ function spo.setupSectorProductionSubmenuRows(tableInfo, sector, instance)
   end
 
   titleColor = spo.isV9 and (isSector and menu.getObjectColor(sector) or Color["text_normal"]) or titleColor
-  local sectorName = isSector
-      and ffi.string(C.GetComponentName(sector))
-      or ReadText(PAGE, 3)
+  local title
+  if isSector then
+    title = ffi.string(C.GetComponentName(sector))
+  else
+    title = visibleSectorsTitle(string.format("%s (%d)", ReadText(PAGE, 5), #sectors), visibleKey)
+  end
 
   local row = tableInfo:addRow("info_focus",
     { fixed = true, bgColor = not spo.isV9 and Color["row_title_background"] or nil })
-  row[6]:createButton({
-    width = config.mapRowHeight,
-    height = config.mapRowHeight,
-    cellBGColor = Color
-        ["row_background"]
-  })
-      :setIcon("menu_center_selection",
-        {
-          width = config.mapRowHeight,
-          height = config.mapRowHeight,
-          y = not spo.isV9 and
-              (Helper.headerRow1Height - config.mapRowHeight) / 2 or nil
-        })
-  row[6].handlers.onClick = function() return C.SetFocusMapComponent(menu.holomap, menu.infoSubmenuObject, true) end
+  if isSector then
+    row[6]:createButton({
+      width = config.mapRowHeight,
+      height = config.mapRowHeight,
+      cellBGColor = Color
+          ["row_background"]
+    })
+        :setIcon("menu_center_selection",
+          {
+            width = config.mapRowHeight,
+            height = config.mapRowHeight,
+            y = not spo.isV9 and
+                (Helper.headerRow1Height - config.mapRowHeight) / 2 or nil
+          })
+    row[6].handlers.onClick = function() return C.SetFocusMapComponent(menu.holomap, sector, true) end
+  end
   if spo.isV9 then
-    row[1]:setBackgroundColSpan(5):setColSpan(5):createText(sectorName,
+    row[1]:setBackgroundColSpan(5):setColSpan(5):createText(title,
       { fontsize = Helper.headerRow1FontSize, color = titleColor })
   else
-    row[1]:setBackgroundColSpan(5):setColSpan(5):createText(sectorName, Helper.headerRow1Properties)
+    row[1]:setBackgroundColSpan(5):setColSpan(5):createText(title, Helper.headerRow1Properties)
     row[1].properties.color = titleColor
   end
 
-  if not isSector then
-    row = tableInfo:addRow(true, {})
-    row[1]:setColSpan(6):createText(ReadText(PAGE, 1004), { halign = "center", wordwrap = true })
-    return
-  end
-
   local stations = {}
-  for _, stationId in ipairs(GetContainedStationsByOwner("player", sector)) do
-    local station64 = ConvertIDTo64Bit(stationId)
-    local data = getStationData(station64, instance, true)
-    if data.status ~= "nomodules" then
-      table.insert(stations, { id = station64, name = ffi.string(C.GetComponentName(station64)), data = data })
+  for _, sectorId in ipairs(sectors) do
+    local sectorName = (not isSector) and ffi.string(C.GetComponentName(sectorId)) or ""
+    for _, stationId in ipairs(GetContainedStationsByOwner("player", sectorId)) do
+      local station64 = ConvertIDTo64Bit(stationId)
+      local data = getStationData(station64, instance, true)
+      if data.status ~= "nomodules" then
+        table.insert(stations, {
+          id = station64, name = ffi.string(C.GetComponentName(station64)), sectorName = sectorName, data = data,
+        })
+      end
     end
   end
+  spo.Trace("sector view: %d sectors%s, %d stations", #sectors, isSector and "" or " (visible)", #stations)
 
   if #stations == 0 then
     row = tableInfo:addRow(true, {})
-    row[1]:setColSpan(6):createText(ReadText(PAGE, 1004), { halign = "center", wordwrap = true })
+    row[1]:setColSpan(6):createText(ReadText(PAGE, isSector and 1004 or 1005), { halign = "center", wordwrap = true })
     return
   end
 
-  table.sort(stations, Helper.sortName)
+  table.sort(stations, function(a, b)
+    if a.sectorName ~= b.sectorName then return a.sectorName < b.sectorName end
+    return a.name < b.name
+  end)
 
   spo.toggleEstimatedCurrent(tableInfo, true)
   spo.columnHeaders(tableInfo)
   if #stations > 1 then
-    spo.renderSectorTotal(tableInfo, stations)
+    spo.renderSectorTotal(tableInfo, stations, ReadText(PAGE, isSector and 140 or 141))
     tableInfo:addEmptyRow(2 * Helper.standardContainerOffset, false, Color["row_background_unselectable"])
   end
   for i = 1, #stations do
     local stationInfo = stations[i]
+    if (not isSector) and ((i == 1) or (stations[i - 1].sectorName ~= stationInfo.sectorName)) then
+      row = tableInfo:addRow(true, { bgColor = Color["row_title_background"] })
+      row[1]:setColSpan(6):createText(stationInfo.sectorName, Helper.headerRowCenteredProperties)
+    end
     spo.setupProductionSubmenuRows(tableInfo, stationInfo.id, instance, true, stationInfo.data)
     spo.addButtonsToProductionSubmenu(tableInfo, stationInfo.id, true)
     if i < #stations then
@@ -1200,11 +1249,32 @@ function spo.onSectorInfoSubMenuCreate(infoFrame, instance)
   spo.createSectorProductionSubmenu(infoFrame, instance)
 end
 
+--- True when the tab row of an info object has room for the sector tab next to the tabs shown without it.
+local function sectorTabFits(object)
+  local callbacks = menu.uix_callbacks and menu.uix_callbacks["info_sub_menu_to_show"] or {}
+  local shown = 0
+  for _, entry in ipairs(config.infoCategories or {}) do
+    if entry.category ~= SSPO_CATEGORY then
+      local visible = true
+      for _, callback in pairs(callbacks) do
+        if (callback ~= spo.onSectorInfoSubMenuToShow) and (callback(object, entry.category) == false) then
+          visible = false
+          break
+        end
+      end
+      if visible then shown = shown + 1 end
+    end
+  end
+  return shown < MAX_INFO_TABS
+end
+
+--- A sector shows itself; any other info object the sectors on the map view, when its tab row has room.
 function spo.onSectorInfoSubMenuIsValidFor(object, mode)
   if mode ~= SSPO_CATEGORY then return false end
   if not object or object == 0 then return false end
   local classId = GetComponentData(object, "realclassid")
-  return classId ~= nil and Helper.isComponentClass(classId, "sector")
+  if classId ~= nil and Helper.isComponentClass(classId, "sector") then return true end
+  return sectorTabFits(object)
 end
 
 function spo.onSectorInfoSubMenuToShow(object, mode)

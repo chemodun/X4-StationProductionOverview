@@ -8,6 +8,7 @@
       <t id="2">Visão geral da produção da estação</t>
       <t id="3">Visão geral da produção do setor</t>
       <t id="4">Visão geral da produção do setor</t>
+      <t id="5">Setores visíveis</t>
       <t id="10">Station Production Overview</t>
       <!-- dropdown mode options -->
       <t id="100">Estado ao vivo atual \(± com módulos em construção\) / hora</t>
@@ -33,11 +34,13 @@
       <t id="135">Cheio</t>
       <t id="136">Sem armazenamento deste tipo</t>
       <t id="140">Total do setor</t>
+      <t id="141">Total dos setores visíveis</t>
       <!-- status / empty messages -->
       <t id="1001">Selecione uma estação para ver os dados de produção.</t>
       <t id="1002">Nenhum módulo de produção encontrado.</t>
       <t id="1003">Nenhuma mercadoria de produção encontrada.</t>
       <t id="1004">Nenhuma estação do jogador com módulos de produção encontrada neste setor.</t>
+      <t id="1005">Nenhuma estação do jogador com módulos de produção encontrada nos setores visíveis.</t>
       <!-- settings labels (90000+) -->
       <t id="90001">Visão geral da produção da estação</t>
       <t id="90100">Desempenho</t>

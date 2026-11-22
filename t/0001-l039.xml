@@ -8,6 +8,7 @@
       <t id="2">Panoramica produzione stazione</t>
       <t id="3">Panoramica produzione settore</t>
       <t id="4">Panoramica produzione settore</t>
+      <t id="5">Settori visibili</t>
       <t id="10">Station Production Overview</t>
       <!-- dropdown mode options -->
       <t id="100">Stato live attuale \(± con moduli in costruzione\) / ora</t>
@@ -33,11 +34,13 @@
       <t id="135">Pieno</t>
       <t id="136">Nessun magazzino di questo tipo</t>
       <t id="140">Totale settore</t>
+      <t id="141">Totale settori visibili</t>
       <!-- status / empty messages -->
       <t id="1001">Seleziona una stazione per vedere i dati di produzione.</t>
       <t id="1002">Nessun modulo di produzione trovato.</t>
       <t id="1003">Nessuna merce di produzione trovata.</t>
       <t id="1004">Nessuna stazione del giocatore con moduli di produzione trovata in questo settore.</t>
+      <t id="1005">Nessuna stazione del giocatore con moduli di produzione trovata nei settori visibili.</t>
       <!-- settings labels (90000+) -->
       <t id="90001">Panoramica della produzione della stazione</t>
       <t id="90100">Prestazioni</t>

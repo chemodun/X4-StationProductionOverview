@@ -8,6 +8,7 @@
       <t id="2">Stationsproduktionsübersicht</t>
       <t id="3">Sektorproduktionsübersicht</t>
       <t id="4">Sektorproduktionsübersicht</t>
+      <t id="5">Sichtbare Sektoren</t>
       <t id="10">Station Production Overview</t>
       <!-- dropdown mode options -->
       <t id="100">Aktueller Live-Status \(± mit Baumodulen\) / Stunde</t>
@@ -33,11 +34,13 @@
       <t id="135">Voll</t>
       <t id="136">Kein Lager dieses Typs</t>
       <t id="140">Sektor gesamt</t>
+      <t id="141">Sichtbare Sektoren gesamt</t>
       <!-- status / empty messages -->
       <t id="1001">Wählen Sie eine Station aus, um Produktionsdaten anzuzeigen.</t>
       <t id="1002">Keine Produktionsmodule gefunden.</t>
       <t id="1003">Keine Produktionswaren gefunden.</t>
       <t id="1004">Keine Spielerstationen mit Produktionsmodulen in diesem Sektor gefunden.</t>
+      <t id="1005">Keine Spielerstationen mit Produktionsmodulen in den sichtbaren Sektoren gefunden.</t>
       <!-- settings labels (90000+) -->
       <t id="90001">Stationsproduktionsübersicht</t>
       <t id="90100">Leistung</t>

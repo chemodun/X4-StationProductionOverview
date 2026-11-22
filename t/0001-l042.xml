@@ -8,6 +8,7 @@
       <t id="2">Přehled výroby stanice</t>
       <t id="3">Přehled výroby sektoru</t>
       <t id="4">Přehled výroby sektoru</t>
+      <t id="5">Viditelné sektory</t>
       <t id="10">Station Production Overview</t>
       <!-- dropdown mode options -->
       <t id="100">Aktuální živý stav \(± s moduly ve výstavbě\) / hodinu</t>
@@ -33,11 +34,13 @@
       <t id="135">Plné</t>
       <t id="136">Žádný sklad tohoto typu</t>
       <t id="140">Celkem za sektor</t>
+      <t id="141">Celkem za viditelné sektory</t>
       <!-- status / empty messages -->
       <t id="1001">Vyberte stanici pro zobrazení výrobních dat.</t>
       <t id="1002">Nebyly nalezeny žádné výrobní moduly.</t>
       <t id="1003">Nebylo nalezeno žádné výrobní zboží.</t>
       <t id="1004">V tomto sektoru nebyly nalezeny žádné hráčské stanice s výrobními moduly.</t>
+      <t id="1005">Ve viditelných sektorech nebyly nalezeny žádné hráčské stanice s výrobními moduly.</t>
       <!-- settings labels (90000+) -->
       <t id="90001">Přehled výroby stanice</t>
       <t id="90100">Výkon</t>

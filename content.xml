@@ -3,12 +3,12 @@
   id="ws_3695609478"
   name="Station Production Overview"
   author="Chem O`Dun"
-  version="90011"
-  date="2026-10-16"
+  version="90012"
+  date="2026-11-22"
   save="false"
   sync="false"
   enabled="true"
-  lastupdate="1792167813"
+  lastupdate="1795386450"
   description="Adds a Production Overview tab to the info panel tab strip (alongside Object Info, Crew, etc.) for player-owned stations in the map menu. Shows per-ware production and consumption rates (live or estimated), groups wares into Products, Intermediates, and Resources, and previews the impact of planned modules.">
   <text language="7"
     description="Adds a Production Overview tab to the info panel tab strip (alongside Object Info, Crew, etc.) for player-owned stations in the map menu. Shows per-ware production and consumption rates (live or estimated), groups wares into Products, Intermediates, and Resources, and previews the impact of planned modules."></text>
@@ -51,6 +51,9 @@
   <!-- Turkish -->
   <text language="90"
     description="Harita menüsünde oyuncuya ait istasyonlar için bilgi paneline (Nesne Bilgisi, Mürettebat vb. ile birlikte) bir Üretim Özeti sekmesi ekler. Mal başına üretim ve tüketim oranlarını (canlı veya tahmini) gösterir, malları Ürünler, Ara Ürünler ve Kaynaklar olarak gruplandırır ve planlanan modüllerin etkisini önizler."></text>
+  <!-- Bulgarian -->
+  <text language="359"
+    description="Добавя раздел Преглед на производството в лентата с раздели на информационния панел (до Object Info, Екипаж и др.) за станциите на играча в менюто на картата. Показва производството и потреблението по стоки (реално или прогнозно), групира стоките в Продукти, Междинни продукти и Ресурси и показва предварително ефекта от планираните модули."></text>
   <!-- Ukrainian -->
   <text language="380"
     description="Додає вкладку Огляд виробництва до інформаційної панелі (поряд з Інфо про об'єкт, Екіпаж тощо) для станцій гравця в меню карти. Показує показники виробництва та споживання за товарами (наживо або оціночно), групує товари на Продукти, Напівпродукти та Ресурси та попередньо переглядає вплив запланованих модулів."></text>
@@ -59,4 +62,5 @@
   <dependency id="ws_2042901274" optional="false" name="SirNukes Mod Support APIs" version="195"></dependency>
   <dependency id="ws_3715253556" optional="false" name="Options Helper" version="110"></dependency>
   <dependency id="ws_3770927339" optional="false" name="Print Extension List" version="100"></dependency>
+  <dependency id="ws_3823580916" optional="false" name="Lua Log API" version="100"></dependency>
 </content>

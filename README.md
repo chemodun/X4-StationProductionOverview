@@ -6,6 +6,7 @@ Adds a **Production Overview** tab to the info panel tab strip in the map menu (
 
 - **Production Overview Tab**: Dedicated tab in the station info panel showing per-ware produced, consumed, and net total rates per hour.
 - **Sector Production Overview**: Same tab in the sector info panel, listing all player-owned production stations in the sector.
+- **Visible sectors**: With a ship or any other object selected, the same tab covers the player-owned production stations in the sectors shown on the map, and follows the map when you zoom or move it.
 - **Ware grouping**: Wares split into **Products**, **Intermediates**, and **Resources**; workforce-only consumer goods placed in Resources unless also produced on-site.
 - **Live vs Estimated mode**: Dropdown switches between actual running rates (with `active/total` module count) and the output with all modules running at the current workforce.
 - **Production issue indicators**: Wares with destroyed, damaged, hacked, paused, resource-starved or storage-blocked modules are highlighted, with the count per state as a sub-row or a tooltip.
@@ -35,6 +36,9 @@ Adds a **Production Overview** tab to the info panel tab strip in the map menu (
 - **Print Extension List**: Version 1.00 or higher.
   - Available on Steam: [Print Extension List](https://steamcommunity.com/sharedfiles/filedetails/?id=3770927339)
   - Available on Nexus Mods: [Print Extension List](https://www.nexusmods.com/x4foundations/mods/2191)
+- **Lua Log API**: Version 1.00 or higher.
+  - Available on Steam: [Lua Log API](https://steamcommunity.com/sharedfiles/filedetails/?id=3823580916)
+  - Available on Nexus Mods: [Lua Log API](https://www.nexusmods.com/x4foundations/mods/2473)
 
 ## Installation
 
@@ -116,6 +120,10 @@ Select a sector in the map to get the same **Production Overview** tab listing a
 
 ![Sector Production Overview Tab](docs/images/sector_production_overview_tab.png)
 
+With anything other than a sector selected (a ship, an NPC station), the tab covers the sectors shown on the map instead. The title reads **Visible sectors** with their number, a **Visible sectors total** block sums every ware, and the stations follow sorted by sector, each sector under its own header row. A sector counts when at least half of it is on the screen; when none is, the one covering most of the screen counts. Zoom or move the map and the tab follows within half a second. The tab is left out when the selected object's tab row is already full (10 tabs, for example with other mods adding tabs).
+
+![Visible Sectors Production Overview](docs/images/visible_sectors_production_overview_tab.png)
+
 ## Video
 
 - [Station Production Overview and Production Stations Tab interoperability setting and usage](https://www.youtube.com/watch?v=f0apJSuumY0)
@@ -132,6 +140,16 @@ Select a sector in the map to get the same **Production Overview** tab listing a
 - [SirNukes](https://next.nexusmods.com/profile/sirnukes?gameId=2659) - for the `Mod Support APIs` that power the UI hooks.
 
 ## Changelog
+
+### [9.00.12] - 2026-11-22
+
+- **Added**
+  - Production overview of the sectors shown on the map when no sector is selected.
+  - Bulgarian translation.
+- **Changed**
+  - Log messages go through the Lua Log API, now a required mod.
+- **Fixed**
+  - The focus button of a station in the sector view focused the sector, not the station.
 
 ### [9.00.11] - 2026-10-16
 

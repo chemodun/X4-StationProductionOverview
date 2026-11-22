@@ -8,6 +8,7 @@
       <t id="2">İstasyon Üretim Özeti</t>
       <t id="3">Sektör Üretim Özeti</t>
       <t id="4">Sektör Üretim Özeti</t>
+      <t id="5">Görünür sektörler</t>
       <t id="10">Station Production Overview</t>
       <!-- dropdown mode options -->
       <t id="100">Mevcut canlı durum \(± yapım aşamasındaki modüllerle\) / saat</t>
@@ -33,11 +34,13 @@
       <t id="135">Dolu</t>
       <t id="136">Bu türde depolama yok</t>
       <t id="140">Sektör toplamı</t>
+      <t id="141">Görünür sektörler toplamı</t>
       <!-- status / empty messages -->
       <t id="1001">Üretim verilerini görmek için bir istasyon seçin.</t>
       <t id="1002">Üretim modülü bulunamadı.</t>
       <t id="1003">Üretim malı bulunamadı.</t>
       <t id="1004">Bu sektörde üretim modülü olan oyuncu istasyonu bulunamadı.</t>
+      <t id="1005">Görünür sektörlerde üretim modülü olan oyuncu istasyonu bulunamadı.</t>
       <!-- settings labels (90000+) -->
       <t id="90001">İstasyon Üretim Genel Bakışı</t>
       <t id="90100">Performans</t>

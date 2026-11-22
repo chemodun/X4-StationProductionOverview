@@ -8,6 +8,7 @@
       <t id="2">Station Production Overview</t>
       <t id="3">Sector Production Overview</t>
       <t id="4">Sector Production Overview</t>
+      <t id="5">Visible sectors</t>
       <t id="10">Station Production Overview</t>
       <!-- dropdown mode options -->
       <t id="100">Current live state \(± with building modules\) / hour</t>
@@ -33,11 +34,13 @@
       <t id="135">Full</t>
       <t id="136">No storage of this type</t>
       <t id="140">Sector total</t>
+      <t id="141">Visible sectors total</t>
       <!-- status / empty messages -->
       <t id="1001">Select a station to see production data.</t>
       <t id="1002">No production modules found.</t>
       <t id="1003">No production wares found.</t>
       <t id="1004">No player stations with production modules found in this sector.</t>
+      <t id="1005">No player stations with production modules found in the visible sectors.</t>
       <!-- settings labels (90000+) -->
       <t id="90001">Station Production Overview</t>
       <t id="90100">Performance</t>
